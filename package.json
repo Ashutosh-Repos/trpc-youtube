@@ -8,6 +8,7 @@
         "build": "pnpm --recursive build",
         "start": "pnpm --recursive --parallel start",
         "lint": "pnpm --recursive lint",
+        "sync:schema": "cp apps/server/prisma/schema.prisma apps/client/prisma/schema.prisma && pnpm --filter @youtube/client exec prisma generate",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [],

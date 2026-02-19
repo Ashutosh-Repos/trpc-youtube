@@ -47,8 +47,8 @@ const createChannelSchema = z.object({
             "Handle can only contain letters, numbers, underscores, and periods.",
         ),
     description: z.string().trim().max(5000).optional(),
-    image: z.url().optional(),
-    bannerUrl: z.url().optional(),
+    image: z.string().optional(),
+    bannerUrl: z.string().optional(),
     contactEmail: z.email().optional(),
     links: z.array(linkSchema).max(20).optional(),
 });

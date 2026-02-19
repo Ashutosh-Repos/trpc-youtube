@@ -4,6 +4,8 @@ import { channelRouter } from "./routers/channel";
 import { playlistRouter } from "./routers/playlist";
 import { categoryRouter } from "./routers/category";
 import { userRouter } from "./routers/user";
+import { historyRouter } from "./routers/history";
+import { engagementRouter } from "./routers/engagement";
 import { z } from "zod";
 
 export const appRouter = router({
@@ -12,6 +14,8 @@ export const appRouter = router({
     playlist: playlistRouter,
     category: categoryRouter,
     user: userRouter,
+    history: historyRouter,
+    engagement: engagementRouter,
     /**
      * Public endpoint - anyone can call
      */

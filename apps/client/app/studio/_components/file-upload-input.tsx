@@ -3,8 +3,9 @@
 import { useState, useRef, ChangeEvent } from "react";
 import { Upload, X, Image as ImageIcon, Loader2 } from "lucide-react";
 import { getPresignedUrl } from "@/lib/storage";
-import { UploadType } from "@/lib/utils";
+import { UploadType, getMediaUrl } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+
 import { Button } from "@/components/ui/button";
 
 interface FileUploadInputProps {
@@ -212,7 +213,7 @@ export function FileUploadInput({
                 ) : value ? (
                     <div className="relative w-full h-full group">
                         <img
-                            src={value}
+                            src={getMediaUrl(value)}
                             alt="Preview"
                             className="w-full h-full object-cover rounded-md"
                         />

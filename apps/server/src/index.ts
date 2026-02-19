@@ -14,6 +14,7 @@ import { setupWorker, worker } from "./queue/worker";
 import { setupSchedulerWorker } from "./queue/scheduler";
 import { setupWs } from "./trpc/ws";
 import { transcodeQueue, JOBS } from "./queue/definitions";
+import { startEngagementWorker } from "./queue/engagement-worker";
 import prisma from "./lib/prisma";
 import config from "./config";
 import { MinioEventPayload, S3EventRecord } from "./types/minio";
@@ -92,6 +93,7 @@ const server = http.createServer(app);
 // Initialize workers
 setupWorker();
 setupSchedulerWorker();
+startEngagementWorker();
 
 // Initialize WebSocket server
 const wss = new WebSocketServer({ server });
@@ -358,6 +360,10 @@ const shutdown = async (signal: string) => {
         await schedulerWorker.close();
         console.log("👷 Scheduler Worker closed");
     }
+
+    const { stopWorker: stopEngagementWorker } =
+        await import("./queue/engagement-worker");
+    await stopEngagementWorker();
 
     console.log("👋 Process terminated");
     process.exit(0);

@@ -11,6 +11,10 @@ interface VideoPlayerProps {
     poster?: string;
     spriteVtt?: string;
     autoPlay?: boolean;
+    onPlay?: () => void;
+    onProgress?: (time: number) => void;
+    onEnd?: () => void;
+    initialTime?: number;
 }
 
 /**
@@ -24,6 +28,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     poster,
     spriteVtt,
     autoPlay = false,
+    onPlay,
+    onProgress,
+    onEnd,
+    initialTime = 0,
 }) => {
     const [mounted, setMounted] = React.useState(false);
     const mediaRef = React.useRef<any>(null);
@@ -32,6 +40,49 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     React.useEffect(() => {
         setMounted(true);
     }, []);
+
+    // Set initial time
+    React.useEffect(() => {
+        const media = mediaRef.current;
+        if (media && initialTime > 0 && mounted) {
+            // Small timeout to ensure H.js is attached or metadata loaded
+            // Better: listen for 'loadedmetadata' but this is a simple attempt
+            const setTime = () => {
+                media.currentTime = initialTime;
+            };
+            if (media.readyState >= 1) {
+                setTime();
+            } else {
+                media.addEventListener("loadedmetadata", setTime, {
+                    once: true,
+                });
+            }
+        }
+    }, [mounted, initialTime]);
+
+    // Attach event listeners
+    React.useEffect(() => {
+        const media = mediaRef.current;
+        if (!media) return;
+
+        const handlePlay = () => onPlay?.();
+        const handleTimeUpdate = () => {
+            if (media.currentTime) {
+                onProgress?.(media.currentTime);
+            }
+        };
+        const handleEnded = () => onEnd?.();
+
+        media.addEventListener("play", handlePlay);
+        media.addEventListener("timeupdate", handleTimeUpdate);
+        media.addEventListener("ended", handleEnded);
+
+        return () => {
+            media.removeEventListener("play", handlePlay);
+            media.removeEventListener("timeupdate", handleTimeUpdate);
+            media.removeEventListener("ended", handleEnded);
+        };
+    }, [onPlay, onProgress, onEnd, mounted]);
 
     if (!mounted) {
         return (

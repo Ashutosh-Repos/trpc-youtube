@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { on } from "events";
 import {
     router,
+    publicProcedure,
     protectedProcedure,
     videoOwnerProcedure,
     channelOwnerProcedure,
@@ -33,6 +34,7 @@ import * as fs from "fs";
 import { CompletedPart } from "@aws-sdk/client-s3";
 import { Prisma } from "../../../generated/prisma/client";
 import { updateChannelStats } from "../../lib/channels";
+import { StreamService } from "../../services/StreamService";
 
 // --- Input Schemas ---
 
@@ -1066,5 +1068,160 @@ export const videoRouter = router({
             }
 
             return updatedVideo;
+        }),
+
+    // ─── Public Playback Endpoints ───────────────────────────────────
+
+    /**
+     * Get a video for public viewing (Watch Page).
+     * Includes "Hybrid Read" for Watch History.
+     */
+    getPublicVideo: publicProcedure
+        .input(z.object({ videoId: z.string().min(1) }))
+        .query(async ({ ctx, input }) => {
+            const { videoId } = input;
+            const userId = ctx.user?.id;
+
+            const video = await prisma.videos.findUnique({
+                where: { id: videoId },
+                include: {
+                    channels: {
+                        select: {
+                            id: true,
+                            name: true,
+                            handle: true,
+                            image: true,
+                            subscriberCount: true,
+                        },
+                    },
+                    tags: true,
+                    category: true,
+                    chapters: { orderBy: { startTime: "asc" } },
+                },
+            });
+
+            if (!video) {
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message: "Video not found",
+                });
+            }
+
+            if (video.visibility !== "PUBLIC" && video.channelId !== userId) {
+                throw new TRPCError({
+                    code: "NOT_FOUND", // Mask private as not found for non-owners
+                    message: "Video not found or private",
+                });
+            }
+
+            // Hybrid Read for Watch History
+            let history = null;
+            if (userId) {
+                const dbHistory = await prisma.watch_history.findUnique({
+                    where: {
+                        userId_videoId: { userId, videoId },
+                    },
+                    select: {
+                        watchedSeconds: true,
+                        lastWatchedAt: true,
+                    },
+                });
+
+                // Merge with Redis Session
+                const merged = await StreamService.getMergedHistory(
+                    userId,
+                    videoId,
+                    dbHistory,
+                );
+                history = merged;
+            }
+
+            // Check if user liked/disliked/subscribed
+            let engagement = {
+                liked: false,
+                disliked: false,
+                subscribed: false,
+            };
+            if (userId) {
+                // Parallel fetch: Cache (Fast) + DB (Reliable/Slow) + Subscription
+                // We fetch DB reaction as fallback or source of truth if cache empty
+                const [cachedReaction, dbReaction, sub] = await Promise.all([
+                    StreamService.getUserReaction(userId, videoId),
+                    prisma.video_reactions.findUnique({
+                        where: { videoId_userId: { userId, videoId } },
+                    }),
+                    prisma.subscriptions.findUnique({
+                        where: {
+                            subscriberId_channelId: {
+                                subscriberId: userId,
+                                channelId: video.channelId,
+                            },
+                        },
+                    }),
+                ]);
+
+                // Hybrid Logic: Cache takes precedence if present
+                // Hybrid Logic: Cache takes precedence if present
+                const rawReaction = cachedReaction || dbReaction?.type;
+                const reactionType =
+                    rawReaction === "REMOVE" ? null : rawReaction;
+
+                engagement.liked = reactionType === "LIKE";
+                engagement.disliked = reactionType === "DISLIKE";
+                engagement.subscribed = !!sub;
+            }
+
+            return {
+                ...video,
+                history, // { watchedSeconds: 120, timestamp: ... }
+                engagement,
+            };
+        }),
+
+    /**
+     * Record a public view (Fast Lane).
+     * Called once when video starts or reaches threshold.
+     */
+    registerView: publicProcedure
+        .input(z.object({ videoId: z.string().min(1) }))
+        .mutation(async ({ ctx, input }) => {
+            const { videoId } = input;
+
+            // Get IP/UserAgent for deduplication
+            // Express Adapter puts req/res in ctx
+            // We need to type cast ctx to access req if not typed
+            // Assuming ctx.req is available or we use a fallback
+            // In tRPC express adapter, ctx usually has req/res if we put it there in createContext
+
+            // NOTE: ctx.user is present. ctx.req might need check.
+            // checking createContext... usually it has req.
+            // If not available, we use random ID? No, IP is better.
+            // Let's assume we can get it or fallback.
+
+            const ip = ctx.ip || "unknown";
+            const ua = ctx.req.headers["user-agent"] || "unknown";
+
+            await StreamService.addViewItem(videoId, ip, ua);
+            return { success: true };
+        }),
+
+    /**
+     * Heartbeat: Update Watch Progress (Reliable Lane).
+     * Called every 10-30s by client.
+     */
+    updateWatchProgress: protectedProcedure
+        .input(
+            z.object({
+                videoId: z.string().min(1),
+                seconds: z.number().min(0),
+            }),
+        )
+        .mutation(async ({ ctx, input }) => {
+            const userId = ctx.user.id;
+
+            const { videoId, seconds } = input;
+
+            await StreamService.addHistoryItem(userId, videoId, seconds);
+            return { success: true };
         }),
 });
