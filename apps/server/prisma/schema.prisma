@@ -143,6 +143,8 @@ model comments {
   @@index([userId])
   @@index([videoId, parentId, createdAt])
   @@index([videoId, status, isPinned(sort: Desc), createdAt(sort: Desc)])
+  // Optimized Index for "TOP" sort (Pinned -> LikeCount -> CreatedAt)
+  @@index([videoId, parentId, status, isPinned(sort: Desc), likeCount(sort: Desc), createdAt(sort: Desc)])
 }
 
 model community_posts {
@@ -549,6 +551,7 @@ model videos {
   @@index([categoryId, visibility, hotScore(sort: Desc)])
   @@index([categoryId, visibility, publishedAt(sort: Desc)])
   @@index([channelId])
+  @@index([channelId, deletedAt])
   @@index([channelId, visibility, publishedAt(sort: Desc)])
   @@index([deletedAt])
   @@index([processingStatus])
@@ -559,6 +562,8 @@ model videos {
   @@index([visibility, publishedAt(sort: Desc)])
   @@index([visibility, trendingScore(sort: Desc)])
   @@index([visibility, viewCount(sort: Desc)])
+  @@index([title])
+  @@index([description])
 }
 
 model watch_history {

@@ -1,6 +1,7 @@
 import { Worker, Job } from "bullmq";
 import { QUEUES, JOBS } from "./definitions";
 import { getRedisConnection } from "../lib/redis";
+import redis from "../lib/redis";
 import prisma from "../lib/prisma";
 import config from "../config";
 import { updateChannelStats } from "../lib/channels";
@@ -156,6 +157,41 @@ async function handlePublishScheduledVideo(job: Job) {
             err,
         );
         // Do not throw; DB update was successful.
+    }
+
+    // NEW_VIDEO notification: fan out to all subscribers
+    if (channelId) {
+        try {
+            const videoData = await prisma.videos.findUnique({
+                where: { id: videoId },
+                select: {
+                    title: true,
+                    thumbnailUrl: true,
+                    channels: { select: { name: true, handle: true } },
+                },
+            });
+
+            if (videoData) {
+                await redis.xadd(
+                    "queue:new-video-notifications",
+                    "*",
+                    "data",
+                    JSON.stringify({
+                        channelId,
+                        videoId,
+                        title: videoData.title,
+                        thumbnailUrl: videoData.thumbnailUrl,
+                        channelName: videoData.channels.name,
+                        channelHandle: videoData.channels.handle,
+                    }),
+                );
+            }
+        } catch (err) {
+            console.error(
+                `[Scheduler] ⚠️ Failed to queue NEW_VIDEO for ${videoId}:`,
+                err,
+            );
+        }
     }
 
     console.log(`[Scheduler] 🎉 Job finished for ${videoId}`);

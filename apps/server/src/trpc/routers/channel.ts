@@ -185,6 +185,8 @@ export const channelRouter = router({
             const { channelId } = input;
             const userId = ctx.user.id;
 
+            // TODO: For high scale (>1M users), refrain from writing to DB directly.
+            // Instead, push to a Redis queue and process in background (Write-Behind).
             return await prisma.$transaction(async (tx) => {
                 const existing = await tx.subscriptions.findUnique({
                     where: {

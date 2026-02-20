@@ -6,6 +6,8 @@ import { categoryRouter } from "./routers/category";
 import { userRouter } from "./routers/user";
 import { historyRouter } from "./routers/history";
 import { engagementRouter } from "./routers/engagement";
+import { commentRouter } from "./routers/comment";
+import { notificationRouter } from "./routers/notification";
 import { z } from "zod";
 
 export const appRouter = router({
@@ -16,6 +18,8 @@ export const appRouter = router({
     user: userRouter,
     history: historyRouter,
     engagement: engagementRouter,
+    comment: commentRouter,
+    notification: notificationRouter,
     /**
      * Public endpoint - anyone can call
      */

@@ -19,6 +19,7 @@
         "@tabler/icons-react": "^3.36.0",
         "@tanstack/react-query": "^5.90.20",
         "@tanstack/react-table": "^8.21.3",
+        "@tanstack/react-virtual": "^3.13.18",
         "@trpc/client": "^11.9.0",
         "@trpc/react-query": "^11.9.0",
         "@youtube/server": "workspace:^",
@@ -65,7 +66,6 @@
     },
     "devDependencies": {
         "@tailwindcss/postcss": "^4.1.18",
-        "@tanstack/react-virtual": "^3.13.18",
         "@trpc/server": "^11.9.0",
         "@types/node": "^20",
         "@types/nodemailer": "^7.0.9",

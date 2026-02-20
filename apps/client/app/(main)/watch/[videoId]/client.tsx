@@ -19,7 +19,10 @@ interface WatchClientProps {
     video: VideoData;
 }
 
+import { CommentSection } from "@/components/comments";
+
 export function WatchClient({ video }: WatchClientProps) {
+    // ... existing hook calls ...
     const { onPlay, onProgress } = useVideoEngagement(video.id);
 
     // Engagement Hook (Optimistic)
@@ -147,6 +150,9 @@ export function WatchClient({ video }: WatchClientProps) {
                         {video.description || "No description provided."}
                     </p>
                 </div>
+
+                {/* Comment Section */}
+                <CommentSection videoId={video.id} />
             </div>
 
             {/* Sidebar (Recommendations) - Placeholder for now */}

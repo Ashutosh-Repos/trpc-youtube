@@ -16,18 +16,32 @@ export async function rateLimit(
 ) {
     const key = `ratelimit:${action}:${identifier}`;
 
-    // Increment. If key doesn't exist, it sets to 1.
-    const current = await redis.incr(key);
+    // Atomic increment and expire:
+    // If key doesn't exist, INCR sets it to 1.
+    // If result is 1, we set EXPIRE.
+    // This ensures we never have a key without an expiry (unless Redis crashes between instructions, but Lua makes it atomic).
+    const result = await redis.eval(
+        `
+        local current = redis.call("INCR", KEYS[1])
+        if current == 1 then
+            redis.call("EXPIRE", KEYS[1], ARGV[1])
+        end
+        return current
+        `,
+        1,
+        key,
+        windowSeconds,
+    );
 
-    // If new key (1), set expiry
-    if (current === 1) {
-        await redis.expire(key, windowSeconds);
-    }
+    const current = typeof result === "number" ? result : 1;
+
+    // Get TTL to calculate reset time accurately
+    const ttl = await redis.ttl(key);
 
     return {
         success: current <= limit,
         limit,
         remaining: Math.max(0, limit - current),
-        reset: Date.now() + windowSeconds * 1000, // Approximate
+        reset: Date.now() + (ttl > 0 ? ttl * 1000 : windowSeconds * 1000),
     };
 }

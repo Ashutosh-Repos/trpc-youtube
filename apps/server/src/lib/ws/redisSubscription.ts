@@ -9,7 +9,6 @@ import config from "../../config";
  */
 class RedisSubscriptionManager extends EventEmitter {
     private redis: Redis;
-    private subscribers: Map<string, number> = new Map(); // Ref counting
 
     constructor() {
         super();

@@ -6,8 +6,13 @@
     "types": "src/trpc/router.ts",
     "scripts": {
         "dev": "nodemon src/index.ts",
+        "dev:cluster": "CLUSTER_MODE=true nodemon src/index.ts",
+        "worker:dev": "tsx watch src/worker-entry.ts",
+        "worker:transcode": "WORKER_TYPE=transcode tsx watch src/worker-entry.ts",
+        "worker:engagement": "WORKER_TYPE=engagement tsx watch src/worker-entry.ts",
         "build": "tsc",
-        "start": "node dist/index.js"
+        "start": "node dist/index.js",
+        "worker:start": "node dist/worker-entry.js"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.975.0",

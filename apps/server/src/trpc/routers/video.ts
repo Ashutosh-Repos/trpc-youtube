@@ -35,6 +35,7 @@ import { CompletedPart } from "@aws-sdk/client-s3";
 import { Prisma } from "../../../generated/prisma/client";
 import { updateChannelStats } from "../../lib/channels";
 import { StreamService } from "../../services/StreamService";
+import redis from "../../lib/redis";
 
 // --- Input Schemas ---
 
@@ -871,6 +872,20 @@ export const videoRouter = router({
             const channelId = ctx.channel.id;
             const { videoIds, visibility } = input;
 
+            // Pre-fetch non-public video IDs before update (for notification filtering)
+            let previouslyNonPublicIds: string[] = [];
+            if (visibility === "PUBLIC") {
+                const nonPublic = await prisma.videos.findMany({
+                    where: {
+                        id: { in: videoIds },
+                        channelId,
+                        visibility: { not: "PUBLIC" },
+                    },
+                    select: { id: true },
+                });
+                previouslyNonPublicIds = nonPublic.map((v) => v.id);
+            }
+
             const result = await prisma.videos.updateMany({
                 where: {
                     id: { in: videoIds },
@@ -884,6 +899,43 @@ export const videoRouter = router({
 
             // Update channel stats
             await updateChannelStats(channelId);
+
+            // NEW_VIDEO notification: only for videos that were previously non-public
+            if (visibility === "PUBLIC" && previouslyNonPublicIds.length > 0) {
+                const [channel, videos] = await Promise.all([
+                    prisma.channels.findUnique({
+                        where: { id: channelId },
+                        select: { name: true, handle: true },
+                    }),
+                    prisma.videos.findMany({
+                        where: { id: { in: previouslyNonPublicIds } },
+                        select: { id: true, title: true, thumbnailUrl: true },
+                    }),
+                ]);
+
+                for (const vid of videos) {
+                    redis
+                        .xadd(
+                            "queue:new-video-notifications",
+                            "*",
+                            "data",
+                            JSON.stringify({
+                                channelId,
+                                videoId: vid.id,
+                                title: vid.title,
+                                thumbnailUrl: vid.thumbnailUrl,
+                                channelName: channel?.name,
+                                channelHandle: channel?.handle,
+                            }),
+                        )
+                        .catch((err) =>
+                            console.error(
+                                "[Video] Failed to queue NEW_VIDEO notification",
+                                err,
+                            ),
+                        );
+                }
+            }
 
             return { success: true, count: result.count };
         }),
@@ -1006,6 +1058,40 @@ export const videoRouter = router({
                 otherData.visibility !== video.visibility
             ) {
                 await updateChannelStats(video.channelId);
+
+                // NEW_VIDEO notification: fan out to subscribers when video goes PUBLIC
+                if (
+                    otherData.visibility === "PUBLIC" &&
+                    video.visibility !== "PUBLIC"
+                ) {
+                    // Fetch channel info for notification message
+                    const channel = await prisma.channels.findUnique({
+                        where: { id: video.channelId },
+                        select: { name: true, handle: true },
+                    });
+
+                    // Push lightweight event to Redis Stream (worker handles fan-out)
+                    redis
+                        .xadd(
+                            "queue:new-video-notifications",
+                            "*",
+                            "data",
+                            JSON.stringify({
+                                channelId: video.channelId,
+                                videoId: video.id,
+                                title: updatedVideo.title,
+                                thumbnailUrl: updatedVideo.thumbnailUrl,
+                                channelName: channel?.name,
+                                channelHandle: channel?.handle,
+                            }),
+                        )
+                        .catch((err) =>
+                            console.error(
+                                "[Video] Failed to queue NEW_VIDEO notification",
+                                err,
+                            ),
+                        );
+                }
             }
 
             // HANDLE SCHEDULING

@@ -1,7 +1,7 @@
 import { ModeToggle } from "@/components/theme-toogle";
 import { TopBar } from "@/components/custom/TopBar";
 import { SearchForm } from "@/components/custom/search-form";
-// import { NotificationBell } from "@/components/custom/notification-bell";
+import { NotificationBell } from "@/components/custom/notification-bell";
 import { SideNav } from "@/components/custom/navigation/sidenav";
 import { HomeIcon } from "@/components/ui/home";
 import { FlameIcon } from "@/components/ui/flame";
@@ -25,22 +25,28 @@ const HomeLayout = ({
         { icon: UserIcon, title: "Me", href: "/me" },
     ];
     return (
-        <div className="w-full h-screen flex flex-col overflow-hidden px-2 sm:px-1">
+        <main
+            id="home-layout-wrapper"
+            className="w-full h-screen flex flex-col overflow-hidden px-2 sm:px-1"
+        >
             <TopBar>
                 <SearchForm />
                 <div className="flex items-center gap-2">
-                    {/* <NotificationBell /> */}
+                    <NotificationBell />
                     <ModeToggle />
                 </div>
                 {/* <UserNav/> */}
             </TopBar>
             <div className="w-full h-full flex flex-col-reverse sm:flex-row items-center justify-center overflow-hidden">
                 <SideNav navLinks={navItems} />
-                <div className="w-full h-full overflow-scroll p-2 sm:p-1">
+                <div
+                    id="main-scroll-container"
+                    className="w-full h-full overflow-y-auto p-2 sm:p-1"
+                >
                     {children}
                 </div>
             </div>
-        </div>
+        </main>
     );
 };
 export default HomeLayout;

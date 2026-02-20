@@ -549,6 +549,7 @@ model videos {
   @@index([categoryId, visibility, hotScore(sort: Desc)])
   @@index([categoryId, visibility, publishedAt(sort: Desc)])
   @@index([channelId])
+  @@index([channelId, deletedAt])
   @@index([channelId, visibility, publishedAt(sort: Desc)])
   @@index([deletedAt])
   @@index([processingStatus])
@@ -559,6 +560,8 @@ model videos {
   @@index([visibility, publishedAt(sort: Desc)])
   @@index([visibility, trendingScore(sort: Desc)])
   @@index([visibility, viewCount(sort: Desc)])
+  @@index([title])
+  @@index([description])
 }
 
 model watch_history {
