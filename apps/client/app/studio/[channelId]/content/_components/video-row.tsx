@@ -54,6 +54,7 @@ import Link from "next/link";
 import React from "react";
 import { VideoHoverPreview } from "@/components/custom/video-hover-preview";
 import { RouterOutputs } from "@/lib/trpc-shared";
+import { useUploadStore } from "@/stores/upload-store";
 
 interface VideoRowProps {
     video: RouterOutputs["video"]["getChannelContent"]["items"][number];
@@ -72,6 +73,15 @@ export const VideoRow = ({
 }: VideoRowProps) => {
     const router = useRouter();
     const utils = trpc.useUtils();
+
+    // Upload state for row-level resumption
+    const {
+        videoId: uploadingVideoId,
+        status: uploadStatus,
+        overallProgress,
+    } = useUploadStore();
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
+    const isThisVideoUploading = uploadingVideoId === video.id;
 
     const updateVisibilityMutation =
         trpc.video.updateVideosVisibility.useMutation({
@@ -245,25 +255,108 @@ export const VideoRow = ({
 
                     {video.processingStatus !== "READY" &&
                         video.processingStatus !== "FAILED" && (
-                            <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px] flex items-center justify-center z-10">
-                                <div className="flex flex-col items-center gap-1.5 w-full px-4">
-                                    <div className="w-5 h-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-                                    <div className="flex flex-col items-center gap-0.5 w-full">
-                                        <span className="text-[8px] font-black uppercase text-primary tracking-widest">
-                                            {video.processingStatus}
-                                        </span>
-                                        {typeof video.processingProgress ===
-                                            "number" && (
-                                            <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden mt-1">
-                                                <div
-                                                    className="h-full bg-primary transition-all duration-300"
-                                                    style={{
-                                                        width: `${video.processingProgress}%`,
+                            <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px] flex items-center justify-center z-10 w-full h-full">
+                                <div className="flex flex-col items-center justify-center gap-1.5 w-full h-full px-2 text-center">
+                                    {video.processingStatus === "UPLOADING" ? (
+                                        isThisVideoUploading &&
+                                        (uploadStatus === "uploading" ||
+                                            uploadStatus === "hashing" ||
+                                            uploadStatus === "completing") ? (
+                                            <>
+                                                <div className="w-5 h-5 rounded-full border-2 border-primary border-t-transparent animate-spin shrink-0" />
+                                                <span className="text-[8px] font-black uppercase text-primary tracking-widest truncate max-w-full">
+                                                    {uploadStatus}{" "}
+                                                    {Math.round(
+                                                        overallProgress,
+                                                    )}
+                                                    %
+                                                </span>
+                                                <div className="w-[80%] h-1 bg-white/10 rounded-full overflow-hidden mt-0.5 shrink-0">
+                                                    <div
+                                                        className="h-full bg-primary transition-all duration-300"
+                                                        style={{
+                                                            width: `${overallProgress}%`,
+                                                        }}
+                                                    />
+                                                </div>
+                                            </>
+                                        ) : isThisVideoUploading &&
+                                          uploadStatus === "paused" ? (
+                                            <>
+                                                <span className="text-[8px] font-black uppercase text-yellow-500 tracking-widest leading-tight truncate max-w-full">
+                                                    Paused
+                                                </span>
+                                                <Button
+                                                    size="sm"
+                                                    variant="secondary"
+                                                    className="h-5 text-[9px] px-2 rounded-sm mt-0.5 w-[80%] max-w-full"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        useUploadStore
+                                                            .getState()
+                                                            .resume();
+                                                    }}
+                                                >
+                                                    Resume
+                                                </Button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span className="text-[8px] font-black uppercase text-primary tracking-widest leading-tight truncate max-w-full">
+                                                    Uploading
+                                                </span>
+                                                <Button
+                                                    size="sm"
+                                                    variant="secondary"
+                                                    className="h-5 text-[9px] px-2 rounded-sm mt-0.5 w-[80%] max-w-full"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        fileInputRef.current?.click();
+                                                    }}
+                                                >
+                                                    Resume
+                                                </Button>
+                                                <input
+                                                    ref={fileInputRef}
+                                                    type="file"
+                                                    accept="video/*"
+                                                    className="hidden"
+                                                    onChange={(e) => {
+                                                        const file =
+                                                            e.target.files?.[0];
+                                                        if (file) {
+                                                            useUploadStore
+                                                                .getState()
+                                                                .recoverUploadFromRow(
+                                                                    video.id,
+                                                                    file,
+                                                                );
+                                                        }
                                                     }}
                                                 />
+                                            </>
+                                        )
+                                    ) : (
+                                        <>
+                                            <div className="w-5 h-5 rounded-full border-2 border-primary border-t-transparent animate-spin shrink-0" />
+                                            <div className="flex flex-col items-center gap-0.5 w-full">
+                                                <span className="text-[8px] font-black uppercase text-primary tracking-widest shrink-0">
+                                                    {video.processingStatus}
+                                                </span>
+                                                {typeof video.processingProgress ===
+                                                    "number" && (
+                                                    <div className="w-[80%] h-1 bg-white/10 rounded-full overflow-hidden mt-1 shrink-0">
+                                                        <div
+                                                            className="h-full bg-primary transition-all duration-300"
+                                                            style={{
+                                                                width: `${video.processingProgress}%`,
+                                                            }}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
-                                    </div>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         )}

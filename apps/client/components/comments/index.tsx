@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo, memo } from "react";
+import React, { useState, useRef, useEffect, useMemo, memo } from "react";
+import { useSearchParams } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import {
     Loader2,
@@ -71,35 +72,62 @@ function useCommentInteractions(comment: Comment, videoId: string) {
 
     // Optimistic Update helper for infinite data
     const updateInfiniteData = (type: "LIKE" | "DISLIKE" | "REMOVE") => {
+        // Optimistically update the single comment query (e.g. Highlighted Comment)
+        utils.comment.getById.setData({ id: comment.id }, (oldComment) => {
+            if (!oldComment) return oldComment;
+            let newLikeCount = oldComment.likeCount;
+            if (type === "LIKE" && oldComment.userReaction !== "LIKE")
+                newLikeCount++;
+            if (oldComment.userReaction === "LIKE" && type !== "LIKE")
+                newLikeCount--;
+
+            return {
+                ...oldComment,
+                likeCount: Math.max(0, newLikeCount),
+                userReaction:
+                    type === "REMOVE" ? null : (type as "LIKE" | "DISLIKE"),
+            };
+        });
+
+        // Optimistically update both TOP and NEWEST list queries
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const updateList = (oldData: any) => {
+            if (!oldData) return oldData;
+            return {
+                ...oldData,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                pages: oldData.pages.map((page: any) => ({
+                    ...page,
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    items: page.items.map((item: any) => {
+                        if (item.id !== comment.id) return item;
+
+                        let newLikeCount = item.likeCount;
+                        if (type === "LIKE" && item.userReaction !== "LIKE")
+                            newLikeCount++;
+                        if (item.userReaction === "LIKE" && type !== "LIKE")
+                            newLikeCount--;
+
+                        return {
+                            ...item,
+                            likeCount: Math.max(0, newLikeCount),
+                            userReaction:
+                                type === "REMOVE"
+                                    ? null
+                                    : (type as "LIKE" | "DISLIKE"),
+                        };
+                    }),
+                })),
+            };
+        };
+
         utils.comment.list.setInfiniteData(
             { videoId, limit: 20, sortBy: "TOP" },
-            (oldData) => {
-                if (!oldData) return oldData;
-                return {
-                    ...oldData,
-                    pages: oldData.pages.map((page) => ({
-                        ...page,
-                        items: page.items.map((item) => {
-                            if (item.id !== comment.id) return item;
-
-                            let newLikeCount = item.likeCount;
-                            if (type === "LIKE" && item.userReaction !== "LIKE")
-                                newLikeCount++;
-                            if (item.userReaction === "LIKE" && type !== "LIKE")
-                                newLikeCount--;
-
-                            return {
-                                ...item,
-                                likeCount: newLikeCount,
-                                userReaction:
-                                    type === "REMOVE"
-                                        ? null
-                                        : (type as "LIKE" | "DISLIKE"),
-                            };
-                        }),
-                    })),
-                };
-            },
+            updateList,
+        );
+        utils.comment.list.setInfiniteData(
+            { videoId, limit: 20, sortBy: "NEWEST" },
+            updateList,
         );
     };
 
@@ -108,7 +136,10 @@ function useCommentInteractions(comment: Comment, videoId: string) {
             const newType = comment.userReaction === "LIKE" ? "REMOVE" : "LIKE";
             updateInfiniteData(newType);
         },
-        onError: () => utils.comment.list.invalidate({ videoId }),
+        onError: () => {
+            utils.comment.list.invalidate({ videoId });
+            utils.comment.getById.invalidate({ id: comment.id });
+        },
     });
 
     const toggleDislike = trpc.comment.toggleDislike.useMutation({
@@ -117,11 +148,17 @@ function useCommentInteractions(comment: Comment, videoId: string) {
                 comment.userReaction === "DISLIKE" ? "REMOVE" : "DISLIKE";
             updateInfiniteData(newType);
         },
-        onError: () => utils.comment.list.invalidate({ videoId }),
+        onError: () => {
+            utils.comment.list.invalidate({ videoId });
+            utils.comment.getById.invalidate({ id: comment.id });
+        },
     });
 
     const deleteCommentMutation = trpc.comment.delete.useMutation({
-        onSuccess: () => utils.comment.list.invalidate({ videoId }),
+        onSuccess: () => {
+            utils.comment.list.invalidate({ videoId });
+            utils.comment.getById.invalidate({ id: comment.id });
+        },
     });
 
     return {
@@ -449,10 +486,16 @@ interface CommentSectionProps {
     videoId: string;
 }
 
-export function CommentSection({ videoId }: CommentSectionProps) {
+export function CommentSectionInner({ videoId }: CommentSectionProps) {
     const parentRef = useRef<HTMLElement | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [offsetTop, setOffsetTop] = useState(0);
+
+    const searchParams = useSearchParams();
+    const lc = searchParams.get("lc");
+
+    const { data: highlightedComment, isLoading: isLoadingHighlighted } =
+        trpc.comment.getById.useQuery({ id: lc || "" }, { enabled: !!lc });
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
         trpc.comment.list.useInfiniteQuery(
@@ -460,10 +503,14 @@ export function CommentSection({ videoId }: CommentSectionProps) {
             { getNextPageParam: (lastPage) => lastPage.nextCursor },
         );
 
-    const allComments = useMemo(
-        () => data?.pages.flatMap((page) => page.items) || [],
-        [data],
-    );
+    const allComments = useMemo(() => {
+        const items = data?.pages.flatMap((page) => page.items) || [];
+        // Prevent duplication if the highlighted comment is also in the fetched pages
+        if (lc) {
+            return items.filter((item) => item.id !== lc);
+        }
+        return items;
+    }, [data, lc]);
 
     useEffect(() => {
         const scrollElement = document.getElementById("main-scroll-container");
@@ -529,6 +576,25 @@ export function CommentSection({ videoId }: CommentSectionProps) {
         <div className="w-full max-w-[1280px] mx-auto mt-6">
             <h3 className="text-xl font-bold mb-6">Comments</h3>
             <CommentInput videoId={videoId} />
+
+            {/* Highlighted Linked Comment */}
+            {lc && isLoadingHighlighted && (
+                <div className="mt-6 mb-6">
+                    <CommentSkeleton />
+                </div>
+            )}
+            {lc && highlightedComment && (
+                <div className="mt-8 mb-6 p-4 rounded-xl border border-primary/20 bg-primary/5">
+                    <div className="text-xs font-semibold text-primary mb-4 uppercase tracking-wider flex items-center gap-2">
+                        <span>Highlighted Comment</span>
+                    </div>
+                    <CommentItem
+                        comment={highlightedComment}
+                        videoId={videoId}
+                    />
+                </div>
+            )}
+
             <div className="flex flex-col gap-6 mt-6">
                 <div
                     ref={containerRef}
@@ -566,5 +632,13 @@ export function CommentSection({ videoId }: CommentSectionProps) {
                 )}
             </div>
         </div>
+    );
+}
+
+export function CommentSection(props: CommentSectionProps) {
+    return (
+        <React.Suspense fallback={<CommentListSkeleton />}>
+            <CommentSectionInner {...props} />
+        </React.Suspense>
     );
 }

@@ -59,7 +59,7 @@ export class CommentService {
         sortBy: CommentSort = "NEWEST",
         cursor: string | null = null,
         limit: number = 20,
-        userId: string,
+        userId?: string,
     ) {
         // 1. Try Cache for First Page
         const isFirstPage = !cursor;
@@ -71,13 +71,16 @@ export class CommentService {
                 try {
                     const result = JSON.parse(cached) as CommentListResult;
                     // 6. Hydrate User Reactions (Always for Logged In User)
-                    const commentIds = (
-                        result.items as unknown as CommentItem[]
-                    ).map((c) => c.id);
-                    const reactions = await this.fetchUserReactionsBatch(
-                        userId,
-                        commentIds,
-                    );
+                    let reactions: Record<string, "LIKE" | "DISLIKE"> = {};
+                    if (userId) {
+                        const commentIds = (
+                            result.items as unknown as CommentItem[]
+                        ).map((c) => c.id);
+                        reactions = await this.fetchUserReactionsBatch(
+                            userId,
+                            commentIds,
+                        );
+                    }
                     // Attach reaction to each item
                     result.items = (
                         result.items as unknown as CommentItem[]
@@ -159,14 +162,13 @@ export class CommentService {
             );
         }
 
-        // 6. Hydrate User Reactions
-        const commentIds = (result.items as unknown as CommentItem[]).map(
-            (c) => c.id,
-        );
-        const reactions = await this.fetchUserReactionsBatch(
-            userId,
-            commentIds,
-        );
+        let reactions: Record<string, "LIKE" | "DISLIKE"> = {};
+        if (userId) {
+            const commentIds = (result.items as unknown as CommentItem[]).map(
+                (c) => c.id,
+            );
+            reactions = await this.fetchUserReactionsBatch(userId, commentIds);
+        }
         // Attach reaction to each item
         result.items = (result.items as unknown as CommentItem[]).map((c) => ({
             ...c,
@@ -184,7 +186,7 @@ export class CommentService {
         parentId: string,
         cursor: string | null = null,
         limit: number = 10,
-        userId: string,
+        userId?: string,
     ): Promise<CommentListResult> {
         // 1. Try Cache for First Page
         const isFirstPage = !cursor;
@@ -196,13 +198,16 @@ export class CommentService {
                 try {
                     const result = JSON.parse(cached) as CommentListResult;
                     // Hydrate Reactions
-                    const commentIds = (
-                        result.items as unknown as CommentItem[]
-                    ).map((c) => c.id);
-                    const reactions = await this.fetchUserReactionsBatch(
-                        userId,
-                        commentIds,
-                    );
+                    let reactions: Record<string, "LIKE" | "DISLIKE"> = {};
+                    if (userId) {
+                        const commentIds = (
+                            result.items as unknown as CommentItem[]
+                        ).map((c) => c.id);
+                        reactions = await this.fetchUserReactionsBatch(
+                            userId,
+                            commentIds,
+                        );
+                    }
                     result.items = (
                         result.items as unknown as CommentItem[]
                     ).map((c) => ({
@@ -263,13 +268,13 @@ export class CommentService {
         }
 
         // Hydrate Reactions
-        const commentIds = (result.items as unknown as CommentItem[]).map(
-            (c) => c.id,
-        );
-        const reactions = await this.fetchUserReactionsBatch(
-            userId,
-            commentIds,
-        );
+        let reactions: Record<string, "LIKE" | "DISLIKE"> = {};
+        if (userId) {
+            const commentIds = (result.items as unknown as CommentItem[]).map(
+                (c) => c.id,
+            );
+            reactions = await this.fetchUserReactionsBatch(userId, commentIds);
+        }
         result.items = (result.items as unknown as CommentItem[]).map((c) => ({
             ...c,
             userReaction: reactions[c.id] || null,
@@ -431,7 +436,7 @@ export class CommentService {
                 videoId: comment.videoId,
                 commentId: comment.id,
                 thumbnailUrl: comment.videos.thumbnailUrl || undefined,
-                actionUrl: `/watch/${comment.videoId}`,
+                actionUrl: `/watch/${comment.videoId}?lc=${comment.id}`,
             });
         }
 
@@ -460,7 +465,7 @@ export class CommentService {
                     videoId: comment.videoId,
                     commentId: comment.id,
                     thumbnailUrl: comment.videos.thumbnailUrl || undefined,
-                    actionUrl: `/watch/${comment.videoId}`,
+                    actionUrl: `/watch/${comment.videoId}?lc=${comment.id}`,
                 });
             }
         }
@@ -600,7 +605,7 @@ export class CommentService {
     private static async fetchUserReactionsBatch(
         userId: string,
         commentIds: string[],
-    ) {
+    ): Promise<Record<string, "LIKE" | "DISLIKE">> {
         if (commentIds.length === 0) return {};
 
         const keys = commentIds.map((id) => this.KEYS.reaction(userId, id));
@@ -642,5 +647,45 @@ export class CommentService {
         }
 
         return reactionMap;
+    }
+
+    /**
+     * Get a single comment by ID, fully hydrated with user and reaction state.
+     * Used for highlighting specific linked comments (e.g. from notifications).
+     */
+    static async getById(commentId: string, userId?: string) {
+        const comment = await prisma.comments.findUnique({
+            where: { id: commentId, status: "VISIBLE", deletedAt: null },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true,
+                        channels: {
+                            select: {
+                                handle: true,
+                                name: true,
+                                image: true,
+                                isVerified: true,
+                            },
+                            take: 1,
+                        },
+                    },
+                },
+            },
+        });
+
+        if (!comment) return null;
+
+        let userReaction = null;
+        if (userId) {
+            userReaction = await this.getUserReaction(userId, commentId);
+        }
+
+        return {
+            ...comment,
+            userReaction,
+        } as unknown as CommentItem;
     }
 }

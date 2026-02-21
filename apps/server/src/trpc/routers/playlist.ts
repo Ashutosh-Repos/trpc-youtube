@@ -3,6 +3,7 @@ import {
     protectedProcedure,
     playlistOwnerProcedure,
     channelOwnerProcedure,
+    publicProcedure,
 } from "../trpc";
 import prisma from "../../lib/prisma";
 import z from "zod";
@@ -145,7 +146,7 @@ export const playlistRouter = router({
             return { success: true, playlist: ctx.playlist };
         }),
 
-    getPublicPlaylist: protectedProcedure
+    getPublicPlaylist: publicProcedure
         .input(
             z.object({
                 playlistId: z.string({ message: "Playlist ID is required" }),
@@ -153,7 +154,7 @@ export const playlistRouter = router({
         )
         .query(async ({ ctx, input }) => {
             const { playlistId } = input;
-            const userId = ctx.user.id;
+            const userId = ctx.user?.id;
 
             const playlist = await prisma.playlists.findUnique({
                 where: { id: playlistId },

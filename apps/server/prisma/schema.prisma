@@ -201,8 +201,12 @@ model notifications {
   channelId                        String?
   commentId                        String?
   liveStreamId                     String?
+  groupKey                         String?          // Aggregation key, e.g. "COMMENT_LIKE:commentId123"
+  groupCount                       Int              @default(1) // "and X others"
+  metadata                         Json?            // Extensible payload: { channelName, channelHandle, ... }
   isRead                           Boolean          @default(false)
   readAt                           DateTime?
+  isHidden                         Boolean          @default(false) // Soft dismiss
   createdAt                        DateTime         @default(now())
   user_notifications_actorIdTouser user?            @relation("notifications_actorIdTouser", fields: [actorId], references: [id])
   channels                         channels?        @relation(fields: [channelId], references: [id], onDelete: Cascade)
@@ -214,6 +218,10 @@ model notifications {
   @@index([type, createdAt(sort: Desc)])
   @@index([userId, createdAt(sort: Desc)])
   @@index([userId, isRead, createdAt(sort: Desc)])
+  @@index([userId, isHidden, createdAt(sort: Desc)])  // Main query: non-hidden, sorted
+  @@index([videoId, type])                             // Dedup: WHERE videoId = ? AND type = ?
+  @@index([groupKey])                                  // Aggregation lookups
+  @@index([createdAt])                                 // TTL cleanup cron
 }
 
 model playlist_videos {

@@ -1,9 +1,11 @@
 import { z } from "zod";
-import { router, protectedProcedure } from "../trpc";
+import { router, protectedProcedure, publicProcedure } from "../trpc";
 import { CommentService, CommentSort } from "../../services/CommentService";
+import { TRPCError } from "@trpc/server";
+import prisma from "../../lib/prisma";
 
 export const commentRouter = router({
-    list: protectedProcedure
+    list: publicProcedure
         .input(
             z.object({
                 videoId: z.string(),
@@ -14,7 +16,7 @@ export const commentRouter = router({
         )
         .query(async ({ input, ctx }) => {
             const { videoId, sortBy, cursor, limit } = input;
-            const userId = ctx.user.id;
+            const userId = ctx.user?.id;
 
             return CommentService.getComments(
                 videoId,
@@ -25,7 +27,23 @@ export const commentRouter = router({
             );
         }),
 
-    replies: protectedProcedure
+    getById: publicProcedure
+        .input(z.object({ id: z.string() }))
+        .query(async ({ input, ctx }) => {
+            const comment = await CommentService.getById(
+                input.id,
+                ctx.user?.id,
+            );
+            if (!comment) {
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message: "Comment not found or deleted",
+                });
+            }
+            return comment;
+        }),
+
+    replies: publicProcedure
         .input(
             z.object({
                 parentId: z.string(),
@@ -35,7 +53,7 @@ export const commentRouter = router({
         )
         .query(async ({ input, ctx }) => {
             const { parentId, cursor, limit } = input;
-            const userId = ctx.user.id; // Guaranteed by protectedProcedure
+            const userId = ctx.user?.id;
             return CommentService.getReplies(parentId, cursor, limit, userId);
         }),
 
@@ -64,6 +82,19 @@ export const commentRouter = router({
             const userId = ctx.user.id;
             const { commentId, videoId } = input;
 
+            const comment = await prisma.comments.findUnique({
+                where: { id: commentId },
+                select: { videoId: true },
+            });
+
+            if (!comment || comment.videoId !== videoId) {
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message:
+                        "Comment not found or does not belong to this video",
+                });
+            }
+
             // Check current state (Hybrid Read)
             let current = await CommentService.getUserReaction(
                 userId,
@@ -91,6 +122,19 @@ export const commentRouter = router({
         .mutation(async ({ ctx, input }) => {
             const userId = ctx.user.id;
             const { commentId, videoId } = input;
+
+            const comment = await prisma.comments.findUnique({
+                where: { id: commentId },
+                select: { videoId: true },
+            });
+
+            if (!comment || comment.videoId !== videoId) {
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message:
+                        "Comment not found or does not belong to this video",
+                });
+            }
 
             let current = await CommentService.getUserReaction(
                 userId,

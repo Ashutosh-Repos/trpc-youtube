@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Bell, CheckCheck, PlayCircle } from "lucide-react";
+import { Bell, CheckCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     Popover,
@@ -10,25 +10,16 @@ import {
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { trpc } from "@/lib/trpc";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getMediaUrl, cn } from "@/lib/utils";
-import { formatDistanceToNow } from "date-fns";
+import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth/auth-client";
+import {
+    NotificationItem,
+    type NotificationItemData,
+} from "./notification-item";
+import { toast } from "sonner";
 
-/**
- * YouTube-style notification type icons.
- * Channel/system notifications have no actor — we show a type-specific icon instead.
- */
-const NOTIFICATION_TYPE_CONFIG: Record<
-    string,
-    { icon: typeof Bell; color: string }
-> = {
-    NEW_VIDEO: { icon: PlayCircle, color: "text-red-500" },
-    LIVE_STARTED: { icon: PlayCircle, color: "text-red-500" },
-    LIVE_SCHEDULED: { icon: Bell, color: "text-blue-500" },
-    SYSTEM: { icon: Bell, color: "text-muted-foreground" },
-};
+const POPOVER_MAX_ITEMS = 7;
 
 export function NotificationBell() {
     const [isOpen, setIsOpen] = useState(false);
@@ -50,8 +41,8 @@ export function NotificationBell() {
     const { data: serverUnreadCount } =
         trpc.notification.getUnreadCount.useQuery(undefined, {
             enabled: !!session?.user,
-            staleTime: Infinity, // Only fetch once on mount
-            refetchOnWindowFocus: false, // Real-time subscription handles updates
+            staleTime: Infinity,
+            refetchOnWindowFocus: false,
         });
     const [unreadCount, setUnreadCount] = useState(0);
 
@@ -61,16 +52,32 @@ export function NotificationBell() {
         }
     }, [serverUnreadCount]);
 
-    // 3. Real-time Subscription (direct cache update instead of refetch)
+    // 3. Real-time Subscription (direct cache update + desktop toast)
     trpc.notification.onNotification.useSubscription(undefined, {
         onData(notification) {
-            setUnreadCount((prev) => prev + 1);
+            let wasUnread = false;
+            let isUpdate = false;
 
-            // Prepend to cache directly instead of refetching
+            // Prepend/Update cache directly
             utils.notification.list.setInfiniteData({ limit: 10 }, (old) => {
                 if (!old) return old;
-                const firstPage = old.pages[0];
+
+                // Remove existing if present to avoid duplicate keys when grouping
+                const newPages = old.pages.map((page) => ({
+                    ...page,
+                    items: page.items.filter((item) => {
+                        if (item.id === notification.id) {
+                            isUpdate = true;
+                            if (!item.isRead) wasUnread = true;
+                            return false;
+                        }
+                        return true;
+                    }),
+                }));
+
+                const firstPage = newPages[0];
                 if (!firstPage) return old;
+
                 return {
                     ...old,
                     pages: [
@@ -78,15 +85,36 @@ export function NotificationBell() {
                             ...firstPage,
                             items: [notification, ...firstPage.items],
                         },
-                        ...old.pages.slice(1),
+                        ...newPages.slice(1),
                     ],
                 };
             });
+
+            // Only increment if it's a new notification, OR an update to a previously read notification
+            if (!isUpdate || (isUpdate && !wasUnread)) {
+                setUnreadCount((prev) => prev + 1);
+            }
+
+            // Desktop toast when bell is closed
+            if (!isOpen) {
+                const msg = (notification as any).title || "New notification";
+                toast(msg, {
+                    description: (notification as any).message,
+                    action: (notification as any).actionUrl
+                        ? {
+                              label: "View",
+                              onClick: () =>
+                                  router.push((notification as any).actionUrl),
+                          }
+                        : undefined,
+                    duration: 5000,
+                });
+            }
         },
         enabled: !!session?.user,
     });
 
-    // 4. Mark Read Mutations
+    // 4. Mutations
     const markRead = trpc.notification.markRead.useMutation({
         onSuccess: () => {
             setUnreadCount((prev) => Math.max(0, prev - 1));
@@ -96,7 +124,6 @@ export function NotificationBell() {
     const markAllRead = trpc.notification.markAllRead.useMutation({
         onSuccess: () => {
             setUnreadCount(0);
-            // Update cached items to show as read
             utils.notification.list.setInfiniteData({ limit: 10 }, (old) => {
                 if (!old) return old;
                 return {
@@ -106,28 +133,42 @@ export function NotificationBell() {
                         items: page.items.map((item) => ({
                             ...item,
                             isRead: true,
-                            readAt: new Date().toISOString(),
+                            readAt: new Date(),
                         })),
                     })),
                 };
             });
-            // Also invalidate the count query
             utils.notification.getUnreadCount.setData(undefined, 0);
         },
     });
 
-    const notifications = data?.pages.flatMap((page) => page.items) || [];
+    const deleteNotification = trpc.notification.delete.useMutation({
+        onMutate: async ({ id }) => {
+            // Optimistic removal from cache
+            utils.notification.list.setInfiniteData({ limit: 10 }, (old) => {
+                if (!old) return old;
+                return {
+                    ...old,
+                    pages: old.pages.map((page) => ({
+                        ...page,
+                        items: page.items.filter((item) => item.id !== id),
+                    })),
+                };
+            });
+        },
+    });
 
-    const handleNotificationClick = (notification: {
-        id: string;
-        isRead: boolean;
-        actionUrl: string | null;
-    }) => {
-        // Mark as read if unread
+    const updateNotificationLevel =
+        trpc.channel.updateNotificationLevel.useMutation();
+
+    const notifications = data?.pages.flatMap((page) => page.items) || [];
+    const popoverItems = notifications.slice(0, POPOVER_MAX_ITEMS);
+    const hasMore = notifications.length > POPOVER_MAX_ITEMS || hasNextPage;
+
+    const handleNotificationClick = (notification: NotificationItemData) => {
         if (!notification.isRead) {
             markRead.mutate({ id: notification.id });
-
-            // Optimistic update in cache
+            // Optimistic update
             utils.notification.list.setInfiniteData({ limit: 10 }, (old) => {
                 if (!old) return old;
                 return {
@@ -143,12 +184,28 @@ export function NotificationBell() {
                 };
             });
         }
-
         setIsOpen(false);
         if (notification.actionUrl) {
             router.push(notification.actionUrl);
         }
     };
+
+    const handleDelete = (id: string) => {
+        deleteNotification.mutate({ id });
+    };
+
+    const handleTurnOffChannel = (channelId: string) => {
+        updateNotificationLevel.mutate({ channelId, level: "NONE" });
+        toast.success("Notifications turned off for this channel");
+    };
+
+    // Badge display: cap at 99+
+    const badgeText =
+        unreadCount > 99
+            ? "99+"
+            : unreadCount > 9
+              ? `${unreadCount}`
+              : `${unreadCount}`;
 
     return (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -156,8 +213,15 @@ export function NotificationBell() {
                 <Button variant="ghost" size="icon" className="relative">
                     <Bell className="h-5 w-5" />
                     {unreadCount > 0 && (
-                        <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-red-500 ring-2 ring-background text-[10px] font-bold text-white flex items-center justify-center">
-                            {unreadCount > 9 ? "9+" : unreadCount}
+                        <span
+                            className={cn(
+                                "absolute -top-0.5 -right-0.5 rounded-full bg-red-500 ring-2 ring-background text-[10px] font-bold text-white flex items-center justify-center",
+                                unreadCount > 99
+                                    ? "h-5 min-w-5 px-1"
+                                    : "h-4 w-4",
+                            )}
+                        >
+                            {badgeText}
                         </span>
                     )}
                 </Button>
@@ -178,119 +242,47 @@ export function NotificationBell() {
                         </Button>
                     )}
                 </div>
-                <ScrollArea className="h-[300px]">
-                    {notifications.length === 0 ? (
-                        <div className="p-4 text-center text-muted-foreground text-sm">
-                            No notifications
+                <ScrollArea className="max-h-[380px]">
+                    {popoverItems.length === 0 ? (
+                        <div className="p-8 text-center text-muted-foreground">
+                            <Bell className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                            <p className="text-sm">
+                                Your notifications live here
+                            </p>
                         </div>
                     ) : (
                         <div className="flex flex-col">
-                            {notifications.map((notification) => {
-                                const actor =
-                                    notification.user_notifications_actorIdTouser;
-                                const typeConfig =
-                                    NOTIFICATION_TYPE_CONFIG[notification.type];
-                                const hasActor = !!actor;
-
-                                // YouTube-style: channel name from enriched payload or message
-                                const channelName = (notification as any)
-                                    ._channelName;
-
-                                return (
-                                    <button
-                                        key={notification.id}
-                                        className={cn(
-                                            "flex items-start gap-3 p-3 hover:bg-muted/50 text-left transition-colors border-b last:border-0",
-                                            !notification.isRead &&
-                                                "bg-primary/5 border-l-2 border-l-primary",
-                                        )}
-                                        onClick={() =>
-                                            handleNotificationClick(
-                                                notification,
-                                            )
-                                        }
-                                    >
-                                        {/* YouTube-style avatar: actor photo OR type icon */}
-                                        {hasActor ? (
-                                            <Avatar className="h-8 w-8 mt-1">
-                                                <AvatarImage
-                                                    src={getMediaUrl(
-                                                        actor?.image,
-                                                    )}
-                                                />
-                                                <AvatarFallback>
-                                                    {actor?.name?.[0] || "?"}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                        ) : (
-                                            <div
-                                                className={cn(
-                                                    "h-8 w-8 mt-1 rounded-full flex items-center justify-center bg-muted shrink-0",
-                                                    typeConfig?.color,
-                                                )}
-                                            >
-                                                {typeConfig ? (
-                                                    <typeConfig.icon className="h-4 w-4" />
-                                                ) : (
-                                                    <Bell className="h-4 w-4" />
-                                                )}
-                                            </div>
-                                        )}
-                                        <div className="flex-1 flex flex-col gap-1">
-                                            <span className="text-sm font-medium line-clamp-2">
-                                                {hasActor ? (
-                                                    <>
-                                                        <span className="font-bold">
-                                                            {actor?.name}
-                                                        </span>{" "}
-                                                    </>
-                                                ) : channelName ? (
-                                                    <>
-                                                        <span className="font-bold">
-                                                            {channelName}
-                                                        </span>{" "}
-                                                    </>
-                                                ) : null}
-                                                {notification.message}
-                                            </span>
-                                            <span className="text-[10px] text-muted-foreground">
-                                                {formatDistanceToNow(
-                                                    new Date(
-                                                        notification.createdAt,
-                                                    ),
-                                                    { addSuffix: true },
-                                                )}
-                                            </span>
-                                        </div>
-                                        {/* Unread indicator dot */}
-                                        {!notification.isRead && (
-                                            <span className="h-2 w-2 rounded-full bg-primary shrink-0 mt-2" />
-                                        )}
-                                        {notification.thumbnailUrl && (
-                                            <img
-                                                src={getMediaUrl(
-                                                    notification.thumbnailUrl,
-                                                )}
-                                                alt=""
-                                                className="h-10 w-16 object-cover rounded"
-                                            />
-                                        )}
-                                    </button>
-                                );
-                            })}
-                            {hasNextPage && (
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => fetchNextPage()}
-                                    className="m-2"
-                                >
-                                    Load more
-                                </Button>
-                            )}
+                            {popoverItems.map((notification) => (
+                                <NotificationItem
+                                    key={notification.id}
+                                    notification={
+                                        notification as NotificationItemData
+                                    }
+                                    onClick={handleNotificationClick}
+                                    onDelete={handleDelete}
+                                    onTurnOff={handleTurnOffChannel}
+                                    compact
+                                />
+                            ))}
                         </div>
                     )}
                 </ScrollArea>
+                {/* "See all" footer */}
+                {(hasMore || popoverItems.length > 0) && (
+                    <div className="border-t p-2">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-full text-xs text-muted-foreground hover:text-foreground"
+                            onClick={() => {
+                                setIsOpen(false);
+                                router.push("/notifications");
+                            }}
+                        >
+                            See all notifications
+                        </Button>
+                    </div>
+                )}
             </PopoverContent>
         </Popover>
     );

@@ -42,6 +42,8 @@ export function VideoUploadZone({
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { data: session } = useSession();
 
+    const isRecoveryNeeded = !currentFile && !!uploadId;
+
     const handleDragOver = (e: DragEvent) => {
         e.preventDefault();
         setIsDragging(true);
@@ -102,12 +104,14 @@ export function VideoUploadZone({
 
     const triggerSelect = () => {
         if (
-            status === "uploading" ||
-            status === "preparing" ||
-            status === "hashing" ||
-            status === "paused"
-        )
+            !isRecoveryNeeded &&
+            (status === "uploading" ||
+                status === "preparing" ||
+                status === "hashing" ||
+                status === "paused")
+        ) {
             return;
+        }
         fileInputRef.current?.click();
     };
 
@@ -116,7 +120,6 @@ export function VideoUploadZone({
         status === "preparing" ||
         status === "hashing";
     const isPaused = status === "paused";
-    const isRecoveryNeeded = !currentFile && !!uploadId;
 
     return (
         <Modal>

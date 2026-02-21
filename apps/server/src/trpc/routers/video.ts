@@ -387,7 +387,31 @@ export const videoRouter = router({
             `[Pipeline] 🔄 Resuming Multipart Upload for ${video.id}...`,
         );
 
-        const parts = await listUploadedParts(video.id, video.uploadId);
+        let parts;
+        try {
+            parts = await listUploadedParts(video.id, video.uploadId);
+        } catch (error: any) {
+            if (error.name === "NoSuchUpload") {
+                console.warn(
+                    `[Pipeline] ⚠️ NoSuchUpload during resume for ${video.id}. Deleting stale DB record.`,
+                );
+                // Clean up the DB since S3 has discarded the upload session
+                await prisma.videos
+                    .delete({ where: { id: video.id } })
+                    .catch(() => {});
+
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message:
+                        "Upload session expired or aborted by server. Please start a new upload.",
+                });
+            }
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Failed to resume upload from storage provider.",
+                cause: error,
+            });
+        }
 
         const wsProtocol = config.nodeEnv === "production" ? "wss" : "ws";
         const wsUrl = config.publicWsUrl
@@ -532,8 +556,24 @@ export const videoRouter = router({
                             headErr,
                         );
                     }
+
+                    // Cleanup DB record if S3 lost the file completely
+                    await prisma.videos
+                        .delete({ where: { id: video.id } })
+                        .catch(() => {});
+
+                    throw new TRPCError({
+                        code: "NOT_FOUND",
+                        message:
+                            "The upload session expired or was discarded by the storage provider. Please upload again.",
+                    });
                 }
-                throw error;
+
+                throw new TRPCError({
+                    code: "INTERNAL_SERVER_ERROR",
+                    message: "Failed to complete upload with storage provider.",
+                    cause: error,
+                });
             }
 
             // Update DB
@@ -1121,6 +1161,11 @@ export const videoRouter = router({
                                     delay,
                                     jobId: video.id, // Enforce unique job ID per video
                                     removeOnComplete: true,
+                                    attempts: 5,
+                                    backoff: {
+                                        type: "exponential",
+                                        delay: 2000,
+                                    },
                                 },
                             );
                         } else {
@@ -1136,6 +1181,11 @@ export const videoRouter = router({
                                 {
                                     jobId: video.id,
                                     removeOnComplete: true,
+                                    attempts: 5,
+                                    backoff: {
+                                        type: "exponential",
+                                        delay: 2000,
+                                    },
                                 },
                             );
                         }
@@ -1285,7 +1335,7 @@ export const videoRouter = router({
             // Let's assume we can get it or fallback.
 
             const ip = ctx.ip || "unknown";
-            const ua = ctx.req.headers["user-agent"] || "unknown";
+            const ua = ctx.req?.headers?.["user-agent"] || "unknown";
 
             await StreamService.addViewItem(videoId, ip, ua);
             return { success: true };

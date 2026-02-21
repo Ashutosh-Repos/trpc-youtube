@@ -1,8 +1,14 @@
-import { router, protectedProcedure, channelOwnerProcedure } from "../trpc";
+import {
+    router,
+    publicProcedure,
+    protectedProcedure,
+    channelOwnerProcedure,
+} from "../trpc";
 import prisma from "../../lib/prisma";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { Prisma } from "../../../generated/prisma/client";
+import { NotificationService } from "../../services/NotificationService";
 
 const channelHandleRegex = /^[a-zA-Z0-9_.]+$/;
 const linkSchema = z.object({
@@ -188,6 +194,25 @@ export const channelRouter = router({
             // TODO: For high scale (>1M users), refrain from writing to DB directly.
             // Instead, push to a Redis queue and process in background (Write-Behind).
             return await prisma.$transaction(async (tx) => {
+                const channelInfo = await tx.channels.findUnique({
+                    where: { id: channelId },
+                    select: { userId: true, handle: true, name: true },
+                });
+
+                if (!channelInfo) {
+                    throw new TRPCError({
+                        code: "NOT_FOUND",
+                        message: "Channel not found",
+                    });
+                }
+
+                if (channelInfo.userId === userId) {
+                    throw new TRPCError({
+                        code: "BAD_REQUEST",
+                        message: "You cannot subscribe to your own channel",
+                    });
+                }
+
                 const existing = await tx.subscriptions.findUnique({
                     where: {
                         subscriberId_channelId: {
@@ -211,10 +236,24 @@ export const channelRouter = router({
                     await tx.subscriptions.create({
                         data: { subscriberId: userId, channelId },
                     });
-                    await tx.channels.update({
+                    const channel = await tx.channels.update({
                         where: { id: channelId },
                         data: { subscriberCount: { increment: 1 } },
+                        select: { userId: true, handle: true, name: true },
                     });
+
+                    // Fire NEW_SUBSCRIBER notification to channel owner (async, non-blocking)
+                    NotificationService.notify({
+                        userId: channel.userId,
+                        actorId: userId,
+                        type: "NEW_SUBSCRIBER",
+                        title: "New Subscriber",
+                        message: "subscribed to your channel",
+                        channelId,
+                        actionUrl: `/@${channel.handle}`,
+                        groupKey: `NEW_SUBSCRIBER:${channelId}:${new Date().toISOString().slice(0, 10)}`,
+                    }).catch(console.error);
+
                     return { success: true, action: "SUBSCRIBED" };
                 }
             });
@@ -235,13 +274,13 @@ export const channelRouter = router({
             return { success: !existing };
         }),
 
-    getChannelByHandle: protectedProcedure
+    getChannelByHandle: publicProcedure
         .input(
             z.object({
                 handle: z.string().min(3).max(30).regex(channelHandleRegex),
             }),
         )
-        .query(async ({ input }) => {
+        .query(async ({ ctx, input }) => {
             const { handle } = input;
             const channel = await prisma.channels.findUnique({
                 where: { handle },
@@ -254,7 +293,33 @@ export const channelRouter = router({
                     message: "Channel not found",
                 });
             }
-            return { success: true, channel };
+
+            let isSubscribed = false;
+            let notificationLevel: "ALL" | "PERSONALIZED" | "NONE" =
+                "PERSONALIZED";
+
+            if (ctx.user?.id) {
+                const sub = await prisma.subscriptions.findUnique({
+                    where: {
+                        subscriberId_channelId: {
+                            subscriberId: ctx.user.id,
+                            channelId: channel.id,
+                        },
+                    },
+                    select: { notificationLevel: true },
+                });
+                if (sub) {
+                    isSubscribed = true;
+                    notificationLevel = sub.notificationLevel;
+                }
+            }
+
+            return {
+                success: true,
+                channel,
+                isSubscribed,
+                notificationLevel,
+            };
         }),
 
     getChannelById: channelOwnerProcedure.query(async ({ ctx }) => {
@@ -317,4 +382,39 @@ export const channelRouter = router({
 
         return { success: true, channels };
     }),
+
+    // Per-channel notification bell: get current level
+    getNotificationLevel: protectedProcedure
+        .input(z.object({ channelId: z.string() }))
+        .query(async ({ ctx, input }) => {
+            const sub = await prisma.subscriptions.findUnique({
+                where: {
+                    subscriberId_channelId: {
+                        subscriberId: ctx.user.id,
+                        channelId: input.channelId,
+                    },
+                },
+                select: { notificationLevel: true },
+            });
+            return sub?.notificationLevel ?? null;
+        }),
+
+    // Per-channel notification bell: update level
+    updateNotificationLevel: protectedProcedure
+        .input(
+            z.object({
+                channelId: z.string(),
+                level: z.enum(["ALL", "PERSONALIZED", "NONE"]),
+            }),
+        )
+        .mutation(async ({ ctx, input }) => {
+            const result = await prisma.subscriptions.updateMany({
+                where: {
+                    subscriberId: ctx.user.id,
+                    channelId: input.channelId,
+                },
+                data: { notificationLevel: input.level },
+            });
+            return { success: result.count > 0 };
+        }),
 });

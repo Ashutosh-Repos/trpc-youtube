@@ -2,6 +2,7 @@ import "dotenv/config";
 import { setupWorker } from "./queue/worker";
 import { setupSchedulerWorker } from "./queue/scheduler";
 import { startEngagementWorker } from "./queue/engagement-worker";
+import { NotificationService } from "./services/NotificationService";
 import config from "./config";
 import prisma from "./lib/prisma";
 
@@ -25,6 +26,16 @@ async function start() {
         console.log("   - Initializing Engagement Workers...");
         startEngagementWorker();
     }
+
+    // 4. Notification TTL Cleanup Cron (runs daily)
+    console.log("   - Scheduling Notification TTL Cleanup...");
+    NotificationService.cleanupOldNotifications(); // Run once on startup
+    setInterval(
+        () => {
+            NotificationService.cleanupOldNotifications();
+        },
+        24 * 60 * 60 * 1000,
+    ); // And every 24 hours
 
     console.log("✅ Workers Initialized.");
 

@@ -441,6 +441,55 @@ async function handleEngagementBatch(messages: [string, string[]][]) {
         }
 
         await prisma.$transaction([...upserts, ...deletes, ...countUpdates]);
+
+        // Fire VIDEO_LIKE notifications for new likes (non-blocking)
+        const newLikes = userVideoPairs.filter((r) => {
+            const prev = existingMap.get(`${r.userId}:${r.videoId}`);
+            return r.type === "LIKE" && prev !== "LIKE";
+        });
+
+        if (newLikes.length > 0) {
+            // Batch fetch video owners to avoid N+1
+            const videoIds = [...new Set(newLikes.map((r) => r.videoId))];
+            const videos = await prisma.videos.findMany({
+                where: { id: { in: videoIds } },
+                select: {
+                    id: true,
+                    title: true,
+                    channelId: true,
+                    channels: {
+                        select: { userId: true },
+                    },
+                },
+            });
+            const videoMap = new Map(videos.map((v) => [v.id, v]));
+
+            for (const like of newLikes) {
+                const video = videoMap.get(like.videoId);
+                if (!video || video.channels.userId === like.userId) continue; // Don't notify self-likes
+
+                const truncated =
+                    video.title.length > 50
+                        ? video.title.substring(0, 50) + "..."
+                        : video.title;
+                NotificationService.notify({
+                    userId: video.channels.userId,
+                    actorId: like.userId,
+                    type: "VIDEO_LIKE",
+                    title: "Video Liked",
+                    message: `liked your video: "${truncated}"`,
+                    videoId: video.id,
+                    channelId: video.channelId,
+                    actionUrl: `/watch/${video.id}`,
+                    groupKey: `VIDEO_LIKE:${video.id}`,
+                }).catch((err) => {
+                    console.error(
+                        "[VideoEngagement] Failed to send like notification",
+                        err,
+                    );
+                });
+            }
+        }
     }
 
     await redis.xack(KEYS.ENGAGEMENT_STREAM, GROUP_NAME, ...messageIds);
@@ -626,7 +675,8 @@ async function handleCommentEngagementBatch(messages: [string, string[]][]) {
                     message: `liked your comment: "${truncated}"`,
                     videoId: comment.videoId,
                     commentId: comment.id,
-                    actionUrl: `/watch/${comment.videoId}`,
+                    actionUrl: `/watch/${comment.videoId}?lc=${comment.id}`,
+                    groupKey: `COMMENT_LIKE:${comment.id}`,
                 }).catch((err) => {
                     console.error(
                         "[CommentEngagement] Failed to send like notification",
@@ -875,7 +925,7 @@ async function handleNotificationBatch(messages: [string, string[]][]) {
             await prisma.notifications.createManyAndReturn({
                 data: notifications.map((n) => ({
                     userId: n.userId,
-                    actorId: n.actorId,
+                    actorId: n.actorId || null,
                     type: n.type,
                     title: n.title,
                     message: n.message,
@@ -884,6 +934,9 @@ async function handleNotificationBatch(messages: [string, string[]][]) {
                     channelId: n.channelId,
                     thumbnailUrl: n.thumbnailUrl,
                     actionUrl: n.actionUrl,
+                    metadata: n.metadata || null,
+                    groupKey: n.groupKey || null,
+                    groupCount: n.groupCount || 1,
                     isRead: false,
                 })),
                 include: {
@@ -1041,35 +1094,36 @@ async function handleNewVideoBatch(messages: [string, string[]][]) {
     const BATCH_SIZE = 500;
 
     for (const event of events) {
-        // Fix #6: Dedup — skip if we already sent NEW_VIDEO for this video
-        const alreadySent = await prisma.notifications.count({
+        // Dedup: fast existence check (uses @@index([videoId, type]))
+        const alreadySent = await prisma.notifications.findFirst({
             where: { videoId: event.videoId, type: "NEW_VIDEO" },
+            select: { id: true },
         });
-        if (alreadySent > 0) {
+        if (alreadySent) {
             console.log(
-                `[NewVideoWorker] Skipping duplicate fan-out for video ${event.videoId} (${alreadySent} already exist)`,
+                `[NewVideoWorker] Skipping duplicate fan-out for video ${event.videoId}`,
             );
             continue;
         }
 
         let totalNotified = 0;
-        let skip = 0;
+        let lastId: string | undefined;
 
-        // Skip-based pagination for fan-out
-        // (acceptable since this runs in background worker, not in hot path)
+        // Cursor-based pagination for fan-out (no performance degradation at scale)
         while (true) {
             const subscribers = await prisma.subscriptions.findMany({
                 where: {
                     channelId: event.channelId,
                     notificationLevel: { not: "NONE" },
+                    ...(lastId ? { id: { gt: lastId } } : {}),
                 },
-                select: { subscriberId: true },
+                select: { id: true, subscriberId: true },
                 take: BATCH_SIZE,
-                skip,
-                orderBy: { subscribedAt: "asc" },
+                orderBy: { id: "asc" },
             });
 
             if (subscribers.length === 0) break;
+            lastId = subscribers[subscribers.length - 1].id;
 
             // Respect notification_settings: exclude users who disabled newVideos
             const subscriberIds = subscribers.map((s) => s.subscriberId);
@@ -1086,10 +1140,15 @@ async function handleNewVideoBatch(messages: [string, string[]][]) {
             );
 
             if (eligibleSubscribers.length === 0) {
-                skip += BATCH_SIZE;
                 if (subscribers.length < BATCH_SIZE) break;
                 continue;
             }
+
+            // Store channel info in metadata (not Pub/Sub enrichment)
+            const notifMetadata = {
+                channelName: event.channelName || null,
+                channelHandle: event.channelHandle || null,
+            };
 
             // Batch insert notifications
             const created = await prisma.notifications.createManyAndReturn({
@@ -1102,28 +1161,22 @@ async function handleNewVideoBatch(messages: [string, string[]][]) {
                     channelId: event.channelId,
                     thumbnailUrl: event.thumbnailUrl || null,
                     actionUrl: `/watch/${event.videoId}`,
+                    metadata: notifMetadata,
                     isRead: false,
                 })),
             });
 
             // Publish to Pub/Sub for real-time delivery
-            // Enrich with channel info so frontend can display channel name
             for (const notification of created) {
                 const channel = `user:notifications:${notification.userId}`;
-                const enriched = {
-                    ...notification,
-                    _channelName: event.channelName,
-                    _channelHandle: event.channelHandle,
-                };
                 redisPub
-                    .publish(channel, JSON.stringify(enriched))
+                    .publish(channel, JSON.stringify(notification))
                     .catch((e) =>
                         console.error("[NewVideoWorker] PubSub fail", e),
                     );
             }
 
             totalNotified += eligibleSubscribers.length;
-            skip += BATCH_SIZE;
 
             if (subscribers.length < BATCH_SIZE) break;
 

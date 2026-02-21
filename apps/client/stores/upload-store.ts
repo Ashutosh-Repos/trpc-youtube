@@ -54,6 +54,7 @@ export interface UploadState {
     // Actions
     addFile: (file: File, channelId: string) => Promise<void>;
     recoverUpload: (file: File) => Promise<void>;
+    recoverUploadFromRow: (videoId: string, file: File) => Promise<void>;
     startUpload: () => Promise<void>;
     pause: () => void;
     resume: () => void;
@@ -194,7 +195,7 @@ export const useUploadStore = create<UploadState>()(
                         idempotencyKey,
                     });
 
-                    const { videoId, uploadId, wsUrl, expiresAt } = initRes;
+                    const { videoId, uploadId } = initRes;
 
                     // If we got back an existing session, we might need to recover progress?
                     // For now, let's assume valid new or existing session.
@@ -207,8 +208,12 @@ export const useUploadStore = create<UploadState>()(
 
                     set({ videoId, uploadId, parts, status: "idle" });
                     get().startUpload();
-                } catch (error: any) {
-                    set({ status: "error", error: error.message });
+                } catch (error: unknown) {
+                    const msg =
+                        error instanceof Error
+                            ? error.message
+                            : "Unknown error";
+                    set({ status: "error", error: msg });
                 }
             },
 
@@ -308,10 +313,88 @@ export const useUploadStore = create<UploadState>()(
                     set({ parts: mergedParts, status: "idle" });
                     get().startUpload();
                     toast.success("Upload session recovered!");
-                } catch (err: any) {
+                } catch (err: unknown) {
                     console.error("Failed to recover upload:", err);
+                    const msg =
+                        err instanceof Error ? err.message : "Unknown error";
                     toast.error(
-                        `Recovery failed: ${err.message}. Please restart upload.`,
+                        `Recovery failed: ${msg}. Please restart upload.`,
+                    );
+                    get().reset();
+                }
+            },
+
+            recoverUploadFromRow: async (videoId: string, file: File) => {
+                const { status } = get();
+                if (status === "uploading" || status === "hashing") {
+                    const confirm = window.confirm(
+                        "You have an active upload running. Do you want to pause it and resume this one instead?",
+                    );
+                    if (!confirm) return;
+                    get().pause();
+                }
+
+                if (get().chunkSize !== CHUNK_SIZE) {
+                    toast.error("Chunk size changed. Cannot resume upload.");
+                    get().reset();
+                    return;
+                }
+
+                set({ file, videoId, status: "preparing", error: null });
+
+                try {
+                    // Fetch real S3 true state directly from backend
+                    const serverState =
+                        await trpcClient.video.resumeUpload.query({ videoId });
+
+                    const serverParts = new Set(
+                        serverState.parts.map((p) => p.PartNumber),
+                    );
+
+                    // Re-create memory chunks from selected file
+                    const newParts = useUploadStore
+                        .getState()
+                        .actions.createParts(file);
+
+                    // Merge: If server has it, it's complete. Otherwise pending.
+                    const mergedParts = newParts.map((np) => {
+                        if (serverParts.has(np.partNumber)) {
+                            return {
+                                ...np,
+                                status: "completed" as const,
+                                progress: 100,
+                                etag: serverState.parts.find(
+                                    (p) => p.PartNumber === np.partNumber,
+                                )?.ETag,
+                                attempts: 0,
+                            };
+                        }
+                        return np;
+                    });
+
+                    // Calculate progress based on merged state
+                    const totalUploaded = mergedParts.reduce(
+                        (acc, p) =>
+                            acc + (p.status === "completed" ? CHUNK_SIZE : 0),
+                        0,
+                    );
+                    const overallProgress = (totalUploaded / file.size) * 100;
+
+                    set({
+                        uploadId: serverState.uploadId,
+                        parts: mergedParts,
+                        overallProgress: Math.min(overallProgress, 99),
+                        status: "idle",
+                    });
+
+                    get().startUpload();
+                    toast.success("Upload session recovered from server!");
+                } catch (err: unknown) {
+                    console.error("Failed to recover upload from row:", err);
+                    const msg =
+                        err instanceof Error ? err.message : "Unknown error";
+                    toast.error(
+                        `Recovery failed: ${msg}. Try deleting the video and starting over.`,
                     );
                     get().reset();
                 }
@@ -553,16 +636,6 @@ export const useUploadStore = create<UploadState>()(
                                                           }
                                                         : p,
                                             );
-                                            const totalUploaded =
-                                                nextParts.reduce(
-                                                    (acc, p) =>
-                                                        acc +
-                                                        (p.status ===
-                                                        "completed"
-                                                            ? CHUNK_SIZE
-                                                            : 0),
-                                                    0,
-                                                );
 
                                             // Handle last chunk size correctly?
                                             // Simplification: just use CHUNK_SIZE for all completed
@@ -693,8 +766,12 @@ export const useUploadStore = create<UploadState>()(
                         });
                         set({ status: "success", overallProgress: 100 });
                         toast.success("Upload complete! Processing video...");
-                    } catch (e: any) {
-                        set({ status: "error", error: e.message });
+                    } catch (e: unknown) {
+                        const msg =
+                            e instanceof Error
+                                ? e.message
+                                : "An error occurred";
+                        set({ status: "error", error: msg });
                     }
                 },
 

@@ -11,6 +11,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { ThumbsUp, ThumbsDown, Share2, MoreHorizontal } from "lucide-react";
 import { useVideoReaction } from "@/hooks/use-video-reaction";
+import { useSubscribe } from "@/hooks/use-subscribe";
+import { SubscribeButton } from "@/components/custom/subscribe-button";
+import { authClient } from "@/lib/auth/auth-client";
 
 type RouterOutputs = inferRouterOutputs<AppRouter>;
 type VideoData = RouterOutputs["video"]["getPublicVideo"];
@@ -22,6 +25,7 @@ interface WatchClientProps {
 import { CommentSection } from "@/components/comments";
 
 export function WatchClient({ video }: WatchClientProps) {
+    const { data: session } = authClient.useSession();
     // ... existing hook calls ...
     const { onPlay, onProgress } = useVideoEngagement(video.id);
 
@@ -34,6 +38,16 @@ export function WatchClient({ video }: WatchClientProps) {
                 dislikeCount: video.dislikeCount,
                 liked: video.engagement?.liked || false,
                 disliked: video.engagement?.disliked || false,
+            },
+        });
+
+    // Subscription Hook (Optimistic)
+    const { isSubscribed, subscriberCount, toggleSubscribe, isLoading } =
+        useSubscribe({
+            channelId: video.channelId,
+            initialData: {
+                isSubscribed: video.engagement?.subscribed || false,
+                subscriberCount: video.channels?.subscriberCount || 0,
             },
         });
 
@@ -79,16 +93,17 @@ export function WatchClient({ video }: WatchClientProps) {
                                 {video.channelName}
                             </h3>
                             <span className="text-xs text-muted-foreground">
-                                {video.channels?.subscriberCount || 0}{" "}
-                                subscribers
+                                {subscriberCount} subscribers
                             </span>
                         </div>
-                        <Button
-                            variant="secondary"
-                            className="ml-4 rounded-full font-medium hover:bg-neutral-800"
-                        >
-                            Subscribe
-                        </Button>
+                        {session?.user?.id !== video.channelId && (
+                            <SubscribeButton
+                                isSubscribed={isSubscribed}
+                                onClick={toggleSubscribe}
+                                disabled={isLoading}
+                                className="ml-4"
+                            />
+                        )}
                     </div>
 
                     {/* Action Buttons */}

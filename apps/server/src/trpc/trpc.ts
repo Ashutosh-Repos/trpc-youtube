@@ -26,7 +26,13 @@ export const router = t.router;
  * Rate limit middleware - applies to all procedures using this
  */
 const rateLimitMiddleware = t.middleware(async ({ ctx, next, path }) => {
-    const result = await rateLimit(ctx.ip, `trpc:${path}`, 60, 60); // 60 req/min per endpoint
+    const isUploadEndpoint =
+        path === "video.getPartUrls" || path === "video.completeUpload";
+
+    // Default 60 req/min, 600 req/min for multipart upload endpoints
+    const limit = isUploadEndpoint ? 600 : 60;
+
+    const result = await rateLimit(ctx.ip, `trpc:${path}`, limit, 60);
 
     if (!result.success) {
         throw new TRPCError({
