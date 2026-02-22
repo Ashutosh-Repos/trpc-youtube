@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider        = "prisma-client"
+  output          = "../generated/prisma"
+  previewFeatures = ["fullTextSearchPostgres"]
 }
 
 datasource db {
@@ -143,7 +144,6 @@ model comments {
   @@index([userId])
   @@index([videoId, parentId, createdAt])
   @@index([videoId, status, isPinned(sort: Desc), createdAt(sort: Desc)])
-  // Optimized Index for "TOP" sort (Pinned -> LikeCount -> CreatedAt)
   @@index([videoId, parentId, status, isPinned(sort: Desc), likeCount(sort: Desc), createdAt(sort: Desc)])
 }
 
@@ -201,13 +201,13 @@ model notifications {
   channelId                        String?
   commentId                        String?
   liveStreamId                     String?
-  groupKey                         String?          // Aggregation key, e.g. "COMMENT_LIKE:commentId123"
-  groupCount                       Int              @default(1) // "and X others"
-  metadata                         Json?            // Extensible payload: { channelName, channelHandle, ... }
   isRead                           Boolean          @default(false)
   readAt                           DateTime?
-  isHidden                         Boolean          @default(false) // Soft dismiss
   createdAt                        DateTime         @default(now())
+  groupCount                       Int              @default(1)
+  groupKey                         String?
+  isHidden                         Boolean          @default(false)
+  metadata                         Json?
   user_notifications_actorIdTouser user?            @relation("notifications_actorIdTouser", fields: [actorId], references: [id])
   channels                         channels?        @relation(fields: [channelId], references: [id], onDelete: Cascade)
   comments                         comments?        @relation(fields: [commentId], references: [id], onDelete: Cascade)
@@ -218,10 +218,10 @@ model notifications {
   @@index([type, createdAt(sort: Desc)])
   @@index([userId, createdAt(sort: Desc)])
   @@index([userId, isRead, createdAt(sort: Desc)])
-  @@index([userId, isHidden, createdAt(sort: Desc)])  // Main query: non-hidden, sorted
-  @@index([videoId, type])                             // Dedup: WHERE videoId = ? AND type = ?
-  @@index([groupKey])                                  // Aggregation lookups
-  @@index([createdAt])                                 // TTL cleanup cron
+  @@index([userId, isHidden, createdAt(sort: Desc)])
+  @@index([videoId, type])
+  @@index([groupKey])
+  @@index([createdAt])
 }
 
 model playlist_videos {
@@ -422,7 +422,7 @@ model user_interests {
   watchTime   Int         @default(0)
   firstSeenAt DateTime    @default(now())
   lastSeenAt  DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt @default(now())
+  updatedAt   DateTime    @default(now()) @updatedAt
   categories  categories? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   channels    channels?   @relation(fields: [channelId], references: [id], onDelete: Cascade)
   tags        tags?       @relation(fields: [tagId], references: [id], onDelete: Cascade)
@@ -516,7 +516,6 @@ model videos {
   uploadStartedAt    DateTime?
   uploadCompletedAt  DateTime?
   uploadAttempts     Int                @default(0)
-  idempotencyKey     String?            @unique
   hlsPlaylistUrl     String?
   thumbnailUrl       String?
   thumbnailOptions   String[]
@@ -544,6 +543,7 @@ model videos {
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
   deletedAt          DateTime?
+  idempotencyKey     String?            @unique
   comments           comments[]
   notifications      notifications[]
   playlist_videos    playlist_videos[]
@@ -572,6 +572,9 @@ model videos {
   @@index([visibility, viewCount(sort: Desc)])
   @@index([title])
   @@index([description])
+  // Phase 7: Scaling Recommendations
+  @@index([visibility, processingStatus, isShort, hotScore(sort: Desc)])
+  @@index([visibility, processingStatus, isShort, trendingScore(sort: Desc)])
 }
 
 model watch_history {
@@ -584,7 +587,7 @@ model watch_history {
   watchCount     Int      @default(1)
   firstWatchedAt DateTime @default(now())
   lastWatchedAt  DateTime @default(now())
-  updatedAt      DateTime @updatedAt @default(now())
+  updatedAt      DateTime @default(now()) @updatedAt
   user           user     @relation(fields: [userId], references: [id], onDelete: Cascade)
   videos         videos   @relation(fields: [videoId], references: [id], onDelete: Cascade)
 
@@ -635,6 +638,7 @@ enum NotificationType {
   LIVE_STARTED
   LIVE_SCHEDULED
   SYSTEM
+  MENTION
 }
 
 enum PlaylistSystemType {

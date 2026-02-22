@@ -368,6 +368,7 @@ export type channelsOrderByWithRelationInput = {
   user_interests?: Prisma.user_interestsOrderByRelationAggregateInput
   videos?: Prisma.videosOrderByRelationAggregateInput
   tags?: Prisma.tagsOrderByRelationAggregateInput
+  _relevance?: Prisma.channelsOrderByRelevanceInput
 }
 
 export type channelsWhereUniqueInput = Prisma.AtLeast<{
@@ -639,6 +640,12 @@ export type channelsUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type channelsOrderByRelevanceInput = {
+  fields: Prisma.channelsOrderByRelevanceFieldEnum | Prisma.channelsOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type channelsCountOrderByAggregateInput = {

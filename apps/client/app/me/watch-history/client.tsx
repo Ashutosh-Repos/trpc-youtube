@@ -76,7 +76,7 @@ const HistoryItem = forwardRef<HTMLDivElement, HistoryItemProps>(
 
                     <div className="text-sm text-muted-foreground flex flex-col gap-1">
                         <Link
-                            href={`/channel/${video.channels.handle || video.channels.id}`}
+                            href={`/@${video.channels.handle || video.channels.id}`}
                             className="hover:text-foreground transition-colors"
                         >
                             {video.channelName || video.channels.name}

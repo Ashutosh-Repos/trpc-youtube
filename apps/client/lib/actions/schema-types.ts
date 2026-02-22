@@ -121,7 +121,7 @@ export interface CommentWithUser {
     replyCount: number;
     parentId: string | null;
     createdAt: Date;
-    user: UserBasicInfo;
+    users: UserBasicInfo;
 }
 
 export interface GetCommentsResponse {

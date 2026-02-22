@@ -56,7 +56,7 @@ const getChannelInternal = async (
     identifier: string,
 ): Promise<PublicChannel | null> => {
     // First try to find by handle (most common case)
-    let channel = await prisma.channel.findFirst({
+    let channel = await prisma.channels.findFirst({
         where: {
             handle: identifier,
             deletedAt: null,
@@ -66,7 +66,7 @@ const getChannelInternal = async (
 
     // If not found by handle, try by id (fallback for old VideoCards with channelId)
     if (!channel) {
-        channel = await prisma.channel.findFirst({
+        channel = await prisma.channels.findFirst({
             where: {
                 id: identifier,
                 deletedAt: null,
@@ -107,7 +107,7 @@ export async function checkHandleAvailability(
             return { success: true, data: { available: false } };
         }
 
-        const existing = await prisma.channel.findUnique({
+        const existing = await prisma.channels.findUnique({
             where: { handle },
             select: { id: true },
         });
@@ -130,7 +130,7 @@ export async function getUserChannels(): Promise<
             return createErrorResponse("UNAUTHORIZED", "Login required", 401);
         }
 
-        const channels = await prisma.channel.findMany({
+        const channels = await prisma.channels.findMany({
             where: {
                 userId: user.id,
                 deletedAt: null,
@@ -161,7 +161,7 @@ export async function getChannelById(
             return createErrorResponse("UNAUTHORIZED", "Login required", 401);
         }
 
-        const channel = await prisma.channel.findUnique({
+        const channel = await prisma.channels.findUnique({
             where: {
                 id: channelId,
                 deletedAt: null,
@@ -203,7 +203,7 @@ export async function createChannel(
 
         const validData = createChannelSchema.parse(data);
 
-        const existing = await prisma.channel.findUnique({
+        const existing = await prisma.channels.findUnique({
             where: { handle: validData.handle },
         });
 
@@ -214,7 +214,7 @@ export async function createChannel(
             );
         }
 
-        const channel = await prisma.channel.create({
+        const channel = await prisma.channels.create({
             data: {
                 userId: user.id,
                 ...validData,
@@ -254,7 +254,7 @@ export async function updateChannel(
 
         const validData = updateChannelSchema.parse(data);
 
-        const existing = await prisma.channel.findUnique({
+        const existing = await prisma.channels.findUnique({
             where: { id: channelId },
             select: { id: true, userId: true, handle: true, deletedAt: true },
         });
@@ -269,7 +269,7 @@ export async function updateChannel(
 
         // Handle collision check if moving to a new handle
         if (validData.handle && validData.handle !== existing.handle) {
-            const collision = await prisma.channel.findUnique({
+            const collision = await prisma.channels.findUnique({
                 where: { handle: validData.handle },
             });
             if (collision) {
@@ -282,7 +282,7 @@ export async function updateChannel(
 
         const { tags, featureFlags, ...scalarData } = validData;
 
-        const channel = await prisma.channel.update({
+        const channel = await prisma.channels.update({
             where: { id: existing.id },
             data: {
                 ...scalarData,
@@ -348,7 +348,7 @@ export async function deleteChannel(
             return createErrorResponse("UNAUTHORIZED", "Login required", 401);
         }
 
-        const existing = await prisma.channel.findUnique({
+        const existing = await prisma.channels.findUnique({
             where: { handle },
             select: { id: true, userId: true },
         });
@@ -360,7 +360,7 @@ export async function deleteChannel(
             return createErrorResponse("FORBIDDEN", "Access denied", 403);
         }
 
-        await prisma.channel.update({
+        await prisma.channels.update({
             where: { id: existing.id },
             data: {
                 deletedAt: new Date(),
@@ -396,7 +396,7 @@ export async function toggleSubscription(
 
     try {
         const result = await prisma.$transaction(async (tx) => {
-            const existing = await tx.subscription.findUnique({
+            const existing = await tx.subscriptions.findUnique({
                 where: {
                     subscriberId_channelId: {
                         subscriberId: user.id,
@@ -407,18 +407,18 @@ export async function toggleSubscription(
 
             if (existing) {
                 // Unsubscribe
-                await tx.subscription.delete({ where: { id: existing.id } });
-                await tx.channel.update({
+                await tx.subscriptions.delete({ where: { id: existing.id } });
+                await tx.channels.update({
                     where: { id: channelId },
                     data: { subscriberCount: { decrement: 1 } },
                 });
                 return "UNSUBSCRIBED";
             } else {
                 // Subscribe
-                await tx.subscription.create({
+                await tx.subscriptions.create({
                     data: { subscriberId: user.id, channelId },
                 });
-                await tx.channel.update({
+                await tx.channels.update({
                     where: { id: channelId },
                     data: { subscriberCount: { increment: 1 } },
                 });
@@ -443,7 +443,7 @@ export async function isSubscribed(channelId: string): Promise<boolean> {
     const user = await getSessionUser();
     if (!user) return false;
 
-    const sub = await prisma.subscription.findUnique({
+    const sub = await prisma.subscriptions.findUnique({
         where: { subscriberId_channelId: { subscriberId: user.id, channelId } },
         select: { id: true },
     });

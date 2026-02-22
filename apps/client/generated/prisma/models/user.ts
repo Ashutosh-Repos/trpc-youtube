@@ -353,6 +353,7 @@ export type userOrderByWithRelationInput = {
   user_interests?: Prisma.user_interestsOrderByRelationAggregateInput
   video_reactions?: Prisma.video_reactionsOrderByRelationAggregateInput
   watch_history?: Prisma.watch_historyOrderByRelationAggregateInput
+  _relevance?: Prisma.userOrderByRelevanceInput
 }
 
 export type userWhereUniqueInput = Prisma.AtLeast<{
@@ -702,6 +703,12 @@ export type UserScalarRelationFilter = {
 export type UserNullableScalarRelationFilter = {
   is?: Prisma.userWhereInput | null
   isNot?: Prisma.userWhereInput | null
+}
+
+export type userOrderByRelevanceInput = {
+  fields: Prisma.userOrderByRelevanceFieldEnum | Prisma.userOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type userCountOrderByAggregateInput = {

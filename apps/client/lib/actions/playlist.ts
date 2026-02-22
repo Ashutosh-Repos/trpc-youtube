@@ -19,7 +19,7 @@ export async function getChannelPlaylists(
     channelId: string,
 ): Promise<ActionResponse<any[]>> {
     try {
-        const playlists = await prisma.playlist.findMany({
+        const playlists = await prisma.playlists.findMany({
             where: {
                 channelId,
                 deletedAt: null,
@@ -27,7 +27,7 @@ export async function getChannelPlaylists(
             orderBy: { updatedAt: "desc" },
             include: {
                 _count: {
-                    select: { videos: true },
+                    select: { playlist_videos: true },
                 },
             },
         });
@@ -58,7 +58,7 @@ export async function createPlaylist(
 
         // If channelId is provided, verify ownership
         if (data.channelId) {
-            const channel = await prisma.channel.findUnique({
+            const channel = await prisma.channels.findUnique({
                 where: { id: data.channelId },
                 select: { userId: true },
             });
@@ -67,7 +67,7 @@ export async function createPlaylist(
             }
         }
 
-        const playlist = await prisma.playlist.create({
+        const playlist = await prisma.playlists.create({
             data: {
                 title: data.title,
                 description: data.description,
@@ -106,7 +106,7 @@ export async function updatePlaylist(
 
         const data = updatePlaylistSchema.parse(input);
 
-        const playlist = await prisma.playlist.findUnique({
+        const playlist = await prisma.playlists.findUnique({
             where: { id: playlistId },
             select: { userId: true, channelId: true },
         });
@@ -115,7 +115,7 @@ export async function updatePlaylist(
             return createErrorResponse("FORBIDDEN", "Access denied", 403);
         }
 
-        const updated = await prisma.playlist.update({
+        const updated = await prisma.playlists.update({
             where: { id: playlistId },
             data,
         });
@@ -146,7 +146,7 @@ export async function deletePlaylist(
             return createErrorResponse("UNAUTHORIZED", "Login required", 401);
         }
 
-        const playlist = await prisma.playlist.findUnique({
+        const playlist = await prisma.playlists.findUnique({
             where: { id: playlistId },
             select: { userId: true, channelId: true },
         });
@@ -155,7 +155,7 @@ export async function deletePlaylist(
             return createErrorResponse("FORBIDDEN", "Access denied", 403);
         }
 
-        await prisma.playlist.update({
+        await prisma.playlists.update({
             where: { id: playlistId },
             data: { deletedAt: new Date() },
         });
@@ -188,9 +188,9 @@ export async function addVideoToPlaylist(
         }
 
         // Verify playlist ownership
-        const playlist = await prisma.playlist.findUnique({
+        const playlist = await prisma.playlists.findUnique({
             where: { id: playlistId },
-            select: { userId: true, _count: { select: { videos: true } } },
+            select: { userId: true, _count: { select: { playlist_videos: true } } },
         });
 
         if (!playlist || playlist.userId !== user.id) {
@@ -201,7 +201,7 @@ export async function addVideoToPlaylist(
         }
 
         // Check if video already in playlist
-        const existing = await prisma.playlistVideo.findUnique({
+        const existing = await prisma.playlist_videos.findUnique({
             where: {
                 playlistId_videoId: { playlistId, videoId },
             },
@@ -214,16 +214,16 @@ export async function addVideoToPlaylist(
             };
         }
 
-        const playlistVideo = await prisma.playlistVideo.create({
+        const playlistVideo = await prisma.playlist_videos.create({
             data: {
                 playlistId,
                 videoId,
-                position: playlist._count.videos, // End of playlist
+                position: playlist._count.playlist_videos, // End of playlist
             },
         });
 
         // Update video count on playlist
-        await prisma.playlist.update({
+        await prisma.playlists.update({
             where: { id: playlistId },
             data: { videoCount: { increment: 1 } },
         });
@@ -255,7 +255,7 @@ export async function removeVideoFromPlaylist(
         }
 
         // Verify playlist ownership
-        const playlist = await prisma.playlist.findUnique({
+        const playlist = await prisma.playlists.findUnique({
             where: { id: playlistId },
             select: { userId: true },
         });
@@ -264,14 +264,14 @@ export async function removeVideoFromPlaylist(
             return createErrorResponse("FORBIDDEN", "Access denied", 403);
         }
 
-        await prisma.playlistVideo.delete({
+        await prisma.playlist_videos.delete({
             where: {
                 playlistId_videoId: { playlistId, videoId },
             },
         });
 
         // Update video count
-        await prisma.playlist.update({
+        await prisma.playlists.update({
             where: { id: playlistId },
             data: { videoCount: { decrement: 1 } },
         });
@@ -290,10 +290,10 @@ export async function getPlaylistVideos(
     playlistId: string,
 ): Promise<ActionResponse<any[]>> {
     try {
-        const videos = await prisma.playlistVideo.findMany({
+        const videos = await prisma.playlist_videos.findMany({
             where: { playlistId },
             include: {
-                video: {
+                videos: {
                     select: {
                         id: true,
                         title: true,
@@ -333,7 +333,7 @@ export async function reorderPlaylistVideos(
         }
 
         // Verify playlist ownership
-        const playlist = await prisma.playlist.findUnique({
+        const playlist = await prisma.playlists.findUnique({
             where: { id: playlistId },
             select: { userId: true },
         });
@@ -345,7 +345,7 @@ export async function reorderPlaylistVideos(
         // Update positions in a transaction
         await prisma.$transaction(
             videoIds.map((id, index) =>
-                prisma.playlistVideo.update({
+                prisma.playlist_videos.update({
                     where: {
                         playlistId_videoId: {
                             playlistId,
@@ -374,10 +374,10 @@ export async function getPlaylistById(
     playlistId: string,
 ): Promise<ActionResponse<any>> {
     try {
-        const playlist = await prisma.playlist.findUnique({
+        const playlist = await prisma.playlists.findUnique({
             where: { id: playlistId },
             include: {
-                channel: {
+                channels: {
                     select: {
                         id: true,
                         name: true,
@@ -386,7 +386,7 @@ export async function getPlaylistById(
                     },
                 },
                 _count: {
-                    select: { videos: true },
+                    select: { playlist_videos: true },
                 },
             },
         });

@@ -146,7 +146,7 @@ export const playlistRouter = router({
             return { success: true, playlist: ctx.playlist };
         }),
 
-    getPublicPlaylist: publicProcedure
+    getPublicPlaylist: protectedProcedure
         .input(
             z.object({
                 playlistId: z.string({ message: "Playlist ID is required" }),
@@ -154,7 +154,7 @@ export const playlistRouter = router({
         )
         .query(async ({ ctx, input }) => {
             const { playlistId } = input;
-            const userId = ctx.user?.id;
+            const userId = ctx.user.id;
 
             const playlist = await prisma.playlists.findUnique({
                 where: { id: playlistId },
@@ -361,10 +361,15 @@ export const playlistRouter = router({
                             likeCount: true,
                             dislikeCount: true,
                             duration: true,
-                            channelName: true,
-                            channelImage: true,
-                            channelHandle: true,
-                            createdAt: true,
+                            isShort: true,
+                            channels: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    handle: true,
+                                    image: true,
+                                },
+                            },
                         },
                     },
                 },
@@ -377,11 +382,22 @@ export const playlistRouter = router({
                 nextCursor = nextItem?.position;
             }
 
-            const videos = items.map((item) => ({
-                ...item.videos,
-                position: item.position,
-                addedAt: item.addedAt,
-            }));
+            const videos = items.map((item) => {
+                const { channels, ...restVideo } = item.videos;
+
+                return {
+                    ...restVideo,
+                    channelId: channels?.id || "",
+                    channels: {
+                        id: channels?.id || "",
+                        name: channels?.name || null,
+                        handle: channels?.handle || null,
+                        image: channels?.image || null,
+                    },
+                    position: item.position,
+                    addedAt: item.addedAt,
+                };
+            });
 
             return { success: true, videos, nextCursor };
         }),
@@ -461,6 +477,11 @@ export const playlistRouter = router({
             const { channelId, videoId } = input;
 
             if (videoId) {
+                // Fetch two pieces of data per playlist:
+                //   1. Does it contain the given videoId? (containsVideo)
+                //   2. What is its cover thumbnail? (first video by position)
+                // Prisma doesn't support two filtered includes on the same relation,
+                // so we fetch position-ordered items and derive containment in JS.
                 const playlists = await prisma.playlists.findMany({
                     where: {
                         channelId,
@@ -472,9 +493,13 @@ export const playlistRouter = router({
                             select: { playlist_videos: true },
                         },
                         playlist_videos: {
-                            where: { videoId },
-                            select: { videoId: true },
-                            take: 1,
+                            orderBy: { position: "asc" },
+                            take: 50, // enough to check containment + get first thumb
+                            select: {
+                                videoId: true,
+                                position: true,
+                                videos: { select: { thumbnailUrl: true } },
+                            },
                         },
                     },
                 });
@@ -485,8 +510,12 @@ export const playlistRouter = router({
                         const { playlist_videos, ...rest } = p;
                         return {
                             ...rest,
-                            containsVideo: playlist_videos.length > 0,
-                            firstVideoThumbnail: null as string | null,
+                            containsVideo: playlist_videos.some(
+                                (pv) => pv.videoId === videoId,
+                            ),
+                            firstVideoThumbnail:
+                                playlist_videos[0]?.videos?.thumbnailUrl ??
+                                null,
                         };
                     }),
                 };
@@ -525,6 +554,72 @@ export const playlistRouter = router({
                             playlist_videos[0]?.videos.thumbnailUrl ?? null,
                     };
                 }),
+            };
+        }),
+
+    getPlaylistFlow: publicProcedure
+        .input(z.object({ playlistId: z.string() }))
+        .query(async ({ ctx, input }) => {
+            const playlist = await prisma.playlists.findUnique({
+                where: { id: input.playlistId },
+                include: {
+                    user: { select: { name: true, image: true } },
+                    channels: { select: { name: true, handle: true } },
+                    playlist_videos: {
+                        orderBy: { position: "asc" },
+                        include: {
+                            videos: {
+                                select: {
+                                    id: true,
+                                    title: true,
+                                    duration: true,
+                                    thumbnailUrl: true,
+                                    channels: {
+                                        select: { name: true, handle: true },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+
+            if (!playlist || playlist.deletedAt) {
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message: "Playlist not found",
+                });
+            }
+
+            // Privacy enforcement
+            if (
+                playlist.visibility === "PRIVATE" &&
+                playlist.userId !== ctx.user?.id
+            ) {
+                throw new TRPCError({
+                    code: "FORBIDDEN",
+                    message: "You do not have access to this playlist",
+                });
+            }
+
+            return {
+                id: playlist.id,
+                title: playlist.title,
+                authorName: playlist.channels?.name || playlist.user.name,
+                authorHandle: playlist.channels?.handle || null,
+                videos: playlist.playlist_videos
+                    .filter(
+                        (pv) => pv.videos && pv.videos.id, // safety check against corrupted FKs
+                    )
+                    .map((pv) => ({
+                        id: pv.videos.id,
+                        title: pv.videos.title,
+                        duration: pv.videos.duration,
+                        thumbnailUrl: pv.videos.thumbnailUrl,
+                        channelName: pv.videos.channels.name,
+                        channelHandle: pv.videos.channels.handle,
+                        position: pv.position,
+                    })),
             };
         }),
 });

@@ -4,6 +4,19 @@ import { StreamService } from "../../services/StreamService";
 import { TRPCError } from "@trpc/server";
 import prisma from "../../lib/prisma";
 
+/** Hybrid cache→DB read for a user's reaction on a video. */
+async function getReaction(
+    userId: string,
+    videoId: string,
+): Promise<string | null> {
+    const cached = await StreamService.getUserReaction(userId, videoId);
+    if (cached !== null) return cached;
+    const db = await prisma.video_reactions.findUnique({
+        where: { videoId_userId: { videoId, userId } },
+    });
+    return db?.type ?? null;
+}
+
 export const engagementRouter = router({
     /**
      * Toggle Like on a video.
@@ -16,26 +29,7 @@ export const engagementRouter = router({
             const userId = ctx.user.id;
             const { videoId } = input;
 
-            // 1. Check current state (Hybrid Read: Cache + DB)
-            // Ideally we trust the frontend state, but valid to check cache for "truth".
-            // Actually, for toggle logic, we need to know current state.
-            // "Blind Toggle" is risky if UI is out of sync.
-            // Better: 'setLike', 'setDislike', 'removeReaction' explicit actions?
-            // "Toggle" is standard for UI buttons.
-
-            // Let's fetch current state from Cache (Fastest) -> Fallback DB
-            let currentParams = await StreamService.getUserReaction(
-                userId,
-                videoId,
-            );
-
-            if (currentParams === null) {
-                // Fallback to DB
-                const dbReaction = await prisma.video_reactions.findUnique({
-                    where: { videoId_userId: { videoId, userId } },
-                });
-                currentParams = dbReaction?.type || null;
-            }
+            let currentParams = await getReaction(userId, videoId);
 
             let action: "LIKE" | "REMOVE" | "DISLIKE" = "LIKE";
 
@@ -59,17 +53,7 @@ export const engagementRouter = router({
             const userId = ctx.user.id;
             const { videoId } = input;
 
-            let currentParams = await StreamService.getUserReaction(
-                userId,
-                videoId,
-            );
-
-            if (currentParams === null) {
-                const dbReaction = await prisma.video_reactions.findUnique({
-                    where: { videoId_userId: { videoId, userId } },
-                });
-                currentParams = dbReaction?.type || null;
-            }
+            let currentParams = await getReaction(userId, videoId);
 
             let action: "DISLIKE" | "REMOVE" | "LIKE" = "DISLIKE";
 

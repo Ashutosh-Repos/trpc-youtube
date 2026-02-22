@@ -1,6 +1,7 @@
 import redis from "../lib/redis";
 import { prisma } from "../lib/prisma"; // Assuming lib/prisma exports prisma instance
 import os from "os";
+import cluster from "cluster";
 import { redisPub } from "../lib/ws/definitions";
 import { NotificationService } from "../services/NotificationService";
 
@@ -19,8 +20,11 @@ const KEYS = {
 };
 
 const GROUP_NAME = "history_workers";
-// STABLE CONSUMER NAME (No PID) for recovery
-const CONSUMER_NAME = `worker:${os.hostname() || "local"}`;
+// STABLE CONSUMER NAME per cluster worker for safe recovery without collision
+const workerId = cluster.isWorker
+    ? cluster.worker?.id
+    : process.env.pm_id || "master";
+const CONSUMER_NAME = `worker:${os.hostname() || "local"}:${workerId}`;
 
 /**
  * 1. View Flush Worker (Fast Lane)
@@ -107,8 +111,17 @@ async function processViews() {
 // --- SHARED BATCH PROCESSORS ---
 
 async function handleHistoryBatch(messages: [string, string[]][]) {
-    // Parse Messages
-    const historyCurrent: Record<string, any> = {}; // Dedupe by user:video in this batch
+    // Parse Messages and group by user-video pairing to aggregate heartbeats
+    const historyCurrent: Record<
+        string,
+        {
+            userId: string;
+            videoId: string;
+            watchedSeconds: number; // Client cursor position
+            lastWatchedAt: Date;
+            heartbeatCount: number; // How many 10s pings in this batch
+        }
+    > = {};
     const messageIds: string[] = [];
 
     for (const [id, fields] of messages) {
@@ -117,12 +130,28 @@ async function handleHistoryBatch(messages: [string, string[]][]) {
         try {
             const data = JSON.parse(dataStr);
             const key = `${data.userId}:${data.videoId}`;
-            historyCurrent[key] = {
-                userId: data.userId,
-                videoId: data.videoId,
-                watchedSeconds: data.seconds,
-                lastWatchedAt: new Date(data.timestamp),
-            };
+
+            if (!historyCurrent[key]) {
+                historyCurrent[key] = {
+                    userId: data.userId,
+                    videoId: data.videoId,
+                    watchedSeconds: data.seconds,
+                    lastWatchedAt: new Date(data.timestamp),
+                    heartbeatCount: 1,
+                };
+            } else {
+                // Aggregate heartbeats locally
+                const existing = historyCurrent[key];
+                existing.heartbeatCount += 1;
+                // keep the highest cursor
+                if (data.seconds > existing.watchedSeconds) {
+                    existing.watchedSeconds = data.seconds;
+                }
+                const newT = new Date(data.timestamp);
+                if (newT > existing.lastWatchedAt) {
+                    existing.lastWatchedAt = newT;
+                }
+            }
         } catch (e) {
             console.error("Failed to parse history item", dataStr);
         }
@@ -131,6 +160,22 @@ async function handleHistoryBatch(messages: [string, string[]][]) {
     const upsertValues = Object.values(historyCurrent);
 
     if (upsertValues.length > 0) {
+        // 1. Fetch Existing Watch History to calculate First-Time Views
+        const existingHistory = await prisma.watch_history.findMany({
+            where: {
+                OR: upsertValues.map((v) => ({
+                    userId: v.userId,
+                    videoId: v.videoId,
+                })),
+            },
+            select: { userId: true, videoId: true },
+        });
+
+        const existingSet = new Set(
+            existingHistory.map((h) => `${h.userId}:${h.videoId}`),
+        );
+
+        // 2. Commit Core History Records
         await prisma.$transaction(
             upsertValues.map((v) =>
                 prisma.watch_history.upsert({
@@ -147,49 +192,147 @@ async function handleHistoryBatch(messages: [string, string[]][]) {
                         lastWatchedAt: v.lastWatchedAt,
                     },
                     update: {
-                        watchedSeconds: v.watchedSeconds,
+                        watchedSeconds: v.watchedSeconds, // Just map the raw cursor
                         lastWatchedAt: v.lastWatchedAt,
+                        updatedAt: new Date(),
                     },
                 }),
             ),
         );
 
-        // ... (Interest Scoring Logic - kept same)
+        // 3. User Interests Updates
         const uniqueVideoIds = [...new Set(upsertValues.map((v) => v.videoId))];
         const videos = await prisma.videos.findMany({
-            where: { id: { in: uniqueVideoIds as string[] } },
+            where: { id: { in: uniqueVideoIds } },
             include: { tags: true, category: true },
         });
 
         const videoMap = new Map(videos.map((v) => [v.id, v]));
-        const interestMap = new Map<string, number>();
+        const interestMap = new Map<
+            string,
+            {
+                type: "tag" | "category" | "channel";
+                id: string;
+                incScore: number;
+                incWatchTime: number;
+                incViewCount: number;
+            }
+        >();
 
         for (const update of upsertValues) {
             const vid = videoMap.get(update.videoId);
             if (!vid) continue;
-            if (vid.tags) {
+
+            const isNewView = !existingSet.has(
+                `${update.userId}:${update.videoId}`,
+            );
+
+            // Baseline additions based on heartbeat count (10s per ping)
+            const addWatchTime = update.heartbeatCount * 10;
+            // Only inflate the score and view multiplier on the very first time they watch it
+            const addScore = isNewView ? 1.0 : 0.0;
+            const addViews = isNewView ? 1 : 0;
+
+            // 1. Tag Interests
+            if (vid.tags && vid.tags.length > 0) {
+                // To avoid massive inflation from 20 tags, divide the score weight
+                const tagWeight = addScore / Math.max(1, vid.tags.length);
                 for (const tag of vid.tags) {
-                    const k = `${update.userId}:${tag.id}`;
-                    interestMap.set(k, (interestMap.get(k) || 0) + 1);
+                    const k = `${update.userId}:tag:${tag.id}`;
+                    const prev = interestMap.get(k) || {
+                        type: "tag",
+                        id: tag.id,
+                        incScore: 0,
+                        incWatchTime: 0,
+                        incViewCount: 0,
+                    };
+                    interestMap.set(k, {
+                        ...prev,
+                        incScore: prev.incScore + tagWeight,
+                        incWatchTime: prev.incWatchTime + addWatchTime,
+                        incViewCount: prev.incViewCount + addViews,
+                    });
                 }
+            }
+
+            // 2. Category Interests (Higher confidence, 1.0 weight)
+            if (vid.categoryId) {
+                const k = `${update.userId}:category:${vid.categoryId}`;
+                const prev = interestMap.get(k) || {
+                    type: "category",
+                    id: vid.categoryId,
+                    incScore: 0,
+                    incWatchTime: 0,
+                    incViewCount: 0,
+                };
+                interestMap.set(k, {
+                    ...prev,
+                    incScore: prev.incScore + addScore,
+                    incWatchTime: prev.incWatchTime + addWatchTime,
+                    incViewCount: prev.incViewCount + addViews,
+                });
+            }
+
+            // 3. Channel Affinity (Implicit subscription likelihood, 1.0 weight)
+            if (vid.channelId) {
+                const k = `${update.userId}:channel:${vid.channelId}`;
+                const prev = interestMap.get(k) || {
+                    type: "channel",
+                    id: vid.channelId,
+                    incScore: 0,
+                    incWatchTime: 0,
+                    incViewCount: 0,
+                };
+                interestMap.set(k, {
+                    ...prev,
+                    incScore: prev.incScore + addScore,
+                    incWatchTime: prev.incWatchTime + addWatchTime,
+                    incViewCount: prev.incViewCount + addViews,
+                });
             }
         }
 
         if (interestMap.size > 0) {
             const upserts = Array.from(interestMap.entries()).map(
-                ([key, inc]) => {
-                    const [userId, tagId] = key.split(":");
+                ([key, data]) => {
+                    const userId = key.split(":")[0];
                     return prisma.user_interests.upsert({
-                        where: { userId_tagId: { userId, tagId } },
+                        where: {
+                            ...(data.type === "tag" && {
+                                userId_tagId: { userId, tagId: data.id },
+                            }),
+                            ...(data.type === "category" && {
+                                userId_categoryId: {
+                                    userId,
+                                    categoryId: data.id,
+                                },
+                            }),
+                            ...(data.type === "channel" && {
+                                userId_channelId: {
+                                    userId,
+                                    channelId: data.id,
+                                },
+                            }),
+                        } as any, // TypeScript union workaround
                         create: {
                             userId,
-                            tagId,
-                            score: inc,
+                            ...(data.type === "tag" && { tagId: data.id }),
+                            ...(data.type === "category" && {
+                                categoryId: data.id,
+                            }),
+                            ...(data.type === "channel" && {
+                                channelId: data.id,
+                            }),
+                            score: Math.max(0.5, data.incScore),
+                            watchTime: data.incWatchTime,
+                            viewCount: Math.max(1, data.incViewCount),
                             lastSeenAt: new Date(),
                             firstSeenAt: new Date(),
                         },
                         update: {
-                            score: { increment: inc },
+                            score: { increment: data.incScore },
+                            watchTime: { increment: data.incWatchTime },
+                            viewCount: { increment: data.incViewCount },
                             lastSeenAt: new Date(),
                         },
                     });

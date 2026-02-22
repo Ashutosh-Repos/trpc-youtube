@@ -84,12 +84,8 @@ export const protectedProcedure = t.procedure
         });
     });
 
-// ... imports
-
 import { z } from "zod";
 import prisma from "../lib/prisma";
-
-// ... existing code
 
 /**
  * Channel Owner Procedure

@@ -2,6 +2,7 @@ import "dotenv/config";
 import { setupWorker } from "./queue/worker";
 import { setupSchedulerWorker } from "./queue/scheduler";
 import { startEngagementWorker } from "./queue/engagement-worker";
+import { startScoringWorker } from "./queue/scoring-worker";
 import { NotificationService } from "./services/NotificationService";
 import config from "./config";
 import prisma from "./lib/prisma";
@@ -27,7 +28,13 @@ async function start() {
         startEngagementWorker();
     }
 
-    // 4. Notification TTL Cleanup Cron (runs daily)
+    // 4. Scoring (Pool Calculation)
+    if (process.env.WORKER_TYPE === "scoring" || !process.env.WORKER_TYPE) {
+        console.log("   - Initializing Scoring Worker...");
+        startScoringWorker();
+    }
+
+    // 5. Notification TTL Cleanup Cron (runs daily)
     console.log("   - Scheduling Notification TTL Cleanup...");
     NotificationService.cleanupOldNotifications(); // Run once on startup
     setInterval(

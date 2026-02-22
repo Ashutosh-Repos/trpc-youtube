@@ -255,6 +255,7 @@ export type categoriesOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   user_interests?: Prisma.user_interestsOrderByRelationAggregateInput
   videos?: Prisma.videosOrderByRelationAggregateInput
+  _relevance?: Prisma.categoriesOrderByRelevanceInput
 }
 
 export type categoriesWhereUniqueInput = Prisma.AtLeast<{
@@ -386,6 +387,12 @@ export type categoriesUncheckedUpdateManyInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type categoriesOrderByRelevanceInput = {
+  fields: Prisma.categoriesOrderByRelevanceFieldEnum | Prisma.categoriesOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type categoriesCountOrderByAggregateInput = {

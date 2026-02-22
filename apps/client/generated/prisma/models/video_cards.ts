@@ -294,6 +294,7 @@ export type video_cardsOrderByWithRelationInput = {
   pollResults?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   videos?: Prisma.videosOrderByWithRelationInput
+  _relevance?: Prisma.video_cardsOrderByRelevanceInput
 }
 
 export type video_cardsWhereUniqueInput = Prisma.AtLeast<{
@@ -465,6 +466,12 @@ export type video_cardsUncheckedUpdateManyInput = {
   pollOptions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   pollResults?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type video_cardsOrderByRelevanceInput = {
+  fields: Prisma.video_cardsOrderByRelevanceFieldEnum | Prisma.video_cardsOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type video_cardsCountOrderByAggregateInput = {

@@ -27,7 +27,7 @@ export function useVideoEngagement(videoId: string) {
             registerViewMutation.mutate({ videoId });
             hasRegisteredView.current = true;
         }
-    }, [videoId, registerViewMutation, session]);
+    }, [videoId, registerViewMutation]);
 
     const onProgress = useCallback(
         (currentTime: number) => {
@@ -43,7 +43,7 @@ export function useVideoEngagement(videoId: string) {
                 lastProgressUpdate.current = now;
             }
         },
-        [videoId, updateProgressMutation],
+        [videoId, updateProgressMutation, session],
     );
 
     return {

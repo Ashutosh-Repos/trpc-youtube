@@ -30,16 +30,39 @@ if (isClusterPrimary) {
     console.log(`[Cluster] Primary ${process.pid} is running`);
     console.log(`[Cluster] Forking for ${numCPUs} CPUs...`);
 
+    let isShuttingDown = false;
+
     for (let i = 0; i < numCPUs; i++) {
         cluster.fork();
     }
 
     cluster.on("exit", (worker, code, signal) => {
+        if (isShuttingDown) return;
         console.log(
             `[Cluster] Worker ${worker.process.pid} died. Restarting...`,
         );
         cluster.fork();
     });
+
+    const shutdownPrimary = () => {
+        if (isShuttingDown) return;
+        isShuttingDown = true;
+        console.log(`\n[Cluster] Shutting down primary process...`);
+
+        for (const id in cluster.workers) {
+            if (cluster.workers[id]) {
+                cluster.workers[id].process.kill("SIGTERM");
+            }
+        }
+
+        setTimeout(() => {
+            console.log(`[Cluster] Force quitting primary failsafe...`);
+            process.exit(0);
+        }, 4000).unref();
+    };
+
+    process.on("SIGINT", shutdownPrimary);
+    process.on("SIGTERM", shutdownPrimary);
 }
 
 // Only start the application if we are NOT the primary process (or if clustering is disabled)
@@ -390,27 +413,45 @@ if (!isClusterPrimary) {
         await killAllFfmpeg();
 
         await shutdownWs();
-        server.close();
+        try {
+            server.close();
+        } catch (e) {
+            // Ignore EPIPE if primary disconnected
+        }
 
         if (monitorRedis) {
-            await monitorRedis.quit();
+            try {
+                await monitorRedis.quit();
+            } catch (e) {}
             console.log("📡 Monitor Redis closed");
         }
 
+        try {
+            const { prisma } = await import("./lib/prisma");
+            await prisma.$disconnect();
+            console.log("🗄️ Prisma disconnected");
+        } catch (e) {}
+
         if (worker) {
-            await worker.close();
+            try {
+                await worker.close();
+            } catch (e) {}
             console.log("👷 Worker closed");
         }
 
         const { schedulerWorker } = await import("./queue/scheduler");
         if (schedulerWorker) {
-            await schedulerWorker.close();
+            try {
+                await schedulerWorker.close();
+            } catch (e) {}
             console.log("👷 Scheduler Worker closed");
         }
 
         const { stopWorker: stopEngagementWorker } =
             await import("./queue/engagement-worker");
-        await stopEngagementWorker();
+        try {
+            await stopEngagementWorker();
+        } catch (e) {}
 
         console.log("👋 Process terminated");
         process.exit(0);
@@ -420,11 +461,19 @@ if (!isClusterPrimary) {
     process.on("SIGINT", () => shutdown("SIGINT"));
 
     // --- START SERVER ---
-    startupCleanup();
-    startScheduledCleanup();
-    startEventMonitor().catch((err) =>
-        console.error("[Monitor] 💀 Monitor crashed:", err),
-    );
+    // Prevent Race Conditions: Only Worker #1 (or single process) handles cleanup and event monitoring.
+    const isSingletonWorker = !cluster.isWorker || cluster.worker?.id === 1;
+
+    if (isSingletonWorker) {
+        console.log(
+            `[Cluster] Worker ${process.pid} is designated as Singleton Orchestrator.`,
+        );
+        startupCleanup();
+        startScheduledCleanup();
+        startEventMonitor().catch((err) =>
+            console.error("[Monitor] 💀 Monitor crashed:", err),
+        );
+    }
 
     server.listen(config.port, () => {
         console.log(`🚀 Server running on http://localhost:${config.port}`);

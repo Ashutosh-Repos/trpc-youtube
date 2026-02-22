@@ -96,8 +96,8 @@ export class NotificationService {
                 });
 
                 if (existing) {
-                    // Update: increment count, update actor, resurface
-                    await prisma.notifications.update({
+                    // Update: increment count, update actor, resurface, and get full data in one trip
+                    const updated = await prisma.notifications.update({
                         where: { id: existing.id },
                         data: {
                             groupCount: existing.groupCount + 1,
@@ -106,27 +106,22 @@ export class NotificationService {
                             readAt: null,
                             createdAt: new Date(), // float to top
                         },
+                        include: {
+                            user_notifications_actorIdTouser: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    image: true,
+                                },
+                            },
+                        },
                     });
                     // Publish real-time update so bell resurfaces the notification
                     try {
-                        const updated = await prisma.notifications.findUnique({
-                            where: { id: existing.id },
-                            include: {
-                                user_notifications_actorIdTouser: {
-                                    select: {
-                                        id: true,
-                                        name: true,
-                                        image: true,
-                                    },
-                                },
-                            },
-                        });
-                        if (updated) {
-                            await redis.publish(
-                                this.getChannel(data.userId),
-                                JSON.stringify(updated),
-                            );
-                        }
+                        await redis.publish(
+                            this.getChannel(data.userId),
+                            JSON.stringify(updated),
+                        );
                     } catch {
                         // Non-critical, swallow
                     }

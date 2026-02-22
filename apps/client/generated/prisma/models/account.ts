@@ -264,6 +264,7 @@ export type accountOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.userOrderByWithRelationInput
+  _relevance?: Prisma.accountOrderByRelevanceInput
 }
 
 export type accountWhereUniqueInput = Prisma.AtLeast<{
@@ -433,6 +434,12 @@ export type accountUncheckedUpdateManyInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type accountOrderByRelevanceInput = {
+  fields: Prisma.accountOrderByRelevanceFieldEnum | Prisma.accountOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type accountCountOrderByAggregateInput = {

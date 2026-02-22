@@ -14,19 +14,32 @@ import { useVideoReaction } from "@/hooks/use-video-reaction";
 import { useSubscribe } from "@/hooks/use-subscribe";
 import { SubscribeButton } from "@/components/custom/subscribe-button";
 import { authClient } from "@/lib/auth/auth-client";
+import Link from "next/link";
 
 type RouterOutputs = inferRouterOutputs<AppRouter>;
 type VideoData = RouterOutputs["video"]["getPublicVideo"];
 
+import { CommentSection } from "@/components/comments";
+import { RecommendationFeed } from "./recommendation-feed";
+import { PlaylistSidebar } from "./list/[playlistId]/playlist-sidebar";
+import { usePlaylistPlayerStore } from "@/hooks/use-playlist-player";
+import { PlaylistData } from "@/hooks/use-playlist-player";
+import { useRouter } from "next/navigation";
+
 interface WatchClientProps {
     video: VideoData;
+    playlistId?: string;
+    initialPlaylistData?: PlaylistData;
 }
 
-import { CommentSection } from "@/components/comments";
-
-export function WatchClient({ video }: WatchClientProps) {
+export function WatchClient({
+    video,
+    playlistId,
+    initialPlaylistData,
+}: WatchClientProps) {
     const { data: session } = authClient.useSession();
-    // ... existing hook calls ...
+    const router = useRouter();
+    const playlistStore = usePlaylistPlayerStore();
     const { onPlay, onProgress } = useVideoEngagement(video.id);
 
     // Engagement Hook (Optimistic)
@@ -64,10 +77,20 @@ export function WatchClient({ video }: WatchClientProps) {
                         videoId={video.id}
                         src={getMediaUrl(video.hlsPlaylistUrl || "")}
                         poster={getMediaUrl(video.thumbnailUrl || "")}
+                        spriteVtt={getMediaUrl(video.previewSpriteVtt || "")}
                         onPlay={onPlay}
                         onProgress={onProgress}
                         initialTime={initialTime}
                         autoPlay={true}
+                        onEnd={() => {
+                            if (playlistId) {
+                                const nextId = playlistStore.next();
+                                if (nextId)
+                                    router.push(
+                                        `/watch/${nextId}/list/${playlistId}`,
+                                    );
+                            }
+                        }}
                     />
                 </div>
 
@@ -80,23 +103,31 @@ export function WatchClient({ video }: WatchClientProps) {
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     {/* Channel Info */}
                     <div className="flex items-center gap-4">
-                        <Avatar className="h-10 w-10 cursor-pointer">
-                            <AvatarImage
-                                src={getMediaUrl(video.channelImage || "")}
-                            />
-                            <AvatarFallback>
-                                {video.channelName?.[0]}
-                            </AvatarFallback>
-                        </Avatar>
+                        <Link
+                            href={`/@${video.channels?.handle || video.channelId}`}
+                        >
+                            <Avatar className="h-10 w-10 cursor-pointer">
+                                <AvatarImage
+                                    src={getMediaUrl(video.channelImage || "")}
+                                />
+                                <AvatarFallback>
+                                    {video.channelName?.[0]}
+                                </AvatarFallback>
+                            </Avatar>
+                        </Link>
                         <div className="flex flex-col">
-                            <h3 className="text-sm font-semibold hover:text-white cursor-pointer">
-                                {video.channelName}
-                            </h3>
+                            <Link
+                                href={`/@${video.channels?.handle || video.channelId}`}
+                            >
+                                <h3 className="text-sm font-semibold hover:text-white cursor-pointer">
+                                    {video.channelName}
+                                </h3>
+                            </Link>
                             <span className="text-xs text-muted-foreground">
                                 {subscriberCount} subscribers
                             </span>
                         </div>
-                        {session?.user?.id !== video.channelId && (
+                        {session?.user?.id !== video.channels?.userId && (
                             <SubscribeButton
                                 isSubscribed={isSubscribed}
                                 onClick={toggleSubscribe}
@@ -170,31 +201,18 @@ export function WatchClient({ video }: WatchClientProps) {
                 <CommentSection videoId={video.id} />
             </div>
 
-            {/* Sidebar (Recommendations) - Placeholder for now */}
-            <div className="lg:w-[400px] shrink-0 hidden lg:block">
+            {/* Sidebar (Recommendations & Playlist) */}
+            <div className="lg:w-[400px] shrink-0">
+                {playlistId && (
+                    <PlaylistSidebar
+                        playlistId={playlistId}
+                        currentVideoId={video.id}
+                        initialData={initialPlaylistData}
+                    />
+                )}
+
                 <div className="font-semibold mb-4">Up Next</div>
-                <div className="flex flex-col gap-2">
-                    {/* Placeholder items */}
-                    {[1, 2, 3, 4, 5].map((i) => (
-                        <div
-                            key={i}
-                            className="flex gap-2 group cursor-pointer"
-                        >
-                            <div className="w-[168px] h-[94px] bg-secondary rounded-lg shrink-0" />
-                            <div className="flex flex-col gap-1">
-                                <div className="font-semibold text-sm line-clamp-2">
-                                    Recommended Video Title {i}
-                                </div>
-                                <div className="text-xs text-muted-foreground">
-                                    Channel Name
-                                </div>
-                                <div className="text-xs text-muted-foreground">
-                                    10K views • 2 days ago
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                <RecommendationFeed videoId={video.id} />
             </div>
         </div>
     );

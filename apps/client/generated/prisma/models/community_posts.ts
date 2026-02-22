@@ -326,6 +326,7 @@ export type community_postsOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   channels?: Prisma.channelsOrderByWithRelationInput
+  _relevance?: Prisma.community_postsOrderByRelevanceInput
 }
 
 export type community_postsWhereUniqueInput = Prisma.AtLeast<{
@@ -555,6 +556,12 @@ export type StringNullableListFilter<$PrismaModel = never> = {
   hasEvery?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
   hasSome?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
   isEmpty?: boolean
+}
+
+export type community_postsOrderByRelevanceInput = {
+  fields: Prisma.community_postsOrderByRelevanceFieldEnum | Prisma.community_postsOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type community_postsCountOrderByAggregateInput = {

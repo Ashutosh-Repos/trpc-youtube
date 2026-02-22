@@ -283,6 +283,7 @@ export type reportsOrderByWithRelationInput = {
   user_reports_reviewedByIdTouser?: Prisma.userOrderByWithRelationInput
   strikes?: Prisma.strikesOrderByWithRelationInput
   videos?: Prisma.videosOrderByWithRelationInput
+  _relevance?: Prisma.reportsOrderByRelevanceInput
 }
 
 export type reportsWhereUniqueInput = Prisma.AtLeast<{
@@ -475,6 +476,12 @@ export type ReportsListRelationFilter = {
 
 export type reportsOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type reportsOrderByRelevanceInput = {
+  fields: Prisma.reportsOrderByRelevanceFieldEnum | Prisma.reportsOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type reportsReporterIdCommentIdCompoundUniqueInput = {

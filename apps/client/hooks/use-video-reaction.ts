@@ -51,7 +51,7 @@ export function useVideoReaction({
 
             return { previousState };
         },
-        onError: (err, newTodo, context) => {
+        onError: (err, _variables, context) => {
             toast.error("Failed to update like");
             if (context?.previousState) {
                 setState(context.previousState);
@@ -91,7 +91,7 @@ export function useVideoReaction({
             });
             return { previousState };
         },
-        onError: (err, newTodo, context) => {
+        onError: (err, _variables, context) => {
             toast.error("Failed to update dislike");
             if (context?.previousState) {
                 setState(context.previousState);

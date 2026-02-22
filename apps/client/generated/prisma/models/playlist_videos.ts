@@ -228,6 +228,7 @@ export type playlist_videosOrderByWithRelationInput = {
   addedAt?: Prisma.SortOrder
   playlists?: Prisma.playlistsOrderByWithRelationInput
   videos?: Prisma.videosOrderByWithRelationInput
+  _relevance?: Prisma.playlist_videosOrderByRelevanceInput
 }
 
 export type playlist_videosWhereUniqueInput = Prisma.AtLeast<{
@@ -320,6 +321,12 @@ export type playlist_videosUncheckedUpdateManyInput = {
   videoId?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.IntFieldUpdateOperationsInput | number
   addedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type playlist_videosOrderByRelevanceInput = {
+  fields: Prisma.playlist_videosOrderByRelevanceFieldEnum | Prisma.playlist_videosOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type playlist_videosPlaylistIdVideoIdCompoundUniqueInput = {

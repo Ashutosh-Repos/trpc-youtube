@@ -53,10 +53,10 @@ export const getCachedUserProfile = cache(async (userId: string) => {
  * Get user's subscribed channels (memoized for request)
  */
 export const getCachedSubscriptions = cache(async (userId: string) => {
-    return await prisma.subscription.findMany({
+    return await prisma.subscriptions.findMany({
         where: { subscriberId: userId },
         include: {
-            channel: {
+            channels: {
                 select: {
                     id: true,
                     name: true,

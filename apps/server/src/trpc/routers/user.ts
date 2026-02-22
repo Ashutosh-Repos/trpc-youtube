@@ -69,6 +69,20 @@ export const userRouter = router({
                 const user = await prisma.user.update({
                     where: { id: ctx.user.id },
                     data: input,
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        image: true,
+                        bio: true,
+                        websiteUrl: true,
+                        location: true,
+                        bannerUrl: true,
+                        socialLinks: true,
+                        businessInfo: true,
+                        contactInfo: true,
+                        updatedAt: true,
+                    },
                 });
                 return user;
             } catch (error) {

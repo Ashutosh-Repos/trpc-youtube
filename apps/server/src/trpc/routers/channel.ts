@@ -175,8 +175,14 @@ export const channelRouter = router({
         }),
 
     deleteChannel: channelOwnerProcedure.mutation(async ({ ctx }) => {
-        await prisma.channels.delete({
+        // Soft-delete: preserves all video records and analytics.
+        // A background job should later clean up associated S3 objects.
+        await prisma.channels.update({
             where: { id: ctx.channel.id },
+            data: {
+                deletedAt: new Date(),
+                status: "SUSPENDED",
+            },
         });
         return { success: true };
     }),
@@ -283,7 +289,7 @@ export const channelRouter = router({
         .query(async ({ ctx, input }) => {
             const { handle } = input;
             const channel = await prisma.channels.findUnique({
-                where: { handle },
+                where: { handle, deletedAt: null },
                 select: CHANNEL_PUBLIC_SELECT,
             });
 
@@ -343,6 +349,7 @@ export const channelRouter = router({
         const channelsData = await prisma.channels.findMany({
             where: {
                 userId,
+                deletedAt: null,
             },
             orderBy: {
                 createdAt: "desc",

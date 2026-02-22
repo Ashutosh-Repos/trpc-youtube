@@ -244,6 +244,7 @@ export type audit_logsOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   user_audit_logs_actorIdTouser?: Prisma.userOrderByWithRelationInput
   user_audit_logs_targetUserIdTouser?: Prisma.userOrderByWithRelationInput
+  _relevance?: Prisma.audit_logsOrderByRelevanceInput
 }
 
 export type audit_logsWhereUniqueInput = Prisma.AtLeast<{
@@ -393,6 +394,12 @@ export type audit_logsUncheckedUpdateManyInput = {
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type audit_logsOrderByRelevanceInput = {
+  fields: Prisma.audit_logsOrderByRelevanceFieldEnum | Prisma.audit_logsOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type audit_logsCountOrderByAggregateInput = {

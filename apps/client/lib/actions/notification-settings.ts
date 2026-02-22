@@ -27,14 +27,14 @@ export async function getNotificationSettings(): Promise<ActionResponse<any>> {
             return createErrorResponse("UNAUTHORIZED", "Login required", 401);
         }
 
-        let settings = await prisma.notificationSettings.findUnique({
+        let settings = await prisma.notification_settings.findUnique({
             where: {
                 userId: user.id,
             },
         });
 
         if (!settings) {
-            settings = await prisma.notificationSettings.create({
+            settings = await prisma.notification_settings.create({
                 data: {
                     userId: user.id,
                 },
@@ -63,7 +63,7 @@ export async function updateNotificationSettings(
         // Validate input (partial because we might update one by one)
         const validData = notificationSettingsSchema.partial().parse(data);
 
-        const settings = await prisma.notificationSettings.update({
+        const settings = await prisma.notification_settings.update({
             where: {
                 userId: user.id,
             },

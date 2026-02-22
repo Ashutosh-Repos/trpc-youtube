@@ -8,6 +8,8 @@ import { historyRouter } from "./routers/history";
 import { engagementRouter } from "./routers/engagement";
 import { commentRouter } from "./routers/comment";
 import { notificationRouter } from "./routers/notification";
+import { feedRouter } from "./routers/feed";
+import { searchRouter } from "./routers/search";
 import { z } from "zod";
 
 export const appRouter = router({
@@ -20,6 +22,8 @@ export const appRouter = router({
     engagement: engagementRouter,
     comment: commentRouter,
     notification: notificationRouter,
+    feed: feedRouter,
+    search: searchRouter,
     /**
      * Public endpoint - anyone can call
      */

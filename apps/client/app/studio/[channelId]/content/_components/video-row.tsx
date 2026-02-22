@@ -191,7 +191,7 @@ export const VideoRow = ({
     };
 
     const handleCopyLink = () => {
-        const url = `${window.location.origin}/watch?v=${video.id}`;
+        const url = `${window.location.origin}/watch/${video.id}`;
         navigator.clipboard.writeText(url);
         toast.success("Link copied to clipboard");
     };
@@ -419,7 +419,7 @@ export const VideoRow = ({
                             title="Watch"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                window.open(`/watch?v=${video.id}`, "_blank");
+                                window.open(`/watch/${video.id}`, "_blank");
                             }}
                         >
                             <Play className="w-4 h-4 fill-primary" />

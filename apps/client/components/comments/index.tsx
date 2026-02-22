@@ -484,10 +484,25 @@ CommentItem.displayName = "CommentItem";
 // --- Main Export ---
 interface CommentSectionProps {
     videoId: string;
+    scrollRef?: React.RefObject<HTMLElement | null>;
 }
 
-export function CommentSectionInner({ videoId }: CommentSectionProps) {
-    const parentRef = useRef<HTMLElement | null>(null);
+export function CommentSectionInner({
+    videoId,
+    scrollRef,
+}: CommentSectionProps) {
+    // If no external ref is provided, we might fallback to window or null.
+    // We'll track an internal parentRef just in case we need a fallback, but trust scrollRef.
+    const internalScrollRef = useRef<HTMLElement | null>(null);
+    useEffect(() => {
+        internalScrollRef.current = document.getElementById(
+            "main-scroll-container",
+        );
+    }, []);
+
+    // Resolve which ref to use
+    const resolvedScrollRef = scrollRef || internalScrollRef;
+
     const containerRef = useRef<HTMLDivElement>(null);
     const [offsetTop, setOffsetTop] = useState(0);
 
@@ -512,9 +527,9 @@ export function CommentSectionInner({ videoId }: CommentSectionProps) {
         return items;
     }, [data, lc]);
 
+    // Measure offsets manually based on whichever scroll element is active
     useEffect(() => {
-        const scrollElement = document.getElementById("main-scroll-container");
-        if (scrollElement) parentRef.current = scrollElement;
+        const scrollElement = resolvedScrollRef.current;
 
         const measure = () => {
             if (containerRef.current && scrollElement) {
@@ -538,11 +553,11 @@ export function CommentSectionInner({ videoId }: CommentSectionProps) {
             window.removeEventListener("resize", measure);
             clearTimeout(timer);
         };
-    }, [allComments.length, isLoading]);
+    }, [allComments.length, isLoading, resolvedScrollRef.current]);
 
     const rowVirtualizer = useVirtualizer({
         count: allComments.length,
-        getScrollElement: () => parentRef.current,
+        getScrollElement: () => resolvedScrollRef.current,
         estimateSize: () => 100,
         overscan: 5,
         scrollMargin: offsetTop,

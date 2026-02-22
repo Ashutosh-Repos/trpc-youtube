@@ -782,6 +782,14 @@ export const videoRouter = router({
             } = input;
             const channelId = ctx.channel.id;
 
+            const cleanedSearch = search?.trim();
+            const formattedSearch = cleanedSearch
+                ? cleanedSearch
+                      .split(/\s+/)
+                      .map((word) => `${word}:*`)
+                      .join(" & ")
+                : undefined;
+
             const where: Prisma.videosWhereInput = {
                 channelId,
                 deletedAt: null,
@@ -790,13 +798,12 @@ export const videoRouter = router({
                 ...(typeof isAgeRestricted === "boolean" && {
                     isAgeRestricted,
                 }),
-                ...(search && {
+                ...(formattedSearch && {
                     OR: [
-                        { title: { contains: search, mode: "insensitive" } },
+                        { title: { search: formattedSearch } },
                         {
                             description: {
-                                contains: search,
-                                mode: "insensitive",
+                                search: formattedSearch,
                             },
                         },
                     ],
@@ -1212,7 +1219,7 @@ export const videoRouter = router({
      * Get a video for public viewing (Watch Page).
      * Includes "Hybrid Read" for Watch History.
      */
-    getPublicVideo: publicProcedure
+    getPublicVideo: protectedProcedure
         .input(z.object({ videoId: z.string().min(1) }))
         .query(async ({ ctx, input }) => {
             const { videoId } = input;
@@ -1228,6 +1235,7 @@ export const videoRouter = router({
                             handle: true,
                             image: true,
                             subscriberCount: true,
+                            userId: true,
                         },
                     },
                     tags: true,
@@ -1243,9 +1251,10 @@ export const videoRouter = router({
                 });
             }
 
-            if (video.visibility !== "PUBLIC" && video.channelId !== userId) {
+            const isOwner = video.channels?.userId === ctx.user.id;
+            if (video.visibility !== "PUBLIC" && !isOwner) {
                 throw new TRPCError({
-                    code: "NOT_FOUND", // Mask private as not found for non-owners
+                    code: "NOT_FOUND", // Mask private/unlisted as not found for non-owners
                     message: "Video not found or private",
                 });
             }

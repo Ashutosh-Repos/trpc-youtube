@@ -49,7 +49,7 @@ export async function getChannelContent(
         } = validFilters;
 
         // 1. Verify ownership
-        const channel = await prisma.channel.findUnique({
+        const channel = await prisma.channels.findUnique({
             where: { id: channelId },
             select: { userId: true },
         });
@@ -75,7 +75,7 @@ export async function getChannelContent(
 
         // 3. Execute
         const [items, totalCount] = await Promise.all([
-            prisma.video.findMany({
+            prisma.videos.findMany({
                 where,
                 take: limit + 1, // Peek for next cursor
                 cursor: cursor ? { id: cursor } : undefined,
@@ -110,7 +110,7 @@ export async function getChannelContent(
                     previewSpriteVtt: true,
                 },
             }),
-            prisma.video.count({ where }),
+            prisma.videos.count({ where }),
         ]);
 
         let nextCursor: string | null = null;
@@ -154,12 +154,12 @@ export async function updateVideoVisibility(
         }
 
         // Permission check
-        const video = await prisma.video.findUnique({
+        const video = await prisma.videos.findUnique({
             where: { id: videoId },
-            select: { channel: { select: { userId: true, id: true } } },
+            select: { channels: { select: { userId: true, id: true } } },
         });
 
-        if (!video || video.channel.userId !== user.id) {
+        if (!video || video.channels.userId !== user.id) {
             return {
                 success: false,
                 error: {
@@ -170,7 +170,7 @@ export async function updateVideoVisibility(
             };
         }
 
-        const updated = await prisma.video.update({
+        const updated = await prisma.videos.update({
             where: { id: videoId },
             data: {
                 visibility,
@@ -180,8 +180,8 @@ export async function updateVideoVisibility(
             select: { id: true, visibility: true },
         });
 
-        revalidatePath(`/studio/${video.channel.id}/content`);
-        revalidatePath(`/studio/${video.channel.id}/content/video/${videoId}`);
+        revalidatePath(`/studio/${video.channels.id}/content`);
+        revalidatePath(`/studio/${video.channels.id}/content/video/${videoId}`);
 
         return { success: true, data: JSON.parse(JSON.stringify(updated)) };
     } catch (error) {
@@ -217,11 +217,11 @@ export async function getVideoById(
             };
         }
 
-        const video = await prisma.video.findUnique({
+        const video = await prisma.videos.findUnique({
             where: { id: videoId, deletedAt: null },
             include: {
                 // Added 'include' block
-                channel: {
+                channels: {
                     select: {
                         id: true,
                         userId: true,
@@ -240,7 +240,7 @@ export async function getVideoById(
             return createErrorResponse("NOT_FOUND", "Video not found", 404);
         }
 
-        if (video.channel.userId !== user.id) {
+        if (video.channels.userId !== user.id) {
             return {
                 success: false,
                 error: {
@@ -309,12 +309,12 @@ export async function updateVideoMetadata(
         }
 
         // Permission check
-        const video = await prisma.video.findUnique({
+        const video = await prisma.videos.findUnique({
             where: { id: videoId },
-            select: { channel: { select: { userId: true, id: true } } },
+            select: { channels: { select: { userId: true, id: true } } },
         });
 
-        if (!video || video.channel.userId !== user.id) {
+        if (!video || video.channels.userId !== user.id) {
             return {
                 success: false,
                 error: {
@@ -337,7 +337,7 @@ export async function updateVideoMetadata(
 
         const { tags, chapters, ...otherData } = validatedData;
 
-        const updated = await prisma.video.update({
+        const updated = await prisma.videos.update({
             where: { id: videoId },
             data: {
                 ...otherData,
@@ -371,8 +371,8 @@ export async function updateVideoMetadata(
             },
         });
 
-        revalidatePath(`/studio/${video.channel.id}/content`);
-        revalidatePath(`/studio/${video.channel.id}/content/video/${videoId}`);
+        revalidatePath(`/studio/${video.channels.id}/content`);
+        revalidatePath(`/studio/${video.channels.id}/content/video/${videoId}`);
 
         return { success: true, data: JSON.parse(JSON.stringify(updated)) };
     } catch (error) {
@@ -405,12 +405,12 @@ export async function deleteVideo(
         }
 
         // Permission check
-        const video = await prisma.video.findUnique({
+        const video = await prisma.videos.findUnique({
             where: { id: videoId },
-            select: { channel: { select: { userId: true, id: true } } },
+            select: { channels: { select: { userId: true, id: true } } },
         });
 
-        if (!video || video.channel.userId !== user.id) {
+        if (!video || video.channels.userId !== user.id) {
             return {
                 success: false,
                 error: {
@@ -421,12 +421,12 @@ export async function deleteVideo(
             };
         }
 
-        await prisma.video.update({
+        await prisma.videos.update({
             where: { id: videoId },
             data: { deletedAt: new Date() },
         });
 
-        revalidatePath(`/studio/${video.channel.id}/content`);
+        revalidatePath(`/studio/${video.channels.id}/content`);
 
         return { success: true, data: { id: videoId } };
     } catch (error) {
@@ -440,7 +440,7 @@ export async function deleteVideo(
  */
 export async function getCategories() {
     try {
-        const categories = await prisma.category.findMany({
+        const categories = await prisma.categories.findMany({
             orderBy: { name: "asc" },
         });
         return { success: true, data: categories };
@@ -467,16 +467,16 @@ export async function deleteVideos(
         }
 
         // Verify ownership for all
-        const videos = await prisma.video.findMany({
+        const videos = await prisma.videos.findMany({
             where: { id: { in: videoIds } },
             select: {
                 id: true,
                 channelId: true,
-                channel: { select: { userId: true } },
+                channels: { select: { userId: true } },
             },
         });
 
-        const unauthorized = videos.some((v) => v.channel.userId !== user.id);
+        const unauthorized = videos.some((v) => v.channels.userId !== user.id);
         if (unauthorized || videos.length !== videoIds.length) {
             return {
                 success: false,
@@ -487,7 +487,7 @@ export async function deleteVideos(
             };
         }
 
-        await prisma.video.updateMany({
+        await prisma.videos.updateMany({
             where: { id: { in: videoIds } },
             data: { deletedAt: new Date() },
         });
@@ -520,12 +520,12 @@ export async function updateVideosVisibility(
         }
 
         // Verify ownership
-        const videos = await prisma.video.findMany({
+        const videos = await prisma.videos.findMany({
             where: { id: { in: videoIds } },
-            select: { id: true, channel: { select: { userId: true } } },
+            select: { id: true, channels: { select: { userId: true } } },
         });
 
-        const unauthorized = videos.some((v) => v.channel.userId !== user.id);
+        const unauthorized = videos.some((v) => v.channels.userId !== user.id);
         if (unauthorized || videos.length !== videoIds.length) {
             return {
                 success: false,
@@ -536,7 +536,7 @@ export async function updateVideosVisibility(
             };
         }
 
-        await prisma.video.updateMany({
+        await prisma.videos.updateMany({
             where: { id: { in: videoIds } },
             data: {
                 visibility,
@@ -545,7 +545,7 @@ export async function updateVideosVisibility(
         });
 
         // Get one video to find channelId for precise revalidation
-        const refVideo = await prisma.video.findUnique({
+        const refVideo = await prisma.videos.findUnique({
             where: { id: videoIds[0] },
             select: { channelId: true },
         });

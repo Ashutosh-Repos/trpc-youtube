@@ -18,9 +18,9 @@ const StudioLayout = ({ children }: { children: React.ReactNode }) => {
                         className="border p-2 rounded-lg cursor-pointer"
                     />
                 </TopBar>
-                <main className="flex-1 w-full h-full overflow-hidden">
+                <div className="w-full h-full flex flex-col-reverse sm:flex-row items-center justify-center overflow-hidden">
                     {children}
-                </main>
+                </div>
             </div>
         </StudioProvider>
     );

@@ -28,14 +28,6 @@ export function useSubscribe({
     const toggleSubscriptionMutation =
         trpc.channel.toggleSubscription.useMutation({
             onMutate: async () => {
-                if (!session?.user) {
-                    toast.error("Please login to subscribe");
-                    return {
-                        prevSubscribed: isSubscribed,
-                        prevCount: subscriberCount,
-                    };
-                }
-
                 // Optimistically update state
                 const newIsSubscribed = !isSubscribed;
 

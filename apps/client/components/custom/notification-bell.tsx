@@ -200,12 +200,7 @@ export function NotificationBell() {
     };
 
     // Badge display: cap at 99+
-    const badgeText =
-        unreadCount > 99
-            ? "99+"
-            : unreadCount > 9
-              ? `${unreadCount}`
-              : `${unreadCount}`;
+    const badgeText = unreadCount > 99 ? "99+" : `${unreadCount}`;
 
     return (
         <Popover open={isOpen} onOpenChange={setIsOpen}>

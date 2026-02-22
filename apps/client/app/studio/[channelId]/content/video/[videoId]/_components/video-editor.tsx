@@ -15,6 +15,8 @@ import {
     Image as ImageIcon,
     AlertCircle,
     X,
+    CheckCircle2,
+    AlertTriangle,
 } from "lucide-react";
 
 import { cn, getMediaUrl, AllowedMimeTypes, MaxSizes } from "@/lib/utils";
@@ -52,6 +54,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { RouterOutputs } from "@/lib/trpc-shared";
 import { VideoPlayer } from "@/components/custom/video-player";
+import { useVideoStatus } from "@/hooks/use-video-status";
+import { VideoProcessingPanel } from "@/components/custom/video-processing-panel";
 
 type VideoData = RouterOutputs["video"]["getVideo"];
 
@@ -103,6 +107,33 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
             refetchOnWindowFocus: false,
         },
     );
+
+    // ── Live processing status ───────────────────────────────────────────────
+    const {
+        status: processingStatus,
+        progress,
+        hlsUrl: liveHlsUrl,
+        thumbnails: liveThumbnails,
+        previewSpriteVtt: livePreviewSpriteVtt,
+        error: processingError,
+        isLive,
+        isTerminal,
+    } = useVideoStatus(video.id, {
+        initialStatus: (video.processingStatus as any) ?? undefined,
+        initialHlsUrl: video.hlsPlaylistUrl ?? null,
+        initialThumbnails: video.thumbnailOptions ?? [],
+        onReady: () => {
+            // Refresh DB data once processing completes
+            utils.video.getVideo.invalidate({ videoId: video.id });
+            router.refresh();
+        },
+    });
+
+    // Merge: live data wins over DB snapshot when available
+    const displayHls = liveHlsUrl || videoData.hlsPlaylistUrl;
+    const displaySprite = livePreviewSpriteVtt || videoData.previewSprite;
+    const displayThumbnail = videoData.thumbnailUrl;
+    const videoIsViewable = !!displayHls && !!displayThumbnail;
 
     const form = useForm<z.infer<typeof updateVideoSchema>>({
         resolver: zodResolver(updateVideoSchema),
@@ -577,39 +608,73 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
 
                         {/* RIGHT COLUMN: Visibility & Schedule */}
                         <div className="space-y-6">
+                            {/* ── Video preview / processing panel ── */}
                             <Card>
                                 <CardContent className="pt-6">
-                                    <div className="aspect-video w-full overflow-hidden rounded-lg bg-black/10">
-                                        {/* Video Player Placeholder - would utilize actual player component */}
-                                        {video.hlsPlaylistUrl &&
-                                        video.previewSprite &&
-                                        video.thumbnailUrl ? (
+                                    {videoIsViewable ? (
+                                        /* ── Player (video ready) ── */
+                                        <div className="aspect-video w-full overflow-hidden rounded-lg bg-black">
                                             <VideoPlayer
                                                 videoId={video.id}
-                                                src={getMediaUrl(
-                                                    video.hlsPlaylistUrl,
-                                                )}
+                                                src={getMediaUrl(displayHls!)}
                                                 poster={getMediaUrl(
-                                                    video.thumbnailUrl,
+                                                    displayThumbnail!,
                                                 )}
-                                                spriteVtt={getMediaUrl(
-                                                    video.previewSprite,
-                                                )}
+                                                spriteVtt={
+                                                    displaySprite
+                                                        ? getMediaUrl(
+                                                              displaySprite,
+                                                          )
+                                                        : undefined
+                                                }
                                             />
-                                        ) : (
-                                            <div className="flex h-full items-center justify-center text-muted-foreground">
-                                                Video Preview
-                                            </div>
-                                        )}
+                                        </div>
+                                    ) : (
+                                        /* ── Processing panel ── */
+                                        <div className="aspect-video w-full overflow-hidden rounded-lg bg-secondary/40 p-6 flex flex-col justify-center">
+                                            <VideoProcessingPanel
+                                                status={processingStatus}
+                                                progress={progress}
+                                                error={processingError}
+                                                isLive={isLive}
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* ── Status badge row ── */}
+                                    <div className="mt-3 flex items-center gap-2">
+                                        {processingStatus === "READY" ? (
+                                            <span className="flex items-center gap-1 text-xs text-emerald-500 font-medium">
+                                                <CheckCircle2 className="h-3.5 w-3.5" />
+                                                Processing complete
+                                            </span>
+                                        ) : processingStatus === "FAILED" ? (
+                                            <span className="flex items-center gap-1 text-xs text-destructive font-medium">
+                                                <AlertTriangle className="h-3.5 w-3.5" />
+                                                Processing failed
+                                            </span>
+                                        ) : processingStatus ? (
+                                            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                                {processingStatus ===
+                                                "UPLOADING"
+                                                    ? "Uploading…"
+                                                    : "Processing video…"}
+                                            </span>
+                                        ) : null}
                                     </div>
-                                    <div className="mt-4 break-all bg-muted/50 p-3 text-xs text-muted-foreground">
+
+                                    {/* ── Video link ── */}
+                                    <div className="mt-3 break-all bg-muted/50 p-3 text-xs text-muted-foreground">
                                         <p>Video Link</p>
                                         <a
                                             href={`/watch/${video.id}`}
                                             target="_blank"
                                             className="text-primary hover:underline"
                                         >
-                                            {`${typeof window !== "undefined" ? window.location.origin : ""}/watch/${video.id}`}
+                                            {typeof window !== "undefined"
+                                                ? `${window.location.origin}/watch/${video.id}`
+                                                : `/watch/${video.id}`}
                                         </a>
                                     </div>
                                 </CardContent>

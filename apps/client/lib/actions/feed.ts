@@ -12,6 +12,7 @@ export interface VideoCardData {
     id: string;
     title: string;
     thumbnailUrl: string | null;
+    previewSprite: string | null;
     duration: number | null;
     viewCount: number;
     publishedAt: Date | null;
@@ -32,6 +33,7 @@ const VIDEO_CARD_SELECT = {
     id: true,
     title: true,
     thumbnailUrl: true,
+    previewSprite: true,
     duration: true,
     viewCount: true,
     publishedAt: true,
@@ -47,7 +49,7 @@ const BASE_VIDEO_WHERE = {
     processingStatus: "READY" as const,
     adminStatus: "NORMAL" as const,
     deletedAt: null,
-    channel: {
+    channels: {
         status: { not: "TERMINATED" as const },
         deletedAt: null,
     },
@@ -72,7 +74,7 @@ export async function getHomeFeed(
         // Fetch more videos for re-ranking pool
         const fetchLimit = user ? limit * 4 : limit;
 
-        const videos = await prisma.video.findMany({
+        const videos = await prisma.videos.findMany({
             where: BASE_VIDEO_WHERE,
             orderBy: { hotScore: "desc" },
             take: fetchLimit,
@@ -112,7 +114,7 @@ export async function getHomeFeed(
         }
 
         // Fetch user's interests (channels and categories)
-        const interests = await prisma.userInterest.findMany({
+        const interests = await prisma.user_interests.findMany({
             where: {
                 userId: user.id,
                 score: { gt: 0.05 }, // Very low threshold to include any interest
@@ -268,7 +270,7 @@ export async function getTrendingVideos(options?: {
     }[options?.timeWindow || "week"];
 
     try {
-        const videos = await prisma.video.findMany({
+        const videos = await prisma.videos.findMany({
             where: {
                 ...BASE_VIDEO_WHERE,
                 publishedAt: { gte: publishedAfter },
@@ -315,7 +317,7 @@ export async function getSubscriptionFeed(
 
     try {
         // Get user's subscribed channel IDs
-        const subscriptions = await prisma.subscription.findMany({
+        const subscriptions = await prisma.subscriptions.findMany({
             where: { subscriberId: user.id },
             select: { channelId: true },
         });
@@ -329,7 +331,7 @@ export async function getSubscriptionFeed(
             };
         }
 
-        const videos = await prisma.video.findMany({
+        const videos = await prisma.videos.findMany({
             where: {
                 channelId: { in: channelIds },
                 visibility: "PUBLIC",
@@ -381,12 +383,12 @@ export async function getContinueWatching(
     }
 
     try {
-        const history = await prisma.watchHistory.findMany({
+        const history = await prisma.watch_history.findMany({
             where: {
                 userId: user.id,
                 completed: false,
                 watchedSeconds: { gt: 30 }, // At least 30 seconds watched
-                video: {
+                videos: {
                     visibility: "PUBLIC",
                     processingStatus: "READY",
                     adminStatus: "NORMAL",
@@ -396,7 +398,7 @@ export async function getContinueWatching(
             orderBy: { lastWatchedAt: "desc" },
             take: limit,
             include: {
-                video: { select: VIDEO_CARD_SELECT },
+                videos: { select: VIDEO_CARD_SELECT },
             },
         });
 
@@ -411,7 +413,7 @@ export async function getContinueWatching(
         return {
             success: true,
             data: {
-                videos: history.map((h) => h.video),
+                videos: history.map((h) => h.videos),
                 watchProgress,
                 nextCursor: undefined, // No pagination for continue watching
             },
@@ -447,10 +449,10 @@ export async function getWatchHistory(
     }
 
     try {
-        const history = await prisma.watchHistory.findMany({
+        const history = await prisma.watch_history.findMany({
             where: {
                 userId: user.id,
-                video: {
+                videos: {
                     visibility: "PUBLIC",
                     processingStatus: "READY",
                     adminStatus: "NORMAL",
@@ -462,12 +464,12 @@ export async function getWatchHistory(
             cursor: cursor ? { id: cursor } : undefined,
             skip: cursor ? 1 : 0,
             include: {
-                video: { select: VIDEO_CARD_SELECT },
+                videos: { select: VIDEO_CARD_SELECT },
             },
         });
 
         const videos = history.map((h) => ({
-            ...h.video,
+            ...h.videos,
             watchedAt: h.lastWatchedAt,
             progress:
                 h.videoDuration && h.videoDuration > 0
@@ -506,7 +508,7 @@ export async function clearWatchHistory(): Promise<
     }
 
     try {
-        const result = await prisma.watchHistory.deleteMany({
+        const result = await prisma.watch_history.deleteMany({
             where: { userId: user.id },
         });
 
@@ -532,7 +534,7 @@ export async function clearWatchHistory(): Promise<
  */
 export async function getCategories() {
     try {
-        const categories = await prisma.category.findMany({
+        const categories = await prisma.categories.findMany({
             orderBy: { sortOrder: "asc" },
             select: {
                 id: true,
@@ -587,11 +589,15 @@ export async function search(
 
     // Clean and prepare search query
     const cleanQuery = query.trim();
-    if (!cleanQuery || cleanQuery.length < 2) {
-        return createErrorResponse(
-            "INVALID_INPUT",
-            "Search query must be at least 2 characters",
-        );
+    if (!cleanQuery) {
+        return {
+            success: true,
+            data: {
+                videos: [],
+                channels: [],
+                nextCursor: undefined,
+            },
+        };
     }
 
     try {
@@ -606,7 +612,7 @@ export async function search(
                       ? { viewCount: "desc" as const }
                       : { hotScore: "desc" as const }; // relevance uses hotScore
 
-            const videoResults = await prisma.video.findMany({
+            const videoResults = await prisma.videos.findMany({
                 where: {
                     ...BASE_VIDEO_WHERE,
                     OR: [
@@ -643,7 +649,7 @@ export async function search(
         // Search channels
         let channels: SearchResult["channels"] = [];
         if (searchType === "all" || searchType === "channel") {
-            const channelResults = await prisma.channel.findMany({
+            const channelResults = await prisma.channels.findMany({
                 where: {
                     status: "ACTIVE",
                     deletedAt: null,

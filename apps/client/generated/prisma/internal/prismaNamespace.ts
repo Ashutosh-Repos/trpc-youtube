@@ -2406,7 +2406,11 @@ export const NotificationsScalarFieldEnum = {
   liveStreamId: 'liveStreamId',
   isRead: 'isRead',
   readAt: 'readAt',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  groupCount: 'groupCount',
+  groupKey: 'groupKey',
+  isHidden: 'isHidden',
+  metadata: 'metadata'
 } as const
 
 export type NotificationsScalarFieldEnum = (typeof NotificationsScalarFieldEnum)[keyof typeof NotificationsScalarFieldEnum]
@@ -2641,7 +2645,6 @@ export const VideosScalarFieldEnum = {
   uploadStartedAt: 'uploadStartedAt',
   uploadCompletedAt: 'uploadCompletedAt',
   uploadAttempts: 'uploadAttempts',
-  idempotencyKey: 'idempotencyKey',
   hlsPlaylistUrl: 'hlsPlaylistUrl',
   thumbnailUrl: 'thumbnailUrl',
   thumbnailOptions: 'thumbnailOptions',
@@ -2668,7 +2671,8 @@ export const VideosScalarFieldEnum = {
   premiereStartsAt: 'premiereStartsAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  idempotencyKey: 'idempotencyKey'
 } as const
 
 export type VideosScalarFieldEnum = (typeof VideosScalarFieldEnum)[keyof typeof VideosScalarFieldEnum]
@@ -2722,6 +2726,21 @@ export const NullsOrder = {
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
+export const accountOrderByRelevanceFieldEnum = {
+  id: 'id',
+  accountId: 'accountId',
+  providerId: 'providerId',
+  userId: 'userId',
+  accessToken: 'accessToken',
+  refreshToken: 'refreshToken',
+  idToken: 'idToken',
+  scope: 'scope',
+  password: 'password'
+} as const
+
+export type accountOrderByRelevanceFieldEnum = (typeof accountOrderByRelevanceFieldEnum)[keyof typeof accountOrderByRelevanceFieldEnum]
+
+
 export const JsonNullValueFilter = {
   DbNull: DbNull,
   JsonNull: JsonNull,
@@ -2729,6 +2748,290 @@ export const JsonNullValueFilter = {
 } as const
 
 export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const audit_logsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  actorId: 'actorId',
+  action: 'action',
+  resource: 'resource',
+  resourceId: 'resourceId',
+  reason: 'reason',
+  targetUserId: 'targetUserId',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent'
+} as const
+
+export type audit_logsOrderByRelevanceFieldEnum = (typeof audit_logsOrderByRelevanceFieldEnum)[keyof typeof audit_logsOrderByRelevanceFieldEnum]
+
+
+export const categoriesOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  description: 'description',
+  iconUrl: 'iconUrl'
+} as const
+
+export type categoriesOrderByRelevanceFieldEnum = (typeof categoriesOrderByRelevanceFieldEnum)[keyof typeof categoriesOrderByRelevanceFieldEnum]
+
+
+export const channelsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  handle: 'handle',
+  name: 'name',
+  description: 'description',
+  image: 'image',
+  bannerUrl: 'bannerUrl',
+  location: 'location',
+  contactEmail: 'contactEmail'
+} as const
+
+export type channelsOrderByRelevanceFieldEnum = (typeof channelsOrderByRelevanceFieldEnum)[keyof typeof channelsOrderByRelevanceFieldEnum]
+
+
+export const comment_reactionsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  commentId: 'commentId',
+  userId: 'userId'
+} as const
+
+export type comment_reactionsOrderByRelevanceFieldEnum = (typeof comment_reactionsOrderByRelevanceFieldEnum)[keyof typeof comment_reactionsOrderByRelevanceFieldEnum]
+
+
+export const commentsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  videoId: 'videoId',
+  userId: 'userId',
+  parentId: 'parentId',
+  content: 'content'
+} as const
+
+export type commentsOrderByRelevanceFieldEnum = (typeof commentsOrderByRelevanceFieldEnum)[keyof typeof commentsOrderByRelevanceFieldEnum]
+
+
+export const community_postsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  channelId: 'channelId',
+  content: 'content',
+  imageUrls: 'imageUrls',
+  channelHandle: 'channelHandle',
+  channelName: 'channelName',
+  channelImage: 'channelImage'
+} as const
+
+export type community_postsOrderByRelevanceFieldEnum = (typeof community_postsOrderByRelevanceFieldEnum)[keyof typeof community_postsOrderByRelevanceFieldEnum]
+
+
+export const notification_settingsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userId: 'userId'
+} as const
+
+export type notification_settingsOrderByRelevanceFieldEnum = (typeof notification_settingsOrderByRelevanceFieldEnum)[keyof typeof notification_settingsOrderByRelevanceFieldEnum]
+
+
+export const notificationsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  title: 'title',
+  message: 'message',
+  thumbnailUrl: 'thumbnailUrl',
+  actionUrl: 'actionUrl',
+  actorId: 'actorId',
+  videoId: 'videoId',
+  channelId: 'channelId',
+  commentId: 'commentId',
+  liveStreamId: 'liveStreamId',
+  groupKey: 'groupKey'
+} as const
+
+export type notificationsOrderByRelevanceFieldEnum = (typeof notificationsOrderByRelevanceFieldEnum)[keyof typeof notificationsOrderByRelevanceFieldEnum]
+
+
+export const playlist_videosOrderByRelevanceFieldEnum = {
+  id: 'id',
+  playlistId: 'playlistId',
+  videoId: 'videoId'
+} as const
+
+export type playlist_videosOrderByRelevanceFieldEnum = (typeof playlist_videosOrderByRelevanceFieldEnum)[keyof typeof playlist_videosOrderByRelevanceFieldEnum]
+
+
+export const playlistsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  channelId: 'channelId',
+  title: 'title',
+  description: 'description',
+  thumbnailUrl: 'thumbnailUrl'
+} as const
+
+export type playlistsOrderByRelevanceFieldEnum = (typeof playlistsOrderByRelevanceFieldEnum)[keyof typeof playlistsOrderByRelevanceFieldEnum]
+
+
+export const reportsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  reporterId: 'reporterId',
+  videoId: 'videoId',
+  commentId: 'commentId',
+  reportedUserId: 'reportedUserId',
+  description: 'description',
+  reviewedById: 'reviewedById',
+  reviewNote: 'reviewNote',
+  strikeId: 'strikeId'
+} as const
+
+export type reportsOrderByRelevanceFieldEnum = (typeof reportsOrderByRelevanceFieldEnum)[keyof typeof reportsOrderByRelevanceFieldEnum]
+
+
+export const sessionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  token: 'token',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  userId: 'userId',
+  impersonatedBy: 'impersonatedBy'
+} as const
+
+export type sessionOrderByRelevanceFieldEnum = (typeof sessionOrderByRelevanceFieldEnum)[keyof typeof sessionOrderByRelevanceFieldEnum]
+
+
+export const strikesOrderByRelevanceFieldEnum = {
+  id: 'id',
+  channelId: 'channelId',
+  userId: 'userId',
+  reason: 'reason',
+  internalNote: 'internalNote',
+  videoId: 'videoId',
+  commentId: 'commentId',
+  postId: 'postId',
+  adminId: 'adminId'
+} as const
+
+export type strikesOrderByRelevanceFieldEnum = (typeof strikesOrderByRelevanceFieldEnum)[keyof typeof strikesOrderByRelevanceFieldEnum]
+
+
+export const subscriptionsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  subscriberId: 'subscriberId',
+  channelId: 'channelId'
+} as const
+
+export type subscriptionsOrderByRelevanceFieldEnum = (typeof subscriptionsOrderByRelevanceFieldEnum)[keyof typeof subscriptionsOrderByRelevanceFieldEnum]
+
+
+export const tagsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name'
+} as const
+
+export type tagsOrderByRelevanceFieldEnum = (typeof tagsOrderByRelevanceFieldEnum)[keyof typeof tagsOrderByRelevanceFieldEnum]
+
+
+export const userOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  image: 'image',
+  role: 'role',
+  banReason: 'banReason',
+  bio: 'bio',
+  bannerUrl: 'bannerUrl',
+  websiteUrl: 'websiteUrl',
+  location: 'location'
+} as const
+
+export type userOrderByRelevanceFieldEnum = (typeof userOrderByRelevanceFieldEnum)[keyof typeof userOrderByRelevanceFieldEnum]
+
+
+export const user_interestsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  channelId: 'channelId',
+  categoryId: 'categoryId',
+  tagId: 'tagId'
+} as const
+
+export type user_interestsOrderByRelevanceFieldEnum = (typeof user_interestsOrderByRelevanceFieldEnum)[keyof typeof user_interestsOrderByRelevanceFieldEnum]
+
+
+export const verificationOrderByRelevanceFieldEnum = {
+  id: 'id',
+  identifier: 'identifier',
+  value: 'value'
+} as const
+
+export type verificationOrderByRelevanceFieldEnum = (typeof verificationOrderByRelevanceFieldEnum)[keyof typeof verificationOrderByRelevanceFieldEnum]
+
+
+export const video_cardsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  videoId: 'videoId',
+  title: 'title',
+  targetVideoId: 'targetVideoId',
+  targetPlaylistId: 'targetPlaylistId',
+  targetChannelId: 'targetChannelId',
+  targetUrl: 'targetUrl'
+} as const
+
+export type video_cardsOrderByRelevanceFieldEnum = (typeof video_cardsOrderByRelevanceFieldEnum)[keyof typeof video_cardsOrderByRelevanceFieldEnum]
+
+
+export const video_chaptersOrderByRelevanceFieldEnum = {
+  id: 'id',
+  videoId: 'videoId',
+  title: 'title'
+} as const
+
+export type video_chaptersOrderByRelevanceFieldEnum = (typeof video_chaptersOrderByRelevanceFieldEnum)[keyof typeof video_chaptersOrderByRelevanceFieldEnum]
+
+
+export const video_reactionsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  videoId: 'videoId',
+  userId: 'userId'
+} as const
+
+export type video_reactionsOrderByRelevanceFieldEnum = (typeof video_reactionsOrderByRelevanceFieldEnum)[keyof typeof video_reactionsOrderByRelevanceFieldEnum]
+
+
+export const videosOrderByRelevanceFieldEnum = {
+  id: 'id',
+  channelId: 'channelId',
+  title: 'title',
+  description: 'description',
+  categoryId: 'categoryId',
+  language: 'language',
+  channelHandle: 'channelHandle',
+  channelName: 'channelName',
+  channelImage: 'channelImage',
+  adminNote: 'adminNote',
+  processingError: 'processingError',
+  originalFileName: 'originalFileName',
+  originalFilePath: 'originalFilePath',
+  originalMimeType: 'originalMimeType',
+  uploadId: 'uploadId',
+  hlsPlaylistUrl: 'hlsPlaylistUrl',
+  thumbnailUrl: 'thumbnailUrl',
+  thumbnailOptions: 'thumbnailOptions',
+  previewSprite: 'previewSprite',
+  previewSpriteVtt: 'previewSpriteVtt',
+  resolutions: 'resolutions',
+  idempotencyKey: 'idempotencyKey'
+} as const
+
+export type videosOrderByRelevanceFieldEnum = (typeof videosOrderByRelevanceFieldEnum)[keyof typeof videosOrderByRelevanceFieldEnum]
+
+
+export const watch_historyOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  videoId: 'videoId'
+} as const
+
+export type watch_historyOrderByRelevanceFieldEnum = (typeof watch_historyOrderByRelevanceFieldEnum)[keyof typeof watch_historyOrderByRelevanceFieldEnum]
 
 
 

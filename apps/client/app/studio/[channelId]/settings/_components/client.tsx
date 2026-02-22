@@ -392,7 +392,7 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                                                     {form.getValues("handle")}
                                                 </span>
                                                 <a
-                                                    href={`/channel/${form.getValues("handle")}`}
+                                                    href={`/@${form.getValues("handle")}`}
                                                     target="_blank"
                                                     rel="noreferrer"
                                                     className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-primary hover:text-primary/80 transition-colors"

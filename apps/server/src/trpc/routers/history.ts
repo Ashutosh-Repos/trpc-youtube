@@ -26,7 +26,7 @@ export const historyRouter = router({
                 where: {
                     userId,
                     videos: {
-                        visibility: "PUBLIC",
+                        visibility: { in: ["PUBLIC", "UNLISTED"] },
                         deletedAt: null,
                         processingStatus: ProcessingStatus.READY,
                     },
@@ -46,8 +46,7 @@ export const historyRouter = router({
                             viewCount: true,
                             createdAt: true,
                             duration: true,
-                            channelName: true,
-                            channelImage: true,
+                            isShort: true,
                             channels: {
                                 select: {
                                     id: true,

@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { useClkOut } from "@/hooks/useClkOut";
+import { toast } from "sonner";
 
 // ---- Zod Schema ----
 const FormSchema = z.object({
@@ -110,7 +111,12 @@ export function SearchForm() {
     };
 
     function onSubmit(data: z.infer<typeof FormSchema>) {
-        router.push(`/search?q=${encodeURIComponent(data.query)}`);
+        const cleanQuery = data.query.trim();
+        if (!cleanQuery) {
+            toast.warning("Please enter a valid search query");
+            return;
+        }
+        router.push(`/search?q=${encodeURIComponent(cleanQuery)}`);
         setFormActive(false);
     }
 

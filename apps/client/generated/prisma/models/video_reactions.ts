@@ -194,6 +194,7 @@ export type video_reactionsOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   user?: Prisma.userOrderByWithRelationInput
   videos?: Prisma.videosOrderByWithRelationInput
+  _relevance?: Prisma.video_reactionsOrderByRelevanceInput
 }
 
 export type video_reactionsWhereUniqueInput = Prisma.AtLeast<{
@@ -294,6 +295,12 @@ export type Video_reactionsListRelationFilter = {
 
 export type video_reactionsOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type video_reactionsOrderByRelevanceInput = {
+  fields: Prisma.video_reactionsOrderByRelevanceFieldEnum | Prisma.video_reactionsOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type video_reactionsVideoIdUserIdCompoundUniqueInput = {

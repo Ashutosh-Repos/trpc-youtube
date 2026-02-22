@@ -109,6 +109,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                     src={src}
                     poster={poster}
                     playsInline
+                    onEnded={onEnd}
                     {...({
                         crossorigin: "anonymous",
                         autoplay: autoPlay,

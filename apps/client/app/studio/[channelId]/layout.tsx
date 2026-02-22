@@ -30,9 +30,11 @@ export default async function ChannelStudioLayout({
     }
 
     return (
-        <div className="flex h-full w-full overflow-hidden">
+        <>
+            {/* // <div className="flex h-full w-full overflow-hidden">  */}
             <StudioSideNav channelId={channelId} />
             <div className="flex-1 overflow-auto h-full w-full">{children}</div>
-        </div>
+            {/* </div> */}
+        </>
     );
 }

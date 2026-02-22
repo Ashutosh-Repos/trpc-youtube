@@ -1,7 +1,9 @@
 import { trpcServer } from "@/lib/trpc-server";
 import { WatchClient } from "./client";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
+// NOTE: getPublicVideo is a protectedProcedure.
+// Unauthenticated users are redirected to /login by middleware before reaching this page.
 export default async function WatchPage({
     params,
 }: {
@@ -12,7 +14,11 @@ export default async function WatchPage({
     try {
         const video = await trpcServer.video.getPublicVideo.query({ videoId });
         return <WatchClient video={video} />;
-    } catch (e) {
+    } catch (e: any) {
+        const code = e?.shape?.data?.code ?? e?.data?.code;
+        if (code === "UNAUTHORIZED" || code === "FORBIDDEN") {
+            redirect("/login");
+        }
         notFound();
     }
 }

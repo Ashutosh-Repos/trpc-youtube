@@ -29,7 +29,7 @@ export async function addComment(
 
         const comment = await prisma.$transaction(async (tx) => {
             // 1. Create Comment
-            const newComment = await tx.comment.create({
+            const newComment = await tx.comments.create({
                 data: {
                     id: uuidv4(),
                     videoId,
@@ -42,13 +42,13 @@ export async function addComment(
             // 2. Increment Counts
             if (parentId) {
                 // Increment replyCount on parent
-                await tx.comment.update({
+                await tx.comments.update({
                     where: { id: parentId },
                     data: { replyCount: { increment: 1 } },
                 });
             } else {
                 // Increment commentCount on video
-                await tx.video.update({
+                await tx.videos.update({
                     where: { id: videoId },
                     data: { commentCount: { increment: 1 } },
                 });
@@ -64,7 +64,7 @@ export async function addComment(
 
             if (parentId) {
                 // Fetch parent comment to get author
-                const parentComment = await prisma.comment.findUnique({
+                const parentComment = await prisma.comments.findUnique({
                     where: { id: parentId },
                     select: { userId: true },
                 });
@@ -73,14 +73,14 @@ export async function addComment(
                 }
             } else {
                 // Fetch video owner
-                const video = await prisma.video.findUnique({
+                const video = await prisma.videos.findUnique({
                     where: { id: videoId },
                     select: {
-                        channel: { select: { userId: true } },
+                        channels: { select: { userId: true } },
                     },
                 });
-                if (video && video.channel.userId !== user.id) {
-                    targetUserId = video.channel.userId;
+                if (video && video.channels.userId !== user.id) {
+                    targetUserId = video.channels.userId;
                 }
             }
 
@@ -123,7 +123,7 @@ export async function getComments(
     limit: number = 20,
 ) {
     try {
-        const comments = await prisma.comment.findMany({
+        const comments = await prisma.comments.findMany({
             where: {
                 videoId,
                 parentId: null, // Only root comments
@@ -170,7 +170,7 @@ export async function getComments(
  */
 export async function getReplies(parentId: string) {
     try {
-        const replies = await prisma.comment.findMany({
+        const replies = await prisma.comments.findMany({
             where: {
                 parentId,
                 status: "VISIBLE",

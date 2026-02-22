@@ -2,6 +2,7 @@ import prisma from "../lib/prisma";
 import redis from "../lib/redis";
 import { Prisma } from "../../generated/prisma/client";
 import { NotificationService } from "./NotificationService";
+import { TRPCError } from "@trpc/server";
 
 export type CommentSort = "TOP" | "NEWEST";
 
@@ -488,9 +489,21 @@ export class CommentService {
             },
         });
 
-        if (!comment) throw new Error("Comment not found");
-        if (comment.userId !== userId) throw new Error("Unauthorized");
-        if (comment.deletedAt) throw new Error("Comment already deleted"); // Idempotency check
+        if (!comment)
+            throw new TRPCError({
+                code: "NOT_FOUND",
+                message: "Comment not found",
+            });
+        if (comment.userId !== userId)
+            throw new TRPCError({
+                code: "FORBIDDEN",
+                message: "You do not own this comment",
+            });
+        if (comment.deletedAt)
+            throw new TRPCError({
+                code: "CONFLICT",
+                message: "Comment already deleted",
+            });
 
         // Soft Delete
         await prisma.comments.update({
@@ -504,7 +517,6 @@ export class CommentService {
             this.KEYS.list(comment.videoId, "NEWEST"),
         );
 
-        // Queue Comment Count Decrement
         // Queue Comment Count Decrement
         const pipeline = redis.pipeline();
         pipeline.xadd(

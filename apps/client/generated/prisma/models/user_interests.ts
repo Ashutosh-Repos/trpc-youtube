@@ -294,6 +294,7 @@ export type user_interestsOrderByWithRelationInput = {
   channels?: Prisma.channelsOrderByWithRelationInput
   tags?: Prisma.tagsOrderByWithRelationInput
   user?: Prisma.userOrderByWithRelationInput
+  _relevance?: Prisma.user_interestsOrderByRelevanceInput
 }
 
 export type user_interestsWhereUniqueInput = Prisma.AtLeast<{
@@ -458,6 +459,12 @@ export type User_interestsListRelationFilter = {
 
 export type user_interestsOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type user_interestsOrderByRelevanceInput = {
+  fields: Prisma.user_interestsOrderByRelevanceFieldEnum | Prisma.user_interestsOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type user_interestsUserIdCategoryIdCompoundUniqueInput = {
