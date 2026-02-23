@@ -64,7 +64,7 @@ export function ShortsShelf({ source }: ShortsShelfProps) {
 
             {/* Horizontal Scroller */}
             <div className="flex w-full overflow-x-auto snap-x snap-mandatory gap-4 px-2 pb-4 pt-2 -mx-2 hide-scrollbar">
-                {data.videos.map((video) => (
+                {data.videos.map((video: any) => (
                     <div key={video.id} className="snap-start shrink-0">
                         <ShortCard video={video} />
                     </div>

@@ -302,7 +302,7 @@ const CommentReplies = memo(({ parentId, videoId }: CommentRepliesProps) => {
 
     return (
         <div className="flex flex-col gap-4 mt-2">
-            {replies.map((reply) => (
+            {replies.map((reply: any) => (
                 <CommentItem key={reply.id} comment={reply} videoId={videoId} />
             ))}
             {hasNextPage && (
@@ -522,7 +522,7 @@ export function CommentSectionInner({
         const items = data?.pages.flatMap((page) => page.items) || [];
         // Prevent duplication if the highlighted comment is also in the fetched pages
         if (lc) {
-            return items.filter((item) => item.id !== lc);
+            return items.filter((item: any) => item.id !== lc);
         }
         return items;
     }, [data, lc]);
@@ -621,7 +621,7 @@ export function CommentSectionInner({
                         position: "relative",
                     }}
                 >
-                    {virtualItems.map((virtualRow) => {
+                    {virtualItems.map((virtualRow: any) => {
                         const comment = allComments[virtualRow.index];
                         if (!comment) return null;
                         return (

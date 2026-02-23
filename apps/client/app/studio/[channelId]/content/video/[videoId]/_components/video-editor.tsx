@@ -297,7 +297,7 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
         const currentTags = form.getValues("tags") || [];
         form.setValue(
             "tags",
-            currentTags.filter((tag) => tag !== tagToRemove),
+            currentTags.filter((tag: any) => tag !== tagToRemove),
             { shouldDirty: true },
         );
     };
@@ -735,7 +735,7 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                                                 label: "Scheduled",
                                                                 desc: "Select a date to make your video public",
                                                             },
-                                                        ].map((option) => (
+                                                        ].map((option: any) => (
                                                             <div
                                                                 key={
                                                                     option.value

@@ -476,7 +476,9 @@ export async function deleteVideos(
             },
         });
 
-        const unauthorized = videos.some((v) => v.channels.userId !== user.id);
+        const unauthorized = videos.some(
+            (v: any) => v.channels.userId !== user.id,
+        );
         if (unauthorized || videos.length !== videoIds.length) {
             return {
                 success: false,
@@ -525,7 +527,9 @@ export async function updateVideosVisibility(
             select: { id: true, channels: { select: { userId: true } } },
         });
 
-        const unauthorized = videos.some((v) => v.channels.userId !== user.id);
+        const unauthorized = videos.some(
+            (v: any) => v.channels.userId !== user.id,
+        );
         if (unauthorized || videos.length !== videoIds.length) {
             return {
                 success: false,

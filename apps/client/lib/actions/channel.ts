@@ -290,7 +290,7 @@ export async function updateChannel(
                 tags: tags
                     ? {
                           set: [], // Clear existing
-                          connectOrCreate: tags.map((name) => ({
+                          connectOrCreate: tags.map((name: string) => ({
                               where: { name },
                               create: { name },
                           })),

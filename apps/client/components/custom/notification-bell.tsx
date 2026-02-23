@@ -179,20 +179,23 @@ export function NotificationBell() {
         if (!notification.isRead) {
             markRead.mutate({ id: notification.id });
             // Optimistic update
-            utils.notification.list.setInfiniteData({ limit: 10 }, (old) => {
-                if (!old) return old;
-                return {
-                    ...old,
-                    pages: old.pages.map((page) => ({
-                        ...page,
-                        items: page.items.map((item) =>
-                            item.id === notification.id
-                                ? { ...item, isRead: true }
-                                : item,
-                        ),
-                    })),
-                };
-            });
+            utils.notification.list.setInfiniteData(
+                { limit: 10 },
+                (old: any) => {
+                    if (!old) return old;
+                    return {
+                        ...old,
+                        pages: old.pages.map((page: any) => ({
+                            ...page,
+                            items: page.items.map((item: any) =>
+                                item.id === notification.id
+                                    ? { ...item, isRead: true }
+                                    : item,
+                            ),
+                        })),
+                    };
+                },
+            );
         }
         setIsOpen(false);
         if (notification.actionUrl) {
@@ -266,7 +269,7 @@ export function NotificationBell() {
                         </div>
                     ) : (
                         <div className="flex flex-col">
-                            {popoverItems.map((notification) => (
+                            {popoverItems.map((notification: any) => (
                                 <NotificationItem
                                     key={notification.id}
                                     notification={

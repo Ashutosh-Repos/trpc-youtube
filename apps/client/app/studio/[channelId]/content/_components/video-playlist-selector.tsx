@@ -85,7 +85,7 @@ export const VideoPlaylistSelector = ({
         isChecked: boolean,
     ) => {
         // Optimistic update could be added here, but refetch is safer for now
-        const promises = videoIds.map((videoId) =>
+        const promises = videoIds.map((videoId: string) =>
             isChecked
                 ? addToPlaylistMutation.mutateAsync({ playlistId, videoId })
                 : removeFromPlaylistMutation.mutateAsync({
@@ -95,7 +95,7 @@ export const VideoPlaylistSelector = ({
         );
 
         const results = await Promise.allSettled(promises);
-        const failed = results.filter((r) => r.status === "rejected");
+        const failed = results.filter((r: any) => r.status === "rejected");
 
         if (failed.length > 0) {
             // Error toast is handled by mutation onError, but for bulk we might want summary
@@ -103,7 +103,7 @@ export const VideoPlaylistSelector = ({
         }
     };
 
-    const filteredPlaylists = playlists.filter((p) =>
+    const filteredPlaylists = playlists.filter((p: any) =>
         p.title.toLowerCase().includes(search.toLowerCase()),
     );
 

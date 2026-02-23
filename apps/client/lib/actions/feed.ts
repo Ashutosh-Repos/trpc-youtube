@@ -96,7 +96,7 @@ export async function getHomeFeed(
 
         // For anonymous users, return as-is
         if (!user) {
-            const result = videos.slice(0, limit).map((v) => {
+            const result = videos.slice(0, limit).map((v: any) => {
                 const { categoryId, hotScore, ...rest } = v;
                 return rest;
             });
@@ -128,7 +128,7 @@ export async function getHomeFeed(
 
         // If no interests yet, return global ranking
         if (interests.length === 0) {
-            const result = videos.slice(0, limit).map((v) => {
+            const result = videos.slice(0, limit).map((v: any) => {
                 const { categoryId, hotScore, ...rest } = v;
                 return rest;
             });
@@ -166,10 +166,13 @@ export async function getHomeFeed(
         }
 
         // Find max hotScore for normalization
-        const maxHotScore = Math.max(...videos.map((v) => v.hotScore || 0), 1);
+        const maxHotScore = Math.max(
+            ...videos.map((v: any) => v.hotScore || 0),
+            1,
+        );
 
         // Calculate personalized scores
-        const personalizedVideos = videos.map((video) => {
+        const personalizedVideos = videos.map((video: any) => {
             // Normalize hotScore to 0-1 range
             const normalizedGlobal = (video.hotScore || 0) / maxHotScore;
 
@@ -202,8 +205,8 @@ export async function getHomeFeed(
         );
 
         // Mix in some diversity: ensure some non-interest videos in results
-        const interested = personalizedVideos.filter((v) => v.hasInterest);
-        const diverse = personalizedVideos.filter((v) => !v.hasInterest);
+        const interested = personalizedVideos.filter((v: any) => v.hasInterest);
+        const diverse = personalizedVideos.filter((v: any) => !v.hasInterest);
 
         // Take 70% from interests, 30% from diverse
         const interestCount = Math.min(
@@ -220,7 +223,7 @@ export async function getHomeFeed(
         // Re-sort mixed results
         mixed.sort((a, b) => b.personalizedScore - a.personalizedScore);
 
-        const result = mixed.slice(0, limit).map((v) => {
+        const result = mixed.slice(0, limit).map((v: any) => {
             const {
                 categoryId,
                 hotScore,
@@ -322,7 +325,7 @@ export async function getSubscriptionFeed(
             select: { channelId: true },
         });
 
-        const channelIds = subscriptions.map((s) => s.channelId);
+        const channelIds = subscriptions.map((s: any) => s.channelId);
 
         if (channelIds.length === 0) {
             return {
@@ -413,7 +416,7 @@ export async function getContinueWatching(
         return {
             success: true,
             data: {
-                videos: history.map((h) => h.videos),
+                videos: history.map((h: any) => h.videos),
                 watchProgress,
                 nextCursor: undefined, // No pagination for continue watching
             },
@@ -468,7 +471,7 @@ export async function getWatchHistory(
             },
         });
 
-        const videos = history.map((h) => ({
+        const videos = history.map((h: any) => ({
             ...h.videos,
             watchedAt: h.lastWatchedAt,
             progress:
@@ -683,7 +686,7 @@ export async function search(
                 },
             });
 
-            channels = channelResults.map((c) => ({
+            channels = channelResults.map((c: any) => ({
                 id: c.id,
                 name: c.name,
                 handle: c.handle,

@@ -19,7 +19,9 @@ export default async function ChannelStudioLayout({
     try {
         const result = await trpcServer.channel.getUserChannels.query();
         if (result.success && result.channels) {
-            isValidChannel = result.channels.some((c) => c.id === channelId);
+            isValidChannel = result.channels.some(
+                (c: any) => c.id === channelId,
+            );
         }
     } catch (error) {
         console.error("Failed to validate channel access", error);

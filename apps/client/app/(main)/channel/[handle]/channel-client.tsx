@@ -261,7 +261,7 @@ export function ChannelClient({
                             label: "Playlists",
                             icon: ListVideo,
                         },
-                    ].map((tab) => (
+                    ].map((tab: any) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}

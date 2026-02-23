@@ -29,7 +29,7 @@ export function RecommendationFeed({ videoId }: { videoId: string }) {
     if (isLoading) {
         return (
             <div className="flex flex-col gap-2">
-                {[1, 2, 3, 4, 5].map((i) => (
+                {[1, 2, 3, 4, 5].map((i: number) => (
                     <div key={i} className="flex gap-2">
                         <div className="w-[168px] h-[94px] bg-surface-2 rounded-xl shrink-0 animate-pulse" />
                         <div className="flex flex-col gap-2 w-full py-1">

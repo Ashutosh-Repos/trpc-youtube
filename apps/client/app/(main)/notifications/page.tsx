@@ -127,7 +127,7 @@ export default function NotificationsPage() {
 
             {/* Filter Tabs */}
             <div className="flex gap-2 mb-4 border-b pb-2">
-                {FILTER_TABS.map((tab) => (
+                {FILTER_TABS.map((tab: any) => (
                     <Button
                         key={tab.key}
                         variant={activeTab === tab.key ? "default" : "ghost"}
@@ -167,7 +167,7 @@ export default function NotificationsPage() {
             ) : (
                 <>
                     <div className="rounded-lg border overflow-hidden">
-                        {notifications.map((notification) => (
+                        {notifications.map((notification: any) => (
                             <NotificationItem
                                 key={notification.id}
                                 notification={

@@ -57,7 +57,7 @@ export function PlaylistSidebar({
                     <div className="w-8 h-8 rounded-full bg-secondary" />
                 </div>
                 <div className="space-y-4 mt-4">
-                    {[1, 2, 3, 4].map((i) => (
+                    {[1, 2, 3, 4].map((i: number) => (
                         <div key={i} className="h-16 bg-secondary rounded" />
                     ))}
                 </div>

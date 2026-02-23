@@ -258,7 +258,7 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
     const removeTag = (tagToRemove: string) => {
         form.setValue(
             "tags",
-            tags.filter((t) => t !== tagToRemove),
+            tags.filter((t: any) => t !== tagToRemove),
             { shouldDirty: true },
         );
     };

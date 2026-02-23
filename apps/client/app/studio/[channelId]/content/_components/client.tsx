@@ -196,7 +196,7 @@ const ContentClient = ({
         if (checked) {
             setSelectedIds((prev) => [...prev, id]);
         } else {
-            setSelectedIds((prev) => prev.filter((i) => i !== id));
+            setSelectedIds((prev) => prev.filter((i: string) => i !== id));
         }
     };
 
@@ -762,7 +762,7 @@ const ContentClient = ({
 
                                 {/* Table Rows */}
                                 <div className="divide-y divide-border/10">
-                                    {allItems.map((video) => (
+                                    {allItems.map((video: any) => (
                                         <VideoRow
                                             key={video.id}
                                             video={video}

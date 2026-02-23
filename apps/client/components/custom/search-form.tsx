@@ -58,7 +58,7 @@ export function SearchForm() {
 
             recognition.onresult = (event: SpeechRecognitionEvent) => {
                 const text = Array.from(event.results)
-                    .map((result) => result[0]?.transcript || "")
+                    .map((result: any) => result[0]?.transcript || "")
                     .join("");
                 setSpokenText(text); // live preview
                 if (event.results[0]?.isFinal) {
