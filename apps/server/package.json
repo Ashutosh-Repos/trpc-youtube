@@ -11,7 +11,7 @@
         "worker:dev": "tsx watch src/worker-entry.ts",
         "worker:transcode": "WORKER_TYPE=transcode tsx watch src/worker-entry.ts",
         "worker:engagement": "WORKER_TYPE=engagement tsx watch src/worker-entry.ts",
-        "build": "tsc",
+        "build": "prisma generate && tsc",
         "start": "node dist/src/index.js",
         "start:api": "node dist/src/index.js",
         "start:transcode": "WORKER_TYPE=transcode node dist/src/worker-entry.js",
