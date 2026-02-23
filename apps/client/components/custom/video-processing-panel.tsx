@@ -148,9 +148,9 @@ export function VideoProcessingPanel({
     return (
         <div className={cn("flex flex-col gap-5 text-sm", className)}>
             {/* ── Status label ── */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
                 {isReady ? (
-                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-500" />
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-tertiary shadow-[0_0_12px_oklch(var(--tertiary)/0.4)]" />
                 ) : isFailed ? (
                     <XCircle className="h-4 w-4 shrink-0 text-destructive" />
                 ) : (
@@ -158,9 +158,10 @@ export function VideoProcessingPanel({
                 )}
                 <span
                     className={cn(
-                        "font-medium",
-                        isReady && "text-emerald-500",
+                        "font-black text-sm tracking-tight uppercase",
+                        isReady && "text-tertiary",
                         isFailed && "text-destructive",
+                        !isReady && !isFailed && "text-foreground",
                     )}
                 >
                     {getStatusLabel(status)}
@@ -176,15 +177,14 @@ export function VideoProcessingPanel({
                 )}
             </div>
 
-            {/* ── Progress bar ── */}
             {!isReady && (
-                <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-secondary">
+                <div className="relative h-2 w-full overflow-hidden rounded-full bg-surface-2 border border-border/10">
                     {indeterminate ? (
                         <div
                             className="h-full w-1/3 rounded-full bg-primary animate-[slide_1.5s_ease-in-out_infinite]"
                             style={{
                                 backgroundImage:
-                                    "linear-gradient(90deg, transparent, hsl(var(--primary)), transparent)",
+                                    "linear-gradient(90deg, transparent, oklch(var(--primary)), transparent)",
                             }}
                         />
                     ) : (
@@ -199,9 +199,8 @@ export function VideoProcessingPanel({
                 </div>
             )}
 
-            {/* Progress percent label */}
             {!isReady && !isFailed && displayProgress > 0 && (
-                <p className="-mt-3 text-right text-xs text-muted-foreground">
+                <p className="-mt-3 text-right text-[11px] font-black uppercase tracking-widest text-muted-foreground/40">
                     {displayProgress}%
                 </p>
             )}
@@ -216,27 +215,28 @@ export function VideoProcessingPanel({
                         <li
                             key={step.id}
                             className={cn(
-                                "flex items-center gap-3 rounded-lg px-3 py-2 text-xs transition-colors",
+                                "flex items-center gap-4 rounded-2xl px-4 py-3 text-[11px] transition-all duration-300 font-sans group",
                                 state === "active" &&
-                                    "bg-primary/8 ring-1 ring-primary/20",
-                                state === "done" && "opacity-70",
+                                    "bg-surface-2 ring-1 ring-primary/20 shadow-sm",
+                                state === "done" &&
+                                    "opacity-80 bg-surface-1/40",
                                 state === "error" &&
                                     "bg-destructive/10 ring-1 ring-destructive/30",
-                                state === "pending" && "opacity-40",
+                                state === "pending" && "opacity-30",
                             )}
                         >
                             {/* ── Step icon circle ── */}
                             <div
                                 className={cn(
-                                    "flex h-6 w-6 shrink-0 items-center justify-center rounded-full",
+                                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl transition-all duration-500",
                                     state === "done" &&
-                                        "bg-emerald-500/15 text-emerald-500",
+                                        "bg-tertiary/15 text-tertiary shadow-[0_0_10px_oklch(var(--tertiary)/0.2)]",
                                     state === "active" &&
-                                        "bg-primary/15 text-primary",
+                                        "bg-primary/15 text-primary shadow-[0_0_10px_oklch(var(--primary)/0.2)]",
                                     state === "error" &&
                                         "bg-destructive/15 text-destructive",
                                     state === "pending" &&
-                                        "bg-secondary text-muted-foreground",
+                                        "bg-surface-2 text-muted-foreground/40",
                                 )}
                             >
                                 {state === "done" ? (
@@ -251,17 +251,20 @@ export function VideoProcessingPanel({
                             </div>
 
                             {/* ── Step text ── */}
-                            <div className="flex flex-col">
+                            <div className="flex flex-col gap-0.5">
                                 <span
                                     className={cn(
-                                        "font-medium leading-tight",
-                                        state === "active" && "text-foreground",
+                                        "font-black uppercase tracking-widest text-[10px] leading-tight",
+                                        state === "active"
+                                            ? "text-primary"
+                                            : "text-muted-foreground/60",
+                                        state === "done" && "text-tertiary/80",
                                     )}
                                 >
                                     {step.label}
                                 </span>
                                 {state === "active" && (
-                                    <span className="text-muted-foreground">
+                                    <span className="text-foreground font-bold tracking-tight text-sm">
                                         {step.sublabel}
                                     </span>
                                 )}

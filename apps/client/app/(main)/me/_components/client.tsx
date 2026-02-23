@@ -13,7 +13,7 @@ import {
     Github,
     Instagram,
     Linkedin,
-    Youtube,
+    Play,
     Loader2,
     Check,
     Plus,
@@ -60,7 +60,8 @@ const getPlatformIcon = (platform: string) => {
     if (p.includes("github")) return <Github className="w-4 h-4" />;
     if (p.includes("instagram")) return <Instagram className="w-4 h-4" />;
     if (p.includes("linkedin")) return <Linkedin className="w-4 h-4" />;
-    if (p.includes("youtube")) return <Youtube className="w-4 h-4" />;
+    if (p.includes("stream") || p.includes("play"))
+        return <Play className="w-4 h-4" />;
     return <LinkIcon className="w-4 h-4" />;
 };
 
@@ -254,14 +255,13 @@ const Client = ({ user }: MePageContentProps) => {
                     {/* Banner Section */}
                     <motion.div
                         layout
-                        className="w-full h-48 md:h-80 relative rounded-b-3xl overflow-hidden shadow-xl group"
+                        className="w-full h-48 md:h-80 relative rounded-b-[40px] overflow-hidden bg-surface-1 shadow-2xl group border-b border-white/5"
                     >
-                        {/* <div className="absolute inset-0 bg-linear-to-t from-background/90 via-background/20 to-transparent z-10 pointer-events-none" /> */}
                         <Image
                             src={resolvedBannerUrl}
                             alt="Banner"
                             fill
-                            className="object-cover"
+                            className="object-cover transition-transform duration-1000 group-hover:scale-105 opacity-90"
                             priority
                         />
                         <ImageUpload
@@ -269,23 +269,24 @@ const Client = ({ user }: MePageContentProps) => {
                             onChange={(url) =>
                                 handleImageUpdate("bannerUrl", url)
                             }
-                            className="absolute inset-0 z-20"
+                            className="absolute inset-0 z-20 backdrop-blur-sm bg-black/5"
                             variant="overlay"
                         />
+                        <div className="absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-background to-transparent pointer-events-none" />
                     </motion.div>
 
                     {/* Profile Header Content */}
-                    <div className="max-w-7xl mx-auto px-6 relative z-30 -mt-20">
-                        <div className="flex flex-col md:flex-row items-start gap-6">
+                    <div className="max-w-7xl mx-auto px-6 relative z-30 -mt-24">
+                        <div className="flex flex-col md:flex-row items-start gap-8">
                             {/* Avatar */}
                             <motion.div layout className="relative group">
-                                <div className="w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-background p-1 bg-background overflow-hidden shadow-2xl ring-1 ring-white/10 relative">
+                                <div className="w-32 h-32 md:w-52 md:h-52 rounded-full border-[6px] border-background p-1 bg-surface-1 overflow-hidden shadow-2xl ring-1 ring-white/10 relative">
                                     <Avatar className="w-full h-full">
                                         <AvatarImage
                                             src={getMediaUrl(userData.image)}
                                             className="object-cover"
                                         />
-                                        <AvatarFallback className="text-4xl bg-muted">
+                                        <AvatarFallback className="text-4xl bg-surface-2 font-black">
                                             {userData.name?.[0]}
                                         </AvatarFallback>
                                     </Avatar>
@@ -301,8 +302,8 @@ const Client = ({ user }: MePageContentProps) => {
                             </motion.div>
 
                             {/* Main Info Column */}
-                            <div className="flex-1 pt-4 md:pt-24 w-full bg-transparent space-y-6">
-                                <div className="flex flex-col gap-6 ">
+                            <div className="flex-1 pt-4 md:pt-28 w-full bg-transparent space-y-6">
+                                <div className="flex flex-col gap-6">
                                     {/* Name & Edit Toggle */}
                                     <div className="flex justify-between items-start gap-4">
                                         <div className="flex-1 max-w-2xl">
@@ -311,42 +312,42 @@ const Client = ({ user }: MePageContentProps) => {
                                                 isEditing={isEditing}
                                                 autoFocus
                                                 placeholder="Display Name"
-                                                className="text-4xl font-black tracking-tight"
+                                                className="text-5xl font-black tracking-tighter bg-linear-to-br from-foreground to-foreground/60 bg-clip-text text-transparent"
                                             />
 
-                                            <div className="flex flex-wrap items-center gap-4 text-sm mt-2">
+                                            <div className="flex flex-wrap items-center gap-4 text-[13px] mt-3 uppercase tracking-widest font-bold text-muted-foreground/60">
                                                 <div
-                                                    className="flex items-center gap-1.5"
+                                                    className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-default"
                                                     title="Location"
                                                 >
-                                                    <MapPin className="w-4 h-4 shrink-0" />
+                                                    <MapPin className="w-3.5 h-3.5 shrink-0" />
                                                     <EditableInput
                                                         name="location"
                                                         isEditing={isEditing}
                                                         placeholder="Add location"
                                                         fallback="Not set"
-                                                        className="font-medium"
+                                                        className="font-bold"
                                                     />
                                                 </div>
 
                                                 <div
-                                                    className="flex items-center gap-1.5"
+                                                    className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer"
                                                     title="Website"
                                                 >
-                                                    <Globe className="w-4 h-4 shrink-0" />
+                                                    <Globe className="w-3.5 h-3.5 shrink-0" />
                                                     <EditableInput
                                                         name="websiteUrl"
                                                         isEditing={isEditing}
                                                         placeholder="Add website"
                                                         fallback="No website"
-                                                        className="font-medium  hover:underline cursor-pointer"
+                                                        className="font-bold hover:underline"
                                                     />
                                                 </div>
                                             </div>
                                         </div>
 
                                         {/* Action Buttons */}
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-3">
                                             {isEditing ? (
                                                 <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4">
                                                     <Button
@@ -355,7 +356,7 @@ const Client = ({ user }: MePageContentProps) => {
                                                         size="sm"
                                                         onClick={handleCancel}
                                                         disabled={isPending}
-                                                        // className="text-white/60 hover:text-white"
+                                                        className="rounded-xl border border-border/40 hover:bg-surface-2"
                                                     >
                                                         <X className="w-4 h-4 mr-2" />
                                                         Cancel
@@ -368,7 +369,7 @@ const Client = ({ user }: MePageContentProps) => {
                                                             !form.formState
                                                                 .isDirty
                                                         }
-                                                        // className="bg-primary text-primary-foreground hover:bg-primary/90"
+                                                        className="rounded-xl bg-primary shadow-[0_0_20px_-5px_oklch(var(--primary)/0.5)]"
                                                     >
                                                         {isPending ? (
                                                             <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -381,12 +382,11 @@ const Client = ({ user }: MePageContentProps) => {
                                             ) : (
                                                 <Button
                                                     type="button"
-                                                    // variant="secondary"
                                                     size="sm"
                                                     onClick={() =>
                                                         setIsEditing(true)
                                                     }
-                                                    // className="bg-white/10 hover:bg-white/20 border border-white/10"
+                                                    className="rounded-xl bg-surface-2 border border-border/40 hover:bg-surface-3 transition-all font-bold tracking-tight shadow-sm"
                                                 >
                                                     <Pencil className="w-4 h-4 mr-2" />
                                                     Edit Profile
@@ -402,33 +402,34 @@ const Client = ({ user }: MePageContentProps) => {
                                             isEditing={isEditing}
                                             placeholder="Write something about yourself..."
                                             fallback="No bio yet."
-                                            className="leading-relaxed text-base"
+                                            className="leading-relaxed text-lg font-medium text-foreground/80"
                                         />
                                     </div>
 
-                                    <div className="w-full h-px bg-white/5 my-2" />
+                                    <div className="w-full h-px bg-border/20 my-4" />
 
                                     {/* Advanced Details Grid */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl">
                                         {/* Contact & Business Info */}
-                                        <div className="space-y-4">
-                                            <h3 className="text-sm font-medium uppercase tracking-wider">
-                                                Contact Info
+                                        <div className="space-y-5">
+                                            <h3 className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/60">
+                                                Contact & Inquiries
                                             </h3>
-                                            <div className="space-y-3">
-                                                <div className="flex items-center gap-3 text-sm">
-                                                    <Mail className="w-4 h-4 text-white/40 shrink-0" />
+                                            <div className="space-y-4">
+                                                <div className="flex items-center gap-4 text-sm bg-surface-1/40 p-3 rounded-2xl border border-border/10">
+                                                    <Mail className="w-4 h-4 text-primary shrink-0" />
                                                     <EditableInput
                                                         name="businessInfo.inquiryEmail"
                                                         isEditing={isEditing}
                                                         placeholder="Public Email"
                                                         fallback="No email set"
+                                                        className="font-bold"
                                                     />
                                                 </div>
-                                                <div className="flex items-center gap-3 text-sm">
+                                                <div className="flex items-center gap-4 text-sm bg-surface-1/40 p-3 rounded-2xl border border-border/10">
                                                     <div className="w-4 flex justify-center shrink-0">
-                                                        <span className="text-xs font-bold">
-                                                            P
+                                                        <span className="text-[10px] font-black text-secondary-brand uppercase tracking-tighter">
+                                                            Tel
                                                         </span>
                                                     </div>
                                                     <EditableInput
@@ -436,29 +437,29 @@ const Client = ({ user }: MePageContentProps) => {
                                                         isEditing={isEditing}
                                                         placeholder="Phone Number"
                                                         fallback="No phone set"
+                                                        className="font-bold"
                                                     />
                                                 </div>
-                                                <div className="flex items-center gap-3 text-sm ">
+                                                <div className="flex items-center gap-4 text-sm bg-surface-1/40 p-3 rounded-2xl border border-border/10">
                                                     <div className="w-4 flex justify-center shrink-0">
-                                                        <span className="text-xs font-bold">
-                                                            A
-                                                        </span>
+                                                        <MapPin className="w-4 h-4 text-tertiary" />
                                                     </div>
                                                     <EditableInput
                                                         name="contactInfo.address"
                                                         isEditing={isEditing}
                                                         placeholder="Address"
                                                         fallback="No address set"
+                                                        className="font-bold"
                                                     />
                                                 </div>
                                             </div>
                                         </div>
 
                                         {/* Social Links */}
-                                        <div className="space-y-4">
+                                        <div className="space-y-5">
                                             <div className="flex items-center justify-between">
-                                                <h3 className="text-sm font-medium uppercase tracking-wider">
-                                                    Social Links
+                                                <h3 className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/60">
+                                                    Social Ecosystem
                                                 </h3>
                                                 {isEditing && (
                                                     <Button
@@ -471,14 +472,14 @@ const Client = ({ user }: MePageContentProps) => {
                                                                 url: "",
                                                             })
                                                         }
-                                                        className="h-6 w-6 "
+                                                        className="h-7 w-7 bg-surface-2 border border-border/40 hover:bg-surface-3 rounded-lg"
                                                     >
                                                         <Plus className="w-4 h-4" />
                                                     </Button>
                                                 )}
                                             </div>
 
-                                            <div className="flex flex-wrap gap-2">
+                                            <div className="flex flex-wrap gap-3">
                                                 <AnimatePresence>
                                                     {socialFields.map(
                                                         (field, index) => (
@@ -487,37 +488,37 @@ const Client = ({ user }: MePageContentProps) => {
                                                                 layout
                                                                 initial={{
                                                                     opacity: 0,
-                                                                    scale: 0.8,
+                                                                    y: 10,
                                                                 }}
                                                                 animate={{
                                                                     opacity: 1,
-                                                                    scale: 1,
+                                                                    y: 0,
                                                                 }}
                                                                 exit={{
                                                                     opacity: 0,
-                                                                    scale: 0.8,
+                                                                    scale: 0.95,
                                                                 }}
                                                                 className={
                                                                     isEditing
-                                                                        ? "w-full flex gap-2 mb-2"
+                                                                        ? "w-full flex gap-3 mb-2"
                                                                         : ""
                                                                 }
                                                             >
                                                                 {isEditing ? (
-                                                                    <div className="flex gap-2 w-full">
+                                                                    <div className="flex gap-3 w-full bg-surface-2/40 p-3 rounded-2xl border border-border/40">
                                                                         <Input
                                                                             {...form.register(
                                                                                 `socialLinks.${index}.platform`,
                                                                             )}
-                                                                            placeholder="Platform (Twitter, etc)"
-                                                                            className="flex-1 bg-white/5 border-white/10 h-8 text-xs"
+                                                                            placeholder="Platform"
+                                                                            className="flex-1 bg-surface-3 border-border/20 h-10 text-xs font-bold rounded-xl"
                                                                         />
                                                                         <Input
                                                                             {...form.register(
                                                                                 `socialLinks.${index}.url`,
                                                                             )}
                                                                             placeholder="URL"
-                                                                            className="flex-2 bg-white/5 border-white/10 h-8 text-xs"
+                                                                            className="flex-2 bg-surface-3 border-border/20 h-10 text-xs font-bold rounded-xl"
                                                                         />
                                                                         <Button
                                                                             type="button"
@@ -528,7 +529,7 @@ const Client = ({ user }: MePageContentProps) => {
                                                                                     index,
                                                                                 )
                                                                             }
-                                                                            className="h-8 w-8 hover:text-red-400 group/del"
+                                                                            className="h-10 w-10 hover:text-destructive group/del hover:bg-destructive/10 rounded-xl"
                                                                         >
                                                                             <Trash2 className="w-4 h-4 group-hover/del:scale-110 transition-transform" />
                                                                         </Button>
@@ -542,9 +543,9 @@ const Client = ({ user }: MePageContentProps) => {
                                                                             "#"
                                                                         }
                                                                         target="_blank"
-                                                                        className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group/link"
+                                                                        className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-surface-2 border border-border/40 hover:bg-surface-3 hover:border-primary/40 transition-all group/link shadow-sm hover:shadow-md hover:-translate-y-0.5"
                                                                     >
-                                                                        <span className="transition-colors">
+                                                                        <span className="transition-colors text-primary drop-shadow-[0_0_8px_oklch(var(--primary)/0.3)] group-hover/link:scale-110">
                                                                             {getPlatformIcon(
                                                                                 form.getValues(
                                                                                     `socialLinks.${index}.platform`,
@@ -552,7 +553,7 @@ const Client = ({ user }: MePageContentProps) => {
                                                                                     "",
                                                                             )}
                                                                         </span>
-                                                                        <span className="text-xs font-medium">
+                                                                        <span className="text-[12px] font-black uppercase tracking-widest bg-linear-to-br from-foreground to-foreground/60 bg-clip-text text-transparent group-hover/link:from-primary group-hover/link:to-primary/60">
                                                                             {form.getValues(
                                                                                 `socialLinks.${index}.platform`,
                                                                             )}
@@ -567,9 +568,9 @@ const Client = ({ user }: MePageContentProps) => {
                                                 {!isEditing &&
                                                     socialFields.length ===
                                                         0 && (
-                                                        <p className="text-sm italic">
-                                                            No social links
-                                                            added.
+                                                        <p className="text-sm italic text-muted-foreground/60 w-full py-2">
+                                                            No verified social
+                                                            connections.
                                                         </p>
                                                     )}
                                             </div>

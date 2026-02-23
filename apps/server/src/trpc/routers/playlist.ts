@@ -622,4 +622,60 @@ export const playlistRouter = router({
                     })),
             };
         }),
+
+    getPublicChannelPlaylists: publicProcedure
+        .input(
+            z.object({
+                channelId: z.string(),
+                limit: z.number().min(1).max(50).default(20),
+                cursor: z.string().optional(),
+            }),
+        )
+        .query(async ({ input }) => {
+            const { channelId, limit, cursor } = input;
+
+            const playlists = await prisma.playlists.findMany({
+                where: {
+                    channelId,
+                    visibility: "PUBLIC",
+                    deletedAt: null,
+                },
+                take: limit + 1,
+                cursor: cursor ? { id: cursor } : undefined,
+                orderBy: { updatedAt: "desc" },
+                include: {
+                    _count: {
+                        select: { playlist_videos: true },
+                    },
+                    playlist_videos: {
+                        take: 1,
+                        orderBy: { position: "asc" },
+                        select: {
+                            videos: {
+                                select: { thumbnailUrl: true },
+                            },
+                        },
+                    },
+                },
+            });
+
+            let nextCursor: string | undefined = undefined;
+            if (playlists.length > limit) {
+                const nextItem = playlists.pop();
+                nextCursor = nextItem?.id;
+            }
+
+            return {
+                success: true,
+                playlists: playlists.map((p) => {
+                    const { playlist_videos, ...rest } = p;
+                    return {
+                        ...rest,
+                        firstVideoThumbnail:
+                            playlist_videos[0]?.videos?.thumbnailUrl ?? null,
+                    };
+                }),
+                nextCursor,
+            };
+        }),
 });

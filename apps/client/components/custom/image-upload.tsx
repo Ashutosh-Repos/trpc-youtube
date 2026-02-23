@@ -108,12 +108,12 @@ export const ImageUpload = ({
             {variant === "overlay" ? (
                 <div
                     onClick={triggerUpload}
-                    className="absolute inset-0 z-50 flex items-center justify-center bg-black/0 group-hover:bg-black/40 transition-all duration-200 cursor-pointer"
+                    className="absolute inset-0 z-50 flex items-center justify-center bg-background/0 group-hover:bg-background/60 transition-all duration-300 cursor-pointer backdrop-blur-0 group-hover:backdrop-blur-sm"
                 >
                     {isUploading ? (
-                        <Loader2 className="w-8 h-8 text-white animate-spin" />
+                        <Loader2 className="w-8 h-8 text-primary animate-spin" />
                     ) : (
-                        <div className="opacity-0 group-hover:opacity-100 transform scale-90 group-hover:scale-100 transition-all duration-200 bg-black/50 backdrop-blur-md p-3 rounded-full text-white">
+                        <div className="opacity-0 group-hover:opacity-100 transform scale-90 group-hover:scale-100 transition-all duration-500 bg-surface-3/80 backdrop-blur-xl p-4 rounded-3xl text-foreground border border-border/40 shadow-2xl">
                             <ImageIcon className="w-6 h-6" />
                         </div>
                     )}
@@ -126,12 +126,12 @@ export const ImageUpload = ({
                         fill
                         className="object-cover"
                     />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                    <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center gap-3 backdrop-blur-sm">
                         <button
                             type="button"
                             onClick={triggerUpload}
                             disabled={disabled || isUploading}
-                            className="bg-white/10 backdrop-blur-md p-2 rounded-full hover:bg-white/20 text-white transition-colors"
+                            className="bg-surface-3/80 backdrop-blur-xl p-3 rounded-2xl hover:bg-primary hover:text-primary-foreground border border-border/40 text-foreground transition-all shadow-xl active:scale-90"
                         >
                             <UploadCloud className="w-5 h-5" />
                         </button>
@@ -143,7 +143,7 @@ export const ImageUpload = ({
                                     onRemove();
                                 }}
                                 disabled={disabled || isUploading}
-                                className="bg-red-500/80 backdrop-blur-md p-2 rounded-full hover:bg-red-600 text-white transition-colors"
+                                className="bg-destructive/80 backdrop-blur-xl p-3 rounded-2xl hover:bg-destructive text-destructive-foreground transition-all shadow-xl active:scale-90"
                             >
                                 <X className="w-5 h-5" />
                             </button>
@@ -155,21 +155,28 @@ export const ImageUpload = ({
                     type="button"
                     onClick={triggerUpload}
                     disabled={disabled || isUploading}
-                    className="flex flex-col items-center justify-center w-full h-full text-muted-foreground bg-white/5 hover:bg-white/10 transition-colors border-2 border-dashed border-white/10 hover:border-white/20 rounded-xl"
+                    className="flex flex-col items-center justify-center w-full h-full text-muted-foreground/60 bg-surface-1/40 hover:bg-surface-1/80 transition-all duration-500 border-2 border-dashed border-border/20 hover:border-primary/40 rounded-[32px] font-sans group/btn shadow-inner"
                 >
                     {isUploading ? (
-                        <Loader2 className="w-8 h-8 animate-spin mb-2" />
+                        <div className="flex flex-col items-center animate-pulse">
+                            <Loader2 className="w-10 h-10 animate-spin mb-3 text-primary" />
+                            <span className="text-[11px] font-black uppercase tracking-widest">
+                                Uploading...
+                            </span>
+                        </div>
                     ) : (
-                        <div className="flex flex-col items-center">
+                        <div className="flex flex-col items-center transition-transform duration-500 group-hover/btn:scale-105">
                             {type === "avatar" ? (
-                                <ImageIcon className="w-8 h-8 mb-2 opacity-50" />
+                                <div className="p-4 rounded-full bg-primary/5 mb-3">
+                                    <ImageIcon className="w-10 h-10 text-primary/40 group-hover/btn:text-primary transition-colors" />
+                                </div>
                             ) : (
-                                <UploadCloud className="w-10 h-10 mb-2 opacity-50" />
+                                <div className="p-6 rounded-[24px] bg-primary/5 mb-4 border border-primary/5">
+                                    <UploadCloud className="w-12 h-12 text-primary/40 group-hover/btn:text-primary transition-colors" />
+                                </div>
                             )}
-                            <span className="text-xs font-medium">
-                                {isUploading
-                                    ? "Uploading..."
-                                    : "Click to upload"}
+                            <span className="text-[11px] font-black uppercase tracking-[0.2em]">
+                                {isUploading ? "Uploading..." : "Select File"}
                             </span>
                         </div>
                     )}

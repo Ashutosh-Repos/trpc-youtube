@@ -117,14 +117,14 @@ const RegisterPage = () => {
                 </CardItem>
                 <CardItem
                     translateZ="50"
-                    className="text-2xl font-bold text-zinc-600 dark:text-white w-full flex items-center justify-center"
+                    className="text-3xl font-black tracking-tighter uppercase text-foreground/90 w-full flex items-center justify-center"
                 >
                     Create Account
                 </CardItem>
                 <CardItem
                     as="p"
                     translateZ="20"
-                    className="text-zinc-500 text-xs mt-2 dark:text-zinc-300 w-full flex items-center justify-center"
+                    className="text-muted-foreground/40 text-[10px] font-black uppercase tracking-[0.2em] mt-2 w-full flex items-center justify-center"
                 >
                     Enter your details to create a new account
                 </CardItem>
@@ -139,7 +139,7 @@ const RegisterPage = () => {
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-neutral-300">
+                                        <FormLabel className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/60">
                                             Name
                                         </FormLabel>
                                         <FormControl>
@@ -159,7 +159,7 @@ const RegisterPage = () => {
                                 name="email"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-neutral-300">
+                                        <FormLabel className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/60">
                                             Email
                                         </FormLabel>
                                         <FormControl>
@@ -179,7 +179,7 @@ const RegisterPage = () => {
                                 name="password"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-neutral-300">
+                                        <FormLabel className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/60">
                                             Password
                                         </FormLabel>
                                         <FormControl>
@@ -200,7 +200,7 @@ const RegisterPage = () => {
                                 name="dob"
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col">
-                                        <FormLabel className="text-neutral-300 mb-1">
+                                        <FormLabel className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/60 mb-2">
                                             Date of birth
                                         </FormLabel>
                                         <Popover>
@@ -222,7 +222,7 @@ const RegisterPage = () => {
                                                 </FormControl>
                                             </PopoverTrigger>
                                             <PopoverContent
-                                                className="w-auto p-0 bg-neutral-900 border-neutral-800"
+                                                className="w-auto p-0 bg-surface-3 border-border/20 shadow-2xl"
                                                 align="start"
                                             >
                                                 <Calendar
@@ -267,13 +267,13 @@ const RegisterPage = () => {
                 </Form>
                 <CardItem
                     translateZ={100}
-                    className="text-sm text-zinc-500 dark:text-zinc-400 w-full"
+                    className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/40 w-full"
                 >
                     <div className="flex justify-center items-center mt-6">
                         Already have an account?{" "}
                         <Link
                             href="/login"
-                            className="font-bold text-zinc-700 dark:text-zinc-200 hover:underline"
+                            className="font-black text-foreground hover:text-primary ml-2 transition-colors"
                         >
                             Sign in
                         </Link>

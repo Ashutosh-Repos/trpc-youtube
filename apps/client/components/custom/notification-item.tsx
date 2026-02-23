@@ -20,9 +20,18 @@ const NOTIFICATION_TYPE_CONFIG: Record<
     string,
     { icon: typeof Bell; color: string }
 > = {
-    NEW_VIDEO: { icon: PlayCircle, color: "text-red-500" },
-    LIVE_STARTED: { icon: PlayCircle, color: "text-red-500" },
-    LIVE_SCHEDULED: { icon: Bell, color: "text-blue-500" },
+    NEW_VIDEO: {
+        icon: PlayCircle,
+        color: "text-primary shadow-[0_0_12px_oklch(var(--primary)/0.3)]",
+    },
+    LIVE_STARTED: {
+        icon: PlayCircle,
+        color: "text-primary shadow-[0_0_12px_oklch(var(--primary)/0.3)]",
+    },
+    LIVE_SCHEDULED: {
+        icon: Bell,
+        color: "text-secondary-brand shadow-[0_0_12px_oklch(var(--secondary-brand)/0.3)]",
+    },
     SYSTEM: { icon: Bell, color: "text-muted-foreground" },
 };
 
@@ -81,9 +90,9 @@ export function NotificationItem({
     return (
         <div
             className={cn(
-                "flex items-start gap-3 p-3 hover:bg-muted/50 text-left transition-colors border-b last:border-0 cursor-pointer group relative",
+                "flex items-start gap-4 p-4 hover:bg-surface-2/60 text-left transition-all duration-300 border-b border-border/10 last:border-0 cursor-pointer group relative font-sans",
                 !notification.isRead &&
-                    "bg-primary/5 border-l-2 border-l-primary",
+                    "bg-primary/5 border-l-[3px] border-l-primary",
             )}
             onClick={() => onClick?.(notification)}
         >
@@ -96,14 +105,14 @@ export function NotificationItem({
             ) : (
                 <div
                     className={cn(
-                        "h-8 w-8 mt-1 rounded-full flex items-center justify-center bg-muted shrink-0",
+                        "h-10 w-10 mt-1 rounded-2xl flex items-center justify-center bg-surface-2 border border-border/40 shrink-0 transition-transform group-hover:scale-105 shadow-sm",
                         typeConfig?.color,
                     )}
                 >
                     {typeConfig ? (
-                        <typeConfig.icon className="h-4 w-4" />
+                        <typeConfig.icon className="h-5 w-5" />
                     ) : (
-                        <Bell className="h-4 w-4" />
+                        <Bell className="h-5 w-5" />
                     )}
                 </div>
             )}
@@ -128,7 +137,7 @@ export function NotificationItem({
                     )}
                     {notification.message}
                 </span>
-                <span className="text-[10px] text-muted-foreground">
+                <span className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/30 group-hover:text-muted-foreground/60 transition-colors">
                     {formatDistanceToNow(new Date(notification.createdAt), {
                         addSuffix: true,
                     })}

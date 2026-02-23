@@ -526,6 +526,53 @@ export class FeedService {
     }
 
     /**
+     * Get Public Shorts for a Channel (paginated, newest first)
+     */
+    public static async getChannelShorts(
+        channelId: string,
+        cursor: FeedCursor = 0,
+    ): Promise<{
+        videos: HydratedVideo[];
+        nextCursor: FeedCursor | undefined;
+    }> {
+        try {
+            const limit = this.PAGE_SIZE;
+            const videos: any[] = await prisma.$queryRaw`
+                SELECT 
+                    v.id,
+                    v.title,
+                    v."thumbnailUrl",
+                    v."previewSprite",
+                    v."channelId",
+                    c.name as "channelName",
+                    c.handle as "channelHandle",
+                    c.image as "channelImage",
+                    c."subscriberCount" as "channelSubscriberCount",
+                    v."viewCount",
+                    v."createdAt",
+                    v.duration,
+                    v."isShort"
+                FROM videos v
+                INNER JOIN channels c ON v."channelId" = c.id
+                WHERE v."channelId" = ${channelId}
+                  AND v.visibility = 'PUBLIC'
+                  AND v."processingStatus" = 'READY'
+                  AND v."isShort" = true
+                  AND v."deletedAt" IS NULL
+                ORDER BY COALESCE(v."publishedAt", v."createdAt") DESC, v.id ASC
+                LIMIT ${limit} OFFSET ${cursor};
+            `;
+            return this.formatResponse(videos, cursor, limit);
+        } catch (error) {
+            console.error("[FeedService] getChannelShorts failed", error);
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Failed to fetch channel shorts",
+            });
+        }
+    }
+
+    /**
      * Get Up Next Recommendations
      * Weighted heavily towards the same category and channel.
      */

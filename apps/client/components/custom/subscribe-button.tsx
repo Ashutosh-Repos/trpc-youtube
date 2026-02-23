@@ -24,11 +24,13 @@ export function SubscribeButton({
                 disabled={disabled}
                 onClick={onClick}
                 className={cn(
-                    "rounded-full font-medium hover:bg-neutral-800",
+                    "rounded-full font-black tracking-tight bg-surface-2 hover:bg-surface-3 text-foreground/80 border border-border/40 px-6 transition-all duration-300 shadow-sm active:scale-95",
                     className,
                 )}
             >
-                {showIcon && <BellRing className="w-4 h-4 mr-2" />}
+                {showIcon && (
+                    <BellRing className="w-4 h-4 mr-2 text-primary drop-shadow-[0_0_8px_oklch(var(--primary)/0.4)]" />
+                )}
                 Subscribed
             </Button>
         );
@@ -40,7 +42,7 @@ export function SubscribeButton({
             disabled={disabled}
             onClick={onClick}
             className={cn(
-                "rounded-full font-medium bg-white text-black hover:bg-neutral-200 hover:text-black",
+                "rounded-full font-black tracking-tighter bg-foreground text-background hover:bg-foreground/90 px-8 transition-all duration-300 shadow-lg active:scale-95",
                 className,
             )}
         >

@@ -69,16 +69,16 @@ export default function PlaylistDetailsPage() {
     };
 
     return (
-        <div className="flex flex-col h-full bg-[#0f0f0f] text-white">
+        <div className="flex flex-col h-full bg-background text-foreground">
             {/* Header */}
-            <div className="p-6 border-b border-white/5 bg-[#0f0f0f]/50 backdrop-blur-md sticky top-0 z-10">
+            <div className="p-6 border-b border-border/10 bg-background/50 backdrop-blur-md sticky top-0 z-10">
                 <div className="max-w-6xl mx-auto flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => router.back()}
-                            className="rounded-full hover:bg-white/10"
+                            className="rounded-full hover:bg-surface-1"
                         >
                             <ArrowLeft className="w-5 h-5" />
                         </Button>
@@ -99,43 +99,43 @@ export default function PlaylistDetailsPage() {
                     {loading ? (
                         <div className="flex flex-col items-center justify-center h-[400px] gap-4">
                             <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-                            <p className="text-zinc-500 font-bold text-xs uppercase tracking-widest">
+                            <p className="text-muted-foreground/40 font-black text-[11px] uppercase tracking-widest mt-2">
                                 Loading playlist content...
                             </p>
                         </div>
                     ) : videos.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-[400px] gap-6 text-center">
-                            <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center text-zinc-500">
-                                <ListVideo className="w-10 h-10" />
+                            <div className="w-24 h-24 rounded-3xl bg-surface-2 flex items-center justify-center rotate-3 hover:rotate-0 transition-transform duration-500 shadow-xl border border-border/10 mb-2">
+                                <ListVideo className="w-10 h-10 text-muted-foreground/20" />
                             </div>
                             <div className="space-y-2">
-                                <h2 className="text-xl font-bold">
+                                <h2 className="text-2xl font-black tracking-tighter uppercase text-foreground/90">
                                     This playlist is empty
                                 </h2>
-                                <p className="text-zinc-500 text-sm max-w-xs mx-auto">
-                                    Add videos from your content library to
-                                    start organizing your playlist.
+                                <p className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/40 max-w-xs mx-auto px-4">
+                                    Add videos from your library to start
+                                    organizing your playlist.
                                 </p>
                             </div>
                             <Button
                                 onClick={() =>
                                     router.push(`/studio/${channelId}/content`)
                                 }
-                                className="bg-primary text-black font-bold hover:bg-primary/90"
+                                className="bg-primary text-black font-black uppercase text-[11px] tracking-widest h-12 px-10 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-95"
                             >
-                                Go to Content library
+                                Go to library
                             </Button>
                         </div>
                     ) : (
-                        <div className="bg-[#16161a] rounded-xl border border-white/5 overflow-hidden shadow-2xl">
-                            <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-white/5 bg-white/5 items-center">
-                                <div className="col-span-1 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">
+                        <div className="bg-surface-1 rounded-3xl border border-border/10 overflow-hidden shadow-2xl">
+                            <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-border/10 bg-surface-2/30 items-center">
+                                <div className="col-span-1 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 px-2">
                                     #
                                 </div>
-                                <div className="col-span-8 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">
-                                    Video
+                                <div className="col-span-8 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">
+                                    Video details
                                 </div>
-                                <div className="col-span-3 text-right text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">
+                                <div className="col-span-3 text-right text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 pr-8">
                                     Actions
                                 </div>
                             </div>

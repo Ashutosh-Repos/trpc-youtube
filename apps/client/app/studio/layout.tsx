@@ -1,8 +1,8 @@
 import { ModeToggle } from "@/components/theme-toogle";
-import { BellIcon } from "@/components/ui/bell";
 import { TopBar } from "@/components/custom/TopBar";
 import { StudioProvider } from "./_components/StudioProvider";
 import { SwitchChannelButton } from "./_components/SwitchChannelButton";
+import { NotificationBell } from "@/components/custom/notification-bell";
 
 const StudioLayout = ({ children }: { children: React.ReactNode }) => {
     return (
@@ -12,11 +12,10 @@ const StudioLayout = ({ children }: { children: React.ReactNode }) => {
                     <div className="flex items-center gap-4">
                         <SwitchChannelButton />
                     </div>
-                    <ModeToggle />
-                    <BellIcon
-                        size={20}
-                        className="border p-2 rounded-lg cursor-pointer"
-                    />
+                    <div className="flex items-center gap-2">
+                        <NotificationBell />
+                        <ModeToggle />
+                    </div>
                 </TopBar>
                 <div className="w-full h-full flex flex-col-reverse sm:flex-row items-center justify-center overflow-hidden">
                     {children}

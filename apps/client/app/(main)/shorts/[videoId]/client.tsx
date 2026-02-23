@@ -96,8 +96,8 @@ export function ShortsClient({ video, isActive = true }: ShortsClientProps) {
     const posterUrl = getMediaUrl(video.thumbnailUrl || "") || "";
 
     return (
-        <div className="flex h-[calc(100vh-64px)] w-full items-center justify-center bg-[#0f0f0f] sm:bg-transparent overflow-hidden sm:py-6 gap-6 transition-all duration-300">
-            <div className="relative flex h-full max-h-[850px] w-full max-w-[450px] sm:h-[90%] sm:rounded-2xl bg-black shadow-2xl overflow-hidden group">
+        <div className="flex h-[calc(100vh-64px)] w-full items-center justify-center bg-background sm:bg-transparent overflow-hidden sm:py-6 gap-6 transition-all duration-300">
+            <div className="relative flex h-full max-h-[850px] w-full max-w-[450px] sm:h-[90%] sm:rounded-3xl bg-surface-1 shadow-2xl overflow-hidden group border border-border/10">
                 {/* Video Player */}
                 <HlsVideo
                     ref={videoRef}
@@ -118,7 +118,7 @@ export function ShortsClient({ video, isActive = true }: ShortsClientProps) {
                 />
 
                 {/* Overlays (Gradient to darken text background) */}
-                <div className="absolute inset-x-0 bottom-0 top-1/2 bg-linear-to-t from-black/95 via-black/40 to-transparent pointer-events-none" />
+                <div className="absolute inset-x-0 bottom-0 top-1/2 bg-linear-to-t from-background/95 via-background/40 to-transparent pointer-events-none" />
 
                 {/* Absolute Container spanning full height for UI */}
                 <div className="absolute inset-0 flex flex-col justify-end p-4 pb-6 sm:pb-4 pointer-events-none">
@@ -127,9 +127,9 @@ export function ShortsClient({ video, isActive = true }: ShortsClientProps) {
                         <div className="flex-1 flex flex-col gap-3">
                             <div className="flex items-center gap-3">
                                 <Link
-                                    href={`/@${video.channels.handle || video.channels.id}`}
+                                    href={`/channel/@${video.channels.handle || video.channels.id}`}
                                 >
-                                    <Avatar className="h-9 w-9 border border-white/20 hover:opacity-80 transition-opacity">
+                                    <Avatar className="h-10 w-10 border border-border/20 shadow-xl ring-2 ring-transparent hover:ring-primary/40 transition-all bg-surface-2">
                                         <AvatarImage
                                             src={
                                                 getMediaUrl(
@@ -144,8 +144,8 @@ export function ShortsClient({ video, isActive = true }: ShortsClientProps) {
                                     </Avatar>
                                 </Link>
                                 <Link
-                                    href={`/@${video.channels.handle || video.channels.id}`}
-                                    className="text-white font-medium text-[15px] drop-shadow-md hover:underline decoration-white/70"
+                                    href={`/channel/@${video.channels.handle || video.channels.id}`}
+                                    className="text-foreground font-black text-[15px] tracking-tight drop-shadow-md hover:text-primary transition-colors"
                                 >
                                     @
                                     {video.channels.handle ||
@@ -167,11 +167,11 @@ export function ShortsClient({ video, isActive = true }: ShortsClientProps) {
                                     />
                                 )}
                             </div>
-                            <h1 className="text-white text-[15px] leading-snug drop-shadow-md line-clamp-2">
+                            <h1 className="text-foreground text-[16px] font-black leading-tight tracking-tight drop-shadow-md line-clamp-2">
                                 {video.title}
                             </h1>
                             {video.description && (
-                                <p className="text-white/80 text-[13px] line-clamp-1 mb-2">
+                                <p className="text-foreground/70 text-[13px] font-medium line-clamp-1 mb-2 tracking-tight">
                                     {video.description}
                                 </p>
                             )}
@@ -180,57 +180,57 @@ export function ShortsClient({ video, isActive = true }: ShortsClientProps) {
                         {/* Right Action Bar */}
                         <div className="flex flex-col gap-5 items-center pb-2">
                             <div
-                                className="flex flex-col items-center gap-1 group/btn cursor-pointer"
+                                className="flex flex-col items-center gap-1.5 group/btn cursor-pointer"
                                 onClick={toggleLike}
                             >
-                                <button className="w-12 h-12 bg-black/40 hover:bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center transition-all group-hover/btn:scale-105 active:scale-95">
+                                <button className="w-12 h-12 bg-surface-1/60 hover:bg-surface-2/80 backdrop-blur-xl border border-border/20 rounded-full flex items-center justify-center shadow-2xl transition-all group-hover/btn:scale-110 active:scale-90 group-hover/btn:shadow-primary/20">
                                     <ThumbsUp
-                                        className={`w-6 h-6 ${isLiked ? "fill-white text-white" : "text-white"}`}
+                                        className={`w-5 h-5 ${isLiked ? "fill-primary text-primary" : "text-foreground"}`}
                                     />
                                 </button>
-                                <span className="text-white text-sm font-medium drop-shadow-md">
+                                <span className="text-foreground text-[11px] font-black uppercase tracking-widest drop-shadow-sm opacity-80">
                                     {formatViewCount(likeCount)}
                                 </span>
                             </div>
 
                             <div
-                                className="flex flex-col items-center gap-1 group/btn cursor-pointer"
+                                className="flex flex-col items-center gap-1.5 group/btn cursor-pointer"
                                 onClick={toggleDislike}
                             >
-                                <button className="w-12 h-12 bg-black/40 hover:bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center transition-all group-hover/btn:scale-105 active:scale-95">
+                                <button className="w-12 h-12 bg-surface-1/60 hover:bg-surface-2/80 backdrop-blur-xl border border-border/20 rounded-full flex items-center justify-center shadow-2xl transition-all group-hover/btn:scale-110 active:scale-90 group-hover/btn:shadow-secondary-brand/20">
                                     <ThumbsDown
-                                        className={`w-6 h-6 ${isDisliked ? "fill-white text-white" : "text-white"}`}
+                                        className={`w-5 h-5 ${isDisliked ? "fill-secondary-brand text-secondary-brand" : "text-foreground"}`}
                                     />
                                 </button>
-                                <span className="text-white text-sm font-medium drop-shadow-md">
+                                <span className="text-foreground text-[11px] font-black uppercase tracking-widest drop-shadow-sm opacity-80">
                                     Dislike
                                 </span>
                             </div>
 
                             <div
-                                className="flex flex-col items-center gap-1 group/btn cursor-pointer"
+                                className="flex flex-col items-center gap-1.5 group/btn cursor-pointer"
                                 onClick={() => setIsCommentsOpen(true)}
                             >
-                                <button className="w-12 h-12 bg-black/40 hover:bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center transition-all group-hover/btn:scale-105 active:scale-95">
-                                    <MessageSquare className="w-6 h-6 text-white fill-white" />
+                                <button className="w-12 h-12 bg-surface-1/60 hover:bg-surface-2/80 backdrop-blur-xl border border-border/20 rounded-full flex items-center justify-center shadow-2xl transition-all group-hover/btn:scale-110 active:scale-90">
+                                    <MessageSquare className="w-5 h-5 text-foreground fill-foreground/10" />
                                 </button>
-                                <span className="text-white text-sm font-medium drop-shadow-md">
+                                <span className="text-foreground text-[11px] font-black uppercase tracking-widest drop-shadow-sm opacity-80">
                                     {formatViewCount(video.commentCount)}
                                 </span>
                             </div>
 
-                            <div className="flex flex-col items-center gap-1 group/btn cursor-pointer">
-                                <button className="w-12 h-12 bg-black/40 hover:bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center transition-all group-hover/btn:scale-105 active:scale-95">
-                                    <Share2 className="w-6 h-6 text-white fill-white" />
+                            <div className="flex flex-col items-center gap-1.5 group/btn cursor-pointer">
+                                <button className="w-12 h-12 bg-surface-1/60 hover:bg-surface-2/80 backdrop-blur-xl border border-border/20 rounded-full flex items-center justify-center shadow-2xl transition-all group-hover/btn:scale-110 active:scale-90">
+                                    <Share2 className="w-5 h-5 text-foreground" />
                                 </button>
-                                <span className="text-white text-sm font-medium drop-shadow-md">
+                                <span className="text-foreground text-[11px] font-black uppercase tracking-widest drop-shadow-sm opacity-80">
                                     Share
                                 </span>
                             </div>
 
                             <div className="flex flex-col items-center group/btn cursor-pointer mt-2">
-                                <button className="w-10 h-10 bg-black/40 hover:bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors">
-                                    <MoreVertical className="w-5 h-5 text-white" />
+                                <button className="w-10 h-10 bg-surface-1/40 hover:bg-surface-2/60 backdrop-blur-md rounded-full flex items-center justify-center border border-border/10 transition-all active:scale-90">
+                                    <MoreVertical className="w-5 h-5 text-muted-foreground/60 hover:text-foreground" />
                                 </button>
                             </div>
                         </div>
@@ -240,19 +240,19 @@ export function ShortsClient({ video, isActive = true }: ShortsClientProps) {
 
             {/* Desktop Side Panel Comments */}
             {isDesktop && isCommentsOpen && (
-                <div className="hidden lg:flex flex-col h-full max-h-[850px] w-full max-w-[450px] sm:h-[90%] bg-[#0f0f0f] sm:bg-[#212121] sm:rounded-2xl shadow-2xl shrink-0 border border-neutral-800 animate-in slide-in-from-right-8 duration-300 fade-in">
-                    <div className="flex items-center justify-between p-4 border-b border-neutral-800">
-                        <h2 className="text-lg font-bold">
+                <div className="hidden lg:flex flex-col h-full max-h-[850px] w-full max-w-[450px] sm:h-[90%] bg-surface-1 sm:rounded-3xl shadow-2xl shrink-0 border border-border/20 animate-in slide-in-from-right-8 duration-500 fade-in">
+                    <div className="flex items-center justify-between p-5 border-b border-border/10">
+                        <h2 className="text-lg font-black tracking-tight uppercase">
                             Comments{" "}
-                            <span className="text-muted-foreground font-normal ml-1">
+                            <span className="text-muted-foreground/40 font-black text-sm ml-1 tracking-widest">
                                 {video.commentCount}
                             </span>
                         </h2>
                         <button
                             onClick={() => setIsCommentsOpen(false)}
-                            className="p-2 hover:bg-neutral-800 rounded-full transition-colors"
+                            className="p-2 hover:bg-surface-2 rounded-full transition-all active:scale-90"
                         >
-                            <X className="w-5 h-5 text-neutral-400" />
+                            <X className="w-5 h-5 text-muted-foreground/60" />
                         </button>
                     </div>
                     <div
@@ -280,12 +280,12 @@ export function ShortsClient({ video, isActive = true }: ShortsClientProps) {
                 <Sheet open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
                     <SheetContent
                         side="bottom"
-                        className="h-[75vh] sm:max-w-[450px] sm:mx-auto sm:right-auto sm:left-1/2 sm:-translate-x-1/2 rounded-t-2xl px-0 pb-0 flex flex-col pt-4 border-none bg-[#0f0f0f] sm:bg-[#212121]"
+                        className="h-[75vh] sm:max-w-[450px] sm:mx-auto sm:right-auto sm:left-1/2 sm:-translate-x-1/2 rounded-t-3xl px-0 pb-0 flex flex-col pt-4 border-none bg-background sm:bg-surface-1 shadow-2xl"
                     >
-                        <SheetHeader className="px-4 pb-2 text-left">
-                            <SheetTitle className="text-lg">
+                        <SheetHeader className="px-6 pb-4 text-left border-b border-border/10">
+                            <SheetTitle className="text-lg font-black tracking-tight uppercase">
                                 Comments{" "}
-                                <span className="text-muted-foreground font-normal ml-1">
+                                <span className="text-muted-foreground/40 font-black text-sm ml-1 tracking-widest">
                                     {video.commentCount}
                                 </span>
                             </SheetTitle>

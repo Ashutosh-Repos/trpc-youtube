@@ -209,10 +209,10 @@ export const VideoRow = ({
     return (
         <div
             className={cn(
-                "grid grid-cols-12 gap-4 px-6 py-4 transition-colors group relative",
+                "grid grid-cols-12 gap-4 px-8 py-5 transition-all group relative",
                 isSelected
                     ? "bg-primary/5 hover:bg-primary/10"
-                    : "hover:bg-white/5",
+                    : "hover:bg-surface-1",
             )}
         >
             <div className="col-span-5 flex gap-4 min-w-0">
@@ -220,11 +220,11 @@ export const VideoRow = ({
                     <Checkbox
                         checked={isSelected}
                         onCheckedChange={(checked) => onSelect(!!checked)}
-                        className="border-white/20 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                        className="border-border/20 data-[state=checked]:bg-primary data-[state=checked]:border-primary rounded-md h-5 w-5"
                     />
                 </div>
 
-                <div className="relative w-32 aspect-video rounded-md overflow-hidden bg-white/5 shrink-0 border border-white/5 shadow-inner group/thumb">
+                <div className="relative w-36 aspect-video rounded-xl overflow-hidden bg-surface-1 shrink-0 border border-border/10 shadow-lg group/thumb">
                     <VideoHoverPreview
                         thumbnailUrl={getMediaUrl(video.thumbnailUrl)}
                         spriteUrl={getMediaUrl(video.previewSprite)}
@@ -235,8 +235,9 @@ export const VideoRow = ({
                     {/* Content Type Badge */}
                     <div className="absolute top-1.5 left-1.5 flex gap-1 z-10">
                         {video.isShort && (
-                            <Badge className="bg-[#ff0000] text-white hover:bg-[#ff0000] border-none text-[8px] h-4 px-1 font-black uppercase tracking-tighter shadow-lg ring-1 ring-white/20">
-                                <Zap className="w-2 h-2 mr-0.5" /> Short
+                            <Badge className="bg-destructive text-white hover:bg-destructive border-none text-[8px] h-4 px-1.5 font-black uppercase tracking-widest shadow-lg ring-1 ring-white/10">
+                                <Zap className="w-2.5 h-2.5 mr-0.5 fill-current" />{" "}
+                                Short
                             </Badge>
                         )}
                     </div>
@@ -246,7 +247,7 @@ export const VideoRow = ({
                         <div className="absolute inset-0 bg-red-500/20 backdrop-blur-[2px] flex items-center justify-center z-10">
                             <Badge
                                 variant="destructive"
-                                className="scale-75 shadow-lg"
+                                className="scale-75 shadow-lg px-2 rounded-lg font-black uppercase tracking-widest text-[9px]"
                             >
                                 Failed
                             </Badge>
@@ -345,9 +346,9 @@ export const VideoRow = ({
                                                 </span>
                                                 {typeof video.processingProgress ===
                                                     "number" && (
-                                                    <div className="w-[80%] h-1 bg-white/10 rounded-full overflow-hidden mt-1 shrink-0">
+                                                    <div className="w-[80%] h-1 bg-primary/10 rounded-full overflow-hidden mt-1 shrink-0">
                                                         <div
-                                                            className="h-full bg-primary transition-all duration-300"
+                                                            className="h-full bg-primary transition-all duration-300 shadow-[0_0_8px_oklch(var(--primary))]"
                                                             style={{
                                                                 width: `${video.processingProgress}%`,
                                                             }}
@@ -363,10 +364,10 @@ export const VideoRow = ({
                 </div>
 
                 <div className="flex flex-col justify-center min-w-0 pr-4">
-                    <p className="font-semibold text-sm truncate group-hover:text-primary transition-colors cursor-pointer tracking-tight">
+                    <p className="font-black text-[15px] truncate group-hover:text-primary transition-colors cursor-pointer tracking-tight text-foreground/90">
                         {video.title}
                     </p>
-                    <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5 font-medium italic opacity-70">
+                    <p className="text-[11px] text-muted-foreground/40 line-clamp-1 mt-1 font-black uppercase tracking-widest">
                         {video.description || "No description provided"}
                     </p>
 
@@ -378,7 +379,7 @@ export const VideoRow = ({
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8 rounded-full hover:bg-white/10 hover:text-primary"
+                                className="h-8 w-8 rounded-full hover:bg-primary/10 hover:text-primary transition-all"
                                 title="Details"
                             >
                                 <Pencil className="w-4 h-4" />
@@ -387,7 +388,7 @@ export const VideoRow = ({
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 rounded-full hover:bg-white/10 hover:text-primary"
+                            className="h-8 w-8 rounded-full hover:bg-surface-2 hover:text-primary group/action transition-all"
                             title="Analytics"
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -396,12 +397,12 @@ export const VideoRow = ({
                                 );
                             }}
                         >
-                            <BarChart2 className="w-4 h-4" />
+                            <BarChart2 className="w-4 h-4 transition-transform group-hover/action:scale-110" />
                         </Button>
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 rounded-full hover:bg-white/10 hover:text-primary"
+                            className="h-8 w-8 rounded-full hover:bg-surface-2 hover:text-primary group/action transition-all"
                             title="Comments"
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -410,19 +411,19 @@ export const VideoRow = ({
                                 );
                             }}
                         >
-                            <MessageSquare className="w-4 h-4" />
+                            <MessageSquare className="w-4 h-4 transition-transform group-hover/action:scale-110" />
                         </Button>
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 rounded-full hover:bg-white/10 hover:text-primary"
+                            className="h-8 w-8 rounded-full hover:bg-surface-2 hover:text-primary group/action transition-all"
                             title="Watch"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 window.open(`/watch/${video.id}`, "_blank");
                             }}
                         >
-                            <Play className="w-4 h-4 fill-primary" />
+                            <Play className="w-4 h-4 fill-primary text-primary transition-transform group-hover/action:scale-110" />
                         </Button>
                     </div>
                 </div>
@@ -433,7 +434,7 @@ export const VideoRow = ({
                     <DropdownMenuTrigger asChild>
                         <Button
                             variant="ghost"
-                            className="h-auto p-2 gap-2 hover:bg-white/5 group/trigger"
+                            className="h-auto px-3 py-2 gap-2.5 rounded-xl hover:bg-surface-2 group/trigger transition-all border border-transparent hover:border-border/10"
                         >
                             <div className="flex items-center gap-2">
                                 {video.visibility === "PUBLIC" && (
@@ -463,7 +464,7 @@ export const VideoRow = ({
                                     </>
                                 )}
                                 {video.visibility !== "SCHEDULED" && (
-                                    <span className="text-xs font-semibold capitalize tracking-tight">
+                                    <span className="text-[11px] font-black uppercase tracking-widest text-foreground/80">
                                         {video.visibility.toLowerCase()}
                                     </span>
                                 )}
@@ -473,34 +474,35 @@ export const VideoRow = ({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         align="start"
-                        className="w-40 bg-[#1f1f23] border-white/10 shadow-2xl"
+                        className="w-40 bg-surface-3 border-border/10 text-foreground rounded-xl shadow-2xl p-1.5"
                     >
                         <DropdownMenuItem
-                            className="gap-2 focus:bg-white/10"
+                            className="gap-2 focus:bg-primary/10 focus:text-primary rounded-lg transition-colors cursor-pointer"
                             onClick={() => handleVisibilityChange("PUBLIC")}
                         >
-                            <Globe className="w-4 h-4 text-green-500" /> Public
+                            <Globe className="w-4 h-4 text-emerald-500" />{" "}
+                            Public
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            className="gap-2 focus:bg-white/10"
+                            className="gap-2 focus:bg-primary/10 focus:text-primary rounded-lg transition-colors cursor-pointer"
                             onClick={() => handleVisibilityChange("UNLISTED")}
                         >
-                            <EyeOff className="w-4 h-4 text-yellow-500" />{" "}
+                            <EyeOff className="w-4 h-4 text-amber-500" />{" "}
                             Unlisted
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            className="gap-2 focus:bg-white/10"
+                            className="gap-2 focus:bg-primary/10 focus:text-primary rounded-lg transition-colors cursor-pointer"
                             onClick={() => handleVisibilityChange("PRIVATE")}
                         >
-                            <Lock className="w-4 h-4 text-red-500" /> Private
+                            <Lock className="w-4 h-4 text-destructive" />{" "}
+                            Private
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator className="bg-white/10" />
+                        <DropdownMenuSeparator className="bg-border/10" />
                         <DropdownMenuItem
-                            className="gap-2 focus:bg-white/10"
+                            className="gap-2 focus:bg-primary/10 focus:text-primary rounded-lg transition-colors cursor-pointer"
                             onClick={() => setIsScheduleOpen(true)}
                         >
-                            <Clock className="w-4 h-4 text-blue-500" />{" "}
-                            Scheduled
+                            <Clock className="w-4 h-4 text-primary" /> Scheduled
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -531,7 +533,7 @@ export const VideoRow = ({
                     <div className="flex items-center gap-1 opacity-60">
                         <Badge
                             variant="outline"
-                            className="text-[10px] py-0 px-1 border-white/10 bg-white/5 font-bold tracking-tighter"
+                            className="text-[10px] py-0 px-1.5 border-border/10 bg-surface-2 font-black tracking-widest text-muted-foreground/60 rounded-md"
                         >
                             {video.resolutions?.includes("2160p")
                                 ? "4K"
@@ -546,17 +548,17 @@ export const VideoRow = ({
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 rounded-full hover:bg-white/10"
+                            className="h-8 w-8 rounded-full hover:bg-primary/10 hover:text-primary transition-all"
                         >
                             <MoreVertical className="w-4 h-4" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         align="end"
-                        className="w-48 bg-[#1f1f23] border-white/10 shadow-2xl"
+                        className="w-48 bg-surface-3 border-border/10 text-foreground shadow-2xl rounded-xl p-1.5"
                     >
                         <DropdownMenuItem
-                            className="gap-2 focus:bg-white/10"
+                            className="gap-2 focus:bg-primary/10 focus:text-primary rounded-lg transition-colors cursor-pointer"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 handleCopyLink();
@@ -565,7 +567,7 @@ export const VideoRow = ({
                             <Share2 className="w-4 h-4" /> Get shareable link
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            className="gap-2 focus:bg-white/10"
+                            className="gap-2 focus:bg-primary/10 focus:text-primary rounded-lg transition-colors cursor-pointer"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 window.open(
@@ -577,7 +579,7 @@ export const VideoRow = ({
                             <Download className="w-4 h-4" /> Download
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            className="gap-2 focus:bg-white/10"
+                            className="gap-2 focus:bg-primary/10 focus:text-primary rounded-lg transition-colors cursor-pointer"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onSaveToPlaylist?.(video.id);
@@ -585,24 +587,28 @@ export const VideoRow = ({
                         >
                             <ListVideo className="w-4 h-4" /> Save to playlist
                         </DropdownMenuItem>
+                        <DropdownMenuSeparator className="bg-border/10" />
                         <DropdownMenuItem
-                            className="gap-2 focus:bg-white/10 text-red-500 focus:text-red-400"
+                            className="gap-2 focus:bg-destructive/10 focus:text-destructive rounded-lg transition-colors cursor-pointer"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 handleDelete();
                             }}
                         >
-                            <Trash className="w-4 h-4" /> Delete
+                            <Trash className="w-4 h-4 text-destructive/60" />{" "}
+                            Delete
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
 
             <Dialog open={isScheduleOpen} onOpenChange={setIsScheduleOpen}>
-                <DialogContent className="sm:max-w-[425px] bg-neutral-900 border-neutral-800 text-white">
+                <DialogContent className="sm:max-w-[425px] bg-surface-3 border-border/10 text-foreground shadow-2xl rounded-3xl p-8">
                     <DialogHeader>
-                        <DialogTitle>Schedule Video</DialogTitle>
-                        <DialogDescription className="text-neutral-400">
+                        <DialogTitle className="text-2xl font-black tracking-tighter uppercase">
+                            Schedule Video
+                        </DialogTitle>
+                        <DialogDescription className="text-muted-foreground/40 text-[11px] font-black uppercase tracking-widest">
                             Select a date and time to make this video public.
                         </DialogDescription>
                     </DialogHeader>
@@ -614,7 +620,7 @@ export const VideoRow = ({
                                 selected={scheduleDate}
                                 onSelect={setScheduleDate}
                                 disabled={(date) => date < new Date()}
-                                className="rounded-md border border-neutral-800 bg-neutral-950 mx-auto"
+                                className="rounded-2xl border border-border/10 bg-surface-1 mx-auto shadow-inner"
                             />
                         </div>
                         <div className="flex flex-col gap-2">
@@ -629,14 +635,18 @@ export const VideoRow = ({
                                         }))
                                     }
                                 >
-                                    <SelectTrigger className="w-[80px] bg-neutral-950 border-neutral-800">
+                                    <SelectTrigger className="w-[85px] bg-surface-1 border-border/10 h-10 rounded-xl text-xs font-black tracking-widest uppercase">
                                         <SelectValue placeholder="Hour" />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-neutral-900 border-neutral-800 text-white">
+                                    <SelectContent className="bg-surface-3 border-border/10 text-foreground rounded-2xl shadow-2xl p-1.5">
                                         {Array.from({ length: 12 }, (_, i) =>
                                             (i + 1).toString(),
                                         ).map((hour) => (
-                                            <SelectItem key={hour} value={hour}>
+                                            <SelectItem
+                                                key={hour}
+                                                value={hour}
+                                                className="focus:bg-primary/10 focus:text-primary rounded-lg transition-colors cursor-pointer"
+                                            >
                                                 {hour}
                                             </SelectItem>
                                         ))}
@@ -654,15 +664,16 @@ export const VideoRow = ({
                                         }))
                                     }
                                 >
-                                    <SelectTrigger className="w-[80px] bg-neutral-950 border-neutral-800">
+                                    <SelectTrigger className="w-[85px] bg-surface-1 border-border/10 h-10 rounded-xl text-xs font-black tracking-widest uppercase">
                                         <SelectValue placeholder="Min" />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-neutral-900 border-neutral-800 text-white">
+                                    <SelectContent className="bg-surface-3 border-border/10 text-foreground rounded-2xl shadow-2xl p-1.5">
                                         {["00", "15", "30", "45"].map(
                                             (minute) => (
                                                 <SelectItem
                                                     key={minute}
                                                     value={minute}
+                                                    className="focus:bg-primary/10 focus:text-primary rounded-lg transition-colors cursor-pointer"
                                                 >
                                                     {minute}
                                                 </SelectItem>
@@ -679,12 +690,22 @@ export const VideoRow = ({
                                         }))
                                     }
                                 >
-                                    <SelectTrigger className="w-[80px] bg-neutral-950 border-neutral-800">
+                                    <SelectTrigger className="w-[85px] bg-surface-1 border-border/10 h-10 rounded-xl text-xs font-black tracking-widest uppercase">
                                         <SelectValue placeholder="AM/PM" />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-neutral-900 border-neutral-800 text-white">
-                                        <SelectItem value="AM">AM</SelectItem>
-                                        <SelectItem value="PM">PM</SelectItem>
+                                    <SelectContent className="bg-surface-3 border-border/10 text-foreground rounded-2xl shadow-2xl p-1.5">
+                                        <SelectItem
+                                            value="AM"
+                                            className="focus:bg-primary/10 focus:text-primary rounded-lg transition-colors cursor-pointer"
+                                        >
+                                            AM
+                                        </SelectItem>
+                                        <SelectItem
+                                            value="PM"
+                                            className="focus:bg-primary/10 focus:text-primary rounded-lg transition-colors cursor-pointer"
+                                        >
+                                            PM
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -694,14 +715,14 @@ export const VideoRow = ({
                         <Button
                             variant="ghost"
                             onClick={() => setIsScheduleOpen(false)}
-                            className="hover:bg-neutral-800"
+                            className="hover:bg-surface-2 font-black uppercase tracking-widest text-[11px] rounded-xl h-12 px-6"
                         >
                             Cancel
                         </Button>
                         <Button
                             onClick={handleSchedule}
                             disabled={!scheduleDate || isScheduling}
-                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                            className="bg-primary hover:bg-primary/90 text-black font-black uppercase tracking-widest text-[11px] rounded-xl h-12 px-10 shadow-lg shadow-primary/20"
                         >
                             {isScheduling ? "Scheduling..." : "Schedule"}
                         </Button>

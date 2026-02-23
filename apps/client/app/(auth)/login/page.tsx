@@ -73,14 +73,14 @@ const LoginPage = () => {
                 </CardItem>
                 <CardItem
                     translateZ="50"
-                    className="text-2xl font-bold text-zinc-600 dark:text-white w-full flex items-center justify-center"
+                    className="text-3xl font-black tracking-tighter uppercase text-foreground/90 w-full flex items-center justify-center"
                 >
-                    Login to PlayTube
+                    Login to Youtube
                 </CardItem>
                 <CardItem
                     as="p"
                     translateZ="20"
-                    className="text-zinc-500 text-xs mt-2 dark:text-zinc-300 w-full flex items-center justify-center"
+                    className="text-muted-foreground/40 text-[10px] font-black uppercase tracking-[0.2em] mt-2 w-full flex items-center justify-center"
                 >
                     Welcome back! Please enter your details
                 </CardItem>
@@ -95,13 +95,14 @@ const LoginPage = () => {
                                 name="email"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-neutral-300">
+                                        <FormLabel className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/60">
                                             Email
                                         </FormLabel>
                                         <FormControl>
                                             <Input
                                                 placeholder="john.doe@example.com"
                                                 {...field}
+                                                className="bg-surface-2/40 border-border/10 focus-visible:ring-primary/20"
                                             />
                                         </FormControl>
                                         <FormMessage className="text-red-400 text-xs" />
@@ -116,12 +117,12 @@ const LoginPage = () => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <div className="flex items-center justify-between">
-                                            <FormLabel className="text-neutral-300">
+                                            <FormLabel className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/60">
                                                 Password
                                             </FormLabel>
                                             <Link
                                                 href="/forgot-password"
-                                                className="text-xs text-zinc-500 hover:text-white transition-colors"
+                                                className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/30 hover:text-primary transition-colors"
                                             >
                                                 Forgot?
                                             </Link>
@@ -131,6 +132,7 @@ const LoginPage = () => {
                                                 type="password"
                                                 placeholder="••••••••"
                                                 {...field}
+                                                className="bg-surface-2/40 border-border/10 focus-visible:ring-primary/20"
                                             />
                                         </FormControl>
                                         <FormMessage className="text-red-400 text-xs" />
@@ -161,11 +163,11 @@ const LoginPage = () => {
                 </Form>
                 <CardItem translateZ="40" className="w-full mt-4">
                     <div className="my-2 flex items-center gap-4">
-                        <Separator className="flex-1 bg-zinc-200/20" />
-                        <span className="text-xs text-muted-foreground">
+                        <Separator className="flex-1 bg-border/20" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30">
                             OR CONTINUE WITH
                         </span>
-                        <Separator className="flex-1 bg-zinc-200/20" />
+                        <Separator className="flex-1 bg-border/20" />
                     </div>
                 </CardItem>
                 <CardItem
@@ -177,13 +179,13 @@ const LoginPage = () => {
                 </CardItem>
                 <CardItem
                     translateZ={100}
-                    className="text-sm text-zinc-500 dark:text-zinc-400 w-full"
+                    className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/40 w-full"
                 >
                     <div className="flex justify-center items-center mt-6">
                         Don't have an account?{" "}
                         <Link
                             href="/register"
-                            className="font-bold text-zinc-700 dark:text-zinc-200 hover:underline ml-1"
+                            className="font-black text-foreground hover:text-primary ml-2 transition-colors"
                         >
                             Sign up
                         </Link>

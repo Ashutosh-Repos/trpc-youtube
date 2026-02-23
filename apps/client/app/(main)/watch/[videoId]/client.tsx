@@ -1,7 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
-import { getMediaUrl } from "@/lib/utils";
+import { cn, getMediaUrl } from "@/lib/utils";
 import { VideoPlayer } from "@/components/custom/video-player";
 import { useVideoEngagement } from "@/hooks/use-video-engagement";
 import type { AppRouter } from "@youtube/server/src/trpc/router";
@@ -68,11 +68,28 @@ export function WatchClient({
     const initialTime = video.history?.watchedSeconds || 0;
 
     return (
-        <div className="flex flex-col gap-6 p-4 max-w-[1700px] mx-auto w-full lg:flex-row">
+        <div className="relative flex flex-col gap-6 p-4 max-w-[1750px] mx-auto w-full lg:flex-row z-10">
+            {/* Cinematic Aura Depth */}
+            <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
+                {/* Primary Luminous Layer */}
+                <div
+                    className="absolute -top-[15%] -left-[10%] w-[130%] h-[130%] opacity-15 dark:opacity-30 blur-[150px] transition-all duration-1000 scale-110"
+                    style={{
+                        backgroundImage: `url(${getMediaUrl(video.thumbnailUrl || "")})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                    }}
+                />
+                {/* Secondary Brand Aura (Violet) */}
+                <div className="absolute top-[20%] right-[10%] w-[50%] h-[50%] bg-secondary-brand/20 blur-[120px] rounded-full animate-pulse-slow" />
+                {/* Tertiary Emerald Shimmer */}
+                <div className="absolute bottom-[20%] left-[20%] w-[40%] h-[40%] bg-tertiary/10 blur-[100px] rounded-full" />
+            </div>
+
             {/* Main Content */}
             <div className="flex-1 flex flex-col gap-4">
                 {/* Player Container */}
-                <div className="w-full">
+                <div className="w-full relative shadow-2xl rounded-2xl overflow-hidden bg-black aspect-video">
                     <VideoPlayer
                         videoId={video.id}
                         src={getMediaUrl(video.hlsPlaylistUrl || "")}
@@ -95,35 +112,35 @@ export function WatchClient({
                 </div>
 
                 {/* Video Title */}
-                <h1 className="text-xl font-bold line-clamp-2 md:text-2xl">
+                <h1 className="text-2xl font-black tracking-tight line-clamp-2 md:text-3xl mt-2 text-foreground/95">
                     {video.title}
                 </h1>
 
                 {/* Actions Bar */}
-                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between px-1">
                     {/* Channel Info */}
                     <div className="flex items-center gap-4">
                         <Link
-                            href={`/@${video.channels?.handle || video.channelId}`}
+                            href={`/channel/@${video.channels?.handle || video.channelId}`}
                         >
-                            <Avatar className="h-10 w-10 cursor-pointer">
+                            <Avatar className="h-12 w-12 cursor-pointer border border-border/40 ring-2 ring-transparent hover:ring-primary/40 transition-all shadow-xl bg-surface-2">
                                 <AvatarImage
                                     src={getMediaUrl(video.channelImage || "")}
                                 />
-                                <AvatarFallback>
+                                <AvatarFallback className="font-bold bg-secondary">
                                     {video.channelName?.[0]}
                                 </AvatarFallback>
                             </Avatar>
                         </Link>
                         <div className="flex flex-col">
                             <Link
-                                href={`/@${video.channels?.handle || video.channelId}`}
+                                href={`/channel/@${video.channels?.handle || video.channelId}`}
                             >
-                                <h3 className="text-sm font-semibold hover:text-white cursor-pointer">
+                                <h3 className="text-[16px] font-bold hover:text-primary cursor-pointer transition-colors tracking-tight">
                                     {video.channelName}
                                 </h3>
                             </Link>
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/30 mt-0.5">
                                 {subscriberCount} subscribers
                             </span>
                         </div>
@@ -138,11 +155,11 @@ export function WatchClient({
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
-                        <div className="flex items-center rounded-full bg-secondary">
+                    <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 font-bold uppercase tracking-widest text-[10px]">
+                        <div className="flex items-center rounded-2xl bg-surface-1/60 backdrop-blur-xl border border-border/40 shadow-sm">
                             <Button
                                 variant="ghost"
-                                className={`rounded-l-full px-4 border-r border-neutral-700 ${isLiked ? "text-white" : "text-neutral-400"} hover:bg-neutral-800`}
+                                className={`rounded-l-2xl px-5 h-10 border-r border-border/40 ${isLiked ? "text-primary bg-primary/15" : "text-muted-foreground hover:text-foreground"} hover:bg-surface-2 transition-all`}
                                 onClick={toggleLike}
                             >
                                 <ThumbsUp
@@ -152,7 +169,7 @@ export function WatchClient({
                             </Button>
                             <Button
                                 variant="ghost"
-                                className={`rounded-r-full px-4 ${isDisliked ? "text-white" : "text-neutral-400"} hover:bg-neutral-800`}
+                                className={`rounded-r-2xl px-5 h-10 ${isDisliked ? "text-secondary-brand bg-secondary-brand/15" : "text-muted-foreground hover:text-foreground"} hover:bg-surface-2 transition-all`}
                                 onClick={toggleDislike}
                             >
                                 <ThumbsDown
@@ -163,7 +180,7 @@ export function WatchClient({
 
                         <Button
                             variant="secondary"
-                            className="rounded-full px-4 hover:bg-neutral-800"
+                            className="rounded-2xl px-6 h-10 bg-surface-1/60 backdrop-blur-xl border border-border/40 hover:bg-surface-2 text-muted-foreground hover:text-foreground transition-all shadow-sm"
                         >
                             <Share2 className="h-4 w-4 mr-2" />
                             Share
@@ -171,38 +188,44 @@ export function WatchClient({
                         <Button
                             variant="secondary"
                             size="icon"
-                            className="rounded-full hover:bg-neutral-800"
+                            className="rounded-2xl h-10 w-10 bg-surface-1/60 backdrop-blur-xl border border-border/40 hover:bg-surface-2 text-muted-foreground hover:text-foreground transition-all shadow-sm"
                         >
                             <MoreHorizontal className="h-4 w-4" />
                         </Button>
                     </div>
                 </div>
 
-                <Separator className="my-2" />
-
                 {/* Description Box */}
-                <div className="bg-secondary/50 rounded-xl p-4 text-sm whitespace-pre-wrap hover:bg-secondary/70 transition-colors cursor-pointer">
-                    <div className="font-semibold mb-2">
-                        {video.viewCount} views •{" "}
-                        {format(new Date(video.createdAt), "PPP")}
+                <div className="bg-surface-1/60 backdrop-blur-xl border border-border/40 rounded-3xl p-5 text-[14px] whitespace-pre-wrap transition-all duration-300 cursor-default group/desc shadow-sm">
+                    <div className="font-bold mb-3 flex gap-2 items-center text-[10px] tracking-[0.2em] uppercase text-muted-foreground/30">
+                        <span className="text-foreground/80 font-black">
+                            {video.viewCount} views
+                        </span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-border/40" />
+                        <span className="text-foreground/80 font-black">
+                            {format(new Date(video.createdAt), "PPP")}
+                        </span>
                     </div>
                     <p
-                        className={
+                        className={cn(
+                            "leading-relaxed font-medium transition-colors",
                             !video.description
                                 ? "text-muted-foreground italic"
-                                : ""
-                        }
+                                : "text-foreground/80 group-hover/desc:text-foreground",
+                        )}
                     >
                         {video.description || "No description provided."}
                     </p>
                 </div>
 
                 {/* Comment Section */}
-                <CommentSection videoId={video.id} />
+                <div className="mt-4">
+                    <CommentSection videoId={video.id} />
+                </div>
             </div>
 
             {/* Sidebar (Recommendations & Playlist) */}
-            <div className="lg:w-[400px] shrink-0">
+            <div className="lg:w-[420px] shrink-0 flex flex-col gap-4">
                 {playlistId && (
                     <PlaylistSidebar
                         playlistId={playlistId}
@@ -211,7 +234,11 @@ export function WatchClient({
                     />
                 )}
 
-                <div className="font-semibold mb-4">Up Next</div>
+                <div className="flex items-center justify-between px-1">
+                    <h2 className="font-black text-lg tracking-tight">
+                        Up Next
+                    </h2>
+                </div>
                 <RecommendationFeed videoId={video.id} />
             </div>
         </div>

@@ -307,7 +307,7 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                     <div className="flex flex-col md:flex-row gap-8 items-start">
                         {/* Avatar */}
                         <div className="relative group shrink-0">
-                            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-background bg-background shadow-xl overflow-hidden relative ring-1 ring-white/10">
+                            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-background bg-background shadow-xl overflow-hidden relative ring-1 ring-border/40">
                                 <Avatar className="w-full h-full">
                                     <AvatarImage
                                         src={
@@ -339,7 +339,7 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                                         name="name"
                                         isEditing={isEditing}
                                         placeholder="Channel Name"
-                                        className="text-4xl font-black tracking-tight"
+                                        className="text-5xl font-black tracking-tighter uppercase text-foreground/90"
                                         autoFocus
                                     />
                                     <div className="flex items-center gap-2 text-muted-foreground ml-2 px-2">
@@ -355,13 +355,13 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                                                                 <Input
                                                                     {...field}
                                                                     className={cn(
-                                                                        "h-8 text-sm font-medium bg-white/5 border-white/10 transition-all",
+                                                                        "h-10 text-sm font-medium bg-surface-2 border-border/10 rounded-xl transition-all focus-visible:ring-primary/20 focus-visible:border-primary/30",
                                                                         handleStatus ===
                                                                             "taken" &&
-                                                                            "border-red-500 focus-visible:ring-red-500",
+                                                                            "border-destructive focus-visible:ring-destructive/20",
                                                                         handleStatus ===
                                                                             "available" &&
-                                                                            "border-green-500 focus-visible:ring-green-500",
+                                                                            "border-emerald-500 focus-visible:ring-emerald-500/20",
                                                                     )}
                                                                 />
                                                                 {handleStatus ===
@@ -370,13 +370,13 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                                                                 )}
                                                                 {handleStatus ===
                                                                     "taken" && (
-                                                                    <span className="text-[10px] text-red-500 uppercase font-bold">
+                                                                    <span className="text-[10px] text-destructive uppercase font-black tracking-widest">
                                                                         Taken
                                                                     </span>
                                                                 )}
                                                                 {handleStatus ===
                                                                     "available" && (
-                                                                    <span className="text-[10px] text-green-500 uppercase font-bold">
+                                                                    <span className="text-[10px] text-emerald-500 uppercase font-black tracking-widest">
                                                                         Available
                                                                     </span>
                                                                 )}
@@ -388,14 +388,14 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                                             />
                                         ) : (
                                             <div className="flex items-center gap-3">
-                                                <span className="font-semibold">
-                                                    {form.getValues("handle")}
+                                                <span className="font-black text-sm uppercase tracking-widest text-foreground/80">
+                                                    @{form.getValues("handle")}
                                                 </span>
                                                 <a
-                                                    href={`/@${form.getValues("handle")}`}
+                                                    href={`/channel/@${form.getValues("handle")}`}
                                                     target="_blank"
                                                     rel="noreferrer"
-                                                    className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-primary hover:text-primary/80 transition-colors"
+                                                    className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-primary hover:text-primary/80 transition-colors"
                                                 >
                                                     View Channel{" "}
                                                     <ExternalLink className="w-3 h-3" />
@@ -415,6 +415,7 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                                                 size="sm"
                                                 onClick={handleCancel}
                                                 disabled={isPending}
+                                                className="hover:bg-surface-2 font-black uppercase text-[11px] tracking-widest rounded-xl transition-all"
                                             >
                                                 <X className="w-4 h-4 mr-2" />{" "}
                                                 Cancel
@@ -427,6 +428,7 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                                                     !form.formState.isDirty ||
                                                     handleStatus === "taken"
                                                 }
+                                                className="bg-primary hover:bg-primary/90 text-black font-black uppercase text-[11px] tracking-widest rounded-xl transition-all shadow-[0_0_20px_-5px_oklch(var(--primary)/0.4)]"
                                             >
                                                 {isPending ? (
                                                     <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -441,8 +443,9 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                                             type="button"
                                             size="sm"
                                             onClick={() => setIsEditing(true)}
+                                            className="bg-surface-2 hover:bg-surface-3 border border-border/10 text-foreground font-black uppercase text-[11px] tracking-widest rounded-xl transition-all h-10 px-6"
                                         >
-                                            <Pencil className="w-4 h-4 mr-2" />{" "}
+                                            <Pencil className="w-4 h-4 mr-2 text-primary" />{" "}
                                             Edit Channel
                                         </Button>
                                     )}
@@ -465,10 +468,11 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                         {/* Discovery & Tags */}
                         <div className="lg:col-span-2 space-y-8">
                             <div className="space-y-4">
-                                <h3 className="text-sm font-bold uppercase tracking-widest flex items-center gap-2">
-                                    <Hash className="w-4 h-4" /> SEO Tags
+                                <h3 className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2 text-foreground/40">
+                                    <Hash className="w-4 h-4 text-primary" />{" "}
+                                    SEO Tags
                                 </h3>
-                                <div className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-4">
+                                <div className="p-8 rounded-2xl bg-surface-1 border border-border/10 space-y-6 shadow-xl">
                                     {isEditing && (
                                         <div className="flex gap-2">
                                             <Input
@@ -482,12 +486,13 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                                                     (e.preventDefault(),
                                                     addTag())
                                                 }
-                                                className="bg-background border-white/10"
+                                                className="bg-surface-2 border-border/10 rounded-xl focus-visible:ring-primary/20"
                                             />
                                             <Button
                                                 type="button"
                                                 onClick={addTag}
                                                 variant="secondary"
+                                                className="rounded-xl font-black uppercase text-[11px] tracking-widest bg-primary/10 text-primary hover:bg-primary/20 px-6"
                                             >
                                                 Add
                                             </Button>
@@ -498,12 +503,12 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                                             <Badge
                                                 key={tag}
                                                 variant="secondary"
-                                                className="px-3 py-1 bg-white/10 hover:bg-white/20 transition-colors gap-2"
+                                                className="px-3 py-1.5 bg-primary/10 text-primary hover:bg-primary/20 border-transparent transition-all gap-2 rounded-lg font-bold text-[10px] uppercase tracking-wider"
                                             >
                                                 {tag}
                                                 {isEditing && (
                                                     <X
-                                                        className="w-3 h-3 cursor-pointer hover:text-red-400"
+                                                        className="w-3 h-3 cursor-pointer opacity-60 hover:opacity-100 hover:text-destructive"
                                                         onClick={() =>
                                                             removeTag(tag)
                                                         }
@@ -523,8 +528,9 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                             {/* Social Links */}
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="text-sm font-bold uppercase tracking-widest flex items-center gap-2">
-                                        <LinkIcon className="w-4 h-4" /> Links
+                                    <h3 className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2 text-foreground/40">
+                                        <LinkIcon className="w-4 h-4 text-primary" />{" "}
+                                        Links
                                     </h3>
                                     {isEditing && (
                                         <Button
@@ -555,12 +561,12 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                                                     opacity: 0,
                                                     scale: 0.95,
                                                 }}
-                                                className="p-4 rounded-xl bg-white/5 border border-white/10 group/link"
+                                                className="p-6 rounded-2xl bg-surface-1 border border-border/10 group/link shadow-xl"
                                             >
                                                 {isEditing ? (
                                                     <div className="space-y-3">
                                                         <div className="flex justify-between items-center">
-                                                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter">
+                                                            <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest">
                                                                 Link #
                                                                 {index + 1}
                                                             </span>
@@ -568,14 +574,14 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                                                                 type="button"
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="h-6 w-6 text-red-400/50 hover:text-red-400 hover:bg-red-400/10"
+                                                                className="h-8 w-8 text-destructive/40 hover:text-destructive hover:bg-destructive/10 rounded-full transition-all"
                                                                 onClick={() =>
                                                                     removeLink(
                                                                         index,
                                                                     )
                                                                 }
                                                             >
-                                                                <Trash2 className="w-3 h-3" />
+                                                                <Trash2 className="w-4 h-4" />
                                                             </Button>
                                                         </div>
                                                         <Input
@@ -583,14 +589,14 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                                                                 `links.${index}.title`,
                                                             )}
                                                             placeholder="Title (e.g. Website)"
-                                                            className="h-8 text-xs bg-background"
+                                                            className="h-10 text-sm bg-surface-2 border-border/10 rounded-xl focus-visible:ring-primary/20"
                                                         />
                                                         <Input
                                                             {...form.register(
                                                                 `links.${index}.url`,
                                                             )}
                                                             placeholder="https://..."
-                                                            className="h-8 text-xs bg-background"
+                                                            className="h-10 text-sm bg-surface-2 border-border/10 rounded-xl focus-visible:ring-primary/20"
                                                         />
                                                     </div>
                                                 ) : (
@@ -611,7 +617,7 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                                                                 e.preventDefault();
                                                         }}
                                                     >
-                                                        <div className="p-2 rounded-lg bg-white/10 group-hover/link:bg-primary/20 transition-colors">
+                                                        <div className="p-3 rounded-xl bg-primary/10 text-primary group-hover/link:bg-primary/20 transition-all">
                                                             {getPlatformIcon(
                                                                 form.getValues(
                                                                     `links.${index}.title`,
@@ -649,16 +655,16 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                         {/* Sidebar Info */}
                         <div className="space-y-8 lg:sticky lg:top-24 h-fit">
                             <div className="space-y-4">
-                                <h3 className="text-sm font-bold uppercase tracking-widest">
+                                <h3 className="text-[11px] font-black uppercase tracking-widest text-foreground/40">
                                     Contact Info
                                 </h3>
-                                <div className="space-y-4 p-6 rounded-2xl bg-white/5 border border-white/10">
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] font-bold text-muted-foreground uppercase ml-2">
+                                <div className="space-y-6 p-8 rounded-2xl bg-surface-1 border border-border/10 shadow-xl">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest ml-1">
                                             Business Inquiry Email
                                         </label>
-                                        <div className="flex items-center gap-2">
-                                            <Mail className="w-4 h-4 text-primary/60 shrink-0" />
+                                        <div className="flex items-center gap-3">
+                                            <Mail className="w-4 h-4 text-primary shrink-0" />
                                             <EditableInput
                                                 name="contactEmail"
                                                 isEditing={isEditing}
@@ -668,12 +674,12 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                                             />
                                         </div>
                                     </div>
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] font-bold text-muted-foreground uppercase ml-2">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest ml-1">
                                             Location
                                         </label>
-                                        <div className="flex items-center gap-2">
-                                            <MapPin className="w-4 h-4 text-primary/60 shrink-0" />
+                                        <div className="flex items-center gap-3">
+                                            <MapPin className="w-4 h-4 text-primary shrink-0" />
                                             <EditableInput
                                                 name="location"
                                                 isEditing={isEditing}
@@ -686,32 +692,33 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                                 </div>
                             </div>
 
-                            <div className="p-6 rounded-2xl bg-linear-to-br from-primary/10 to-transparent border border-primary/5 space-y-4">
-                                <h3 className="text-xs font-bold uppercase tracking-widest text-primary/80">
+                            <div className="p-8 rounded-2xl bg-linear-to-br from-primary/10 to-transparent border border-primary/10 space-y-6 shadow-xl relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-primary/10 transition-all duration-500" />
+                                <h3 className="text-[11px] font-black uppercase tracking-widest text-primary">
                                     Channel Stats
                                 </h3>
-                                <div className="grid grid-cols-3 gap-4">
+                                <div className="grid grid-cols-3 gap-6 relative z-10">
                                     <div className="text-center">
-                                        <p className="text-lg font-black">
+                                        <p className="text-2xl font-black tracking-tighter">
                                             {channelData.subscriberCount}
                                         </p>
-                                        <p className="text-[10px] text-muted-foreground uppercase">
+                                        <p className="text-[10px] text-muted-foreground/60 font-black uppercase tracking-widest mt-1">
                                             Subs
                                         </p>
                                     </div>
                                     <div className="text-center">
-                                        <p className="text-lg font-black">
+                                        <p className="text-2xl font-black tracking-tighter">
                                             {channelData.videoCount}
                                         </p>
-                                        <p className="text-[10px] text-muted-foreground uppercase">
+                                        <p className="text-[10px] text-muted-foreground/60 font-black uppercase tracking-widest mt-1">
                                             Videos
                                         </p>
                                     </div>
                                     <div className="text-center">
-                                        <p className="text-lg font-black">
+                                        <p className="text-2xl font-black tracking-tighter">
                                             {channelData.totalViews}
                                         </p>
-                                        <p className="text-[10px] text-muted-foreground uppercase">
+                                        <p className="text-[10px] text-muted-foreground/60 font-black uppercase tracking-widest mt-1">
                                             Views
                                         </p>
                                     </div>

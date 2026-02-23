@@ -9,6 +9,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/use-debounce";
+import { Plus, Trash } from "lucide-react";
 
 // We need to impart the type from the schema or redefine it if not exported correctly.
 // Assuming createChannelSchema is available from the router or shared package.
@@ -204,11 +205,11 @@ const CreateChannelForm = () => {
                     }
                 }}
             >
-                <div className="mb-6">
-                    <h2 className="text-2xl font-bold tracking-tight text-neutral-800 dark:text-neutral-100">
+                <div className="mb-10 text-center space-y-2">
+                    <h2 className="text-4xl font-black tracking-tighter uppercase text-foreground/90">
                         {steps[step].title}
                     </h2>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">
                         Step {step + 1} of {steps.length}
                     </p>
                 </div>
@@ -220,12 +221,15 @@ const CreateChannelForm = () => {
                             control={control}
                             name="name"
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Channel Name</FormLabel>
+                                <FormItem className="space-y-2">
+                                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">
+                                        Channel Name
+                                    </FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
                                             placeholder="My Awesome Channel"
+                                            className="bg-surface-2 border-border/10 rounded-xl h-12 focus-visible:ring-primary/20 text-sm font-medium"
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -237,32 +241,35 @@ const CreateChannelForm = () => {
                             control={control}
                             name="handle"
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Handle</FormLabel>
+                                <FormItem className="space-y-2">
+                                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">
+                                        Handle
+                                    </FormLabel>
                                     <FormControl>
                                         <div className="relative">
                                             <Input
                                                 {...field}
                                                 placeholder="my_handle"
                                                 className={cn(
+                                                    "bg-surface-2 border-border/10 rounded-xl h-12 focus-visible:ring-primary/20 text-sm font-medium pr-10",
                                                     handleStatus === "taken" &&
-                                                        "border-red-500 focus-visible:ring-red-500",
+                                                        "border-destructive focus-visible:ring-destructive/20",
                                                     handleStatus ===
                                                         "available" &&
-                                                        "border-green-500 focus-visible:ring-green-500",
+                                                        "border-emerald-500 focus-visible:ring-emerald-500/20",
                                                 )}
                                             />
                                             <div className="absolute right-3 top-2.5">
                                                 {handleStatus ===
                                                     "checking" && (
-                                                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                                                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
                                                 )}
                                                 {handleStatus ===
                                                     "available" && (
-                                                    <Check className="h-4 w-4 text-green-500" />
+                                                    <Check className="h-4 w-4 text-emerald-500" />
                                                 )}
                                                 {handleStatus === "taken" && (
-                                                    <X className="h-4 w-4 text-red-500" />
+                                                    <X className="h-4 w-4 text-destructive" />
                                                 )}
                                             </div>
                                         </div>
@@ -271,20 +278,20 @@ const CreateChannelForm = () => {
                                         {handleMessage && (
                                             <span
                                                 className={cn(
-                                                    "text-xs",
+                                                    "text-[10px] font-black uppercase tracking-widest",
                                                     handleStatus === "available"
-                                                        ? "text-green-500"
+                                                        ? "text-emerald-500"
                                                         : handleStatus ===
                                                             "taken"
-                                                          ? "text-red-500"
-                                                          : "text-muted-foreground",
+                                                          ? "text-destructive"
+                                                          : "text-muted-foreground/40",
                                                 )}
                                             >
                                                 {handleMessage}
                                             </span>
                                         )}
                                         {!handleMessage &&
-                                            "Unique identifier for your channel"}
+                                            "A unique URL handle; you can change this anytime"}
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>
@@ -295,13 +302,15 @@ const CreateChannelForm = () => {
                             control={control}
                             name="description"
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Description</FormLabel>
+                                <FormItem className="space-y-2">
+                                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">
+                                        Description
+                                    </FormLabel>
                                     <FormControl>
                                         <Textarea
                                             {...field}
                                             placeholder="Tell viewers about your channel..."
-                                            className="resize-none min-h-[100px]"
+                                            className="bg-surface-2 border-border/10 rounded-xl min-h-[120px] focus-visible:ring-primary/20 text-sm font-medium resize-none"
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -371,13 +380,16 @@ const CreateChannelForm = () => {
                             control={control}
                             name="contactEmail"
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Contact Email</FormLabel>
+                                <FormItem className="space-y-2">
+                                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">
+                                        Contact Email
+                                    </FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
                                             type="email"
                                             placeholder="contact@example.com"
+                                            className="bg-surface-2 border-border/10 rounded-xl h-12 focus-visible:ring-primary/20 text-sm font-medium"
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -387,16 +399,19 @@ const CreateChannelForm = () => {
 
                         <div className="space-y-3">
                             <div className="flex justify-between items-center">
-                                <FormLabel>Links</FormLabel>
+                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">
+                                    Links
+                                </FormLabel>
                                 <Button
                                     type="button"
-                                    variant="outline"
+                                    variant="ghost"
                                     size="sm"
                                     onClick={() =>
                                         append({ title: "", url: "" })
                                     }
+                                    className="hover:bg-primary/10 text-primary font-black uppercase text-[10px] tracking-widest rounded-lg h-8 px-4"
                                 >
-                                    Add Link
+                                    <Plus className="w-4 h-4 mr-2" /> Add Link
                                 </Button>
                             </div>
 
@@ -413,7 +428,8 @@ const CreateChannelForm = () => {
                                                 <FormControl>
                                                     <Input
                                                         {...field}
-                                                        placeholder="Title (e.g. Website)"
+                                                        placeholder="Title"
+                                                        className="h-10 text-sm bg-surface-2 border-border/10 rounded-xl focus-visible:ring-primary/20"
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -429,6 +445,7 @@ const CreateChannelForm = () => {
                                                     <Input
                                                         {...field}
                                                         placeholder="https://..."
+                                                        className="h-10 text-sm bg-surface-2 border-border/10 rounded-xl focus-visible:ring-primary/20"
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -440,8 +457,9 @@ const CreateChannelForm = () => {
                                         variant="ghost"
                                         size="icon"
                                         onClick={() => remove(i)}
+                                        className="h-10 w-10 text-destructive/40 hover:text-destructive hover:bg-destructive/10 rounded-xl transition-all"
                                     >
-                                        <X className="h-4 w-4" />
+                                        <Trash className="h-4 w-4" />
                                     </Button>
                                 </div>
                             ))}
@@ -455,7 +473,7 @@ const CreateChannelForm = () => {
                 )}
 
                 {form.formState.errors.root && (
-                    <div className="bg-red-50 text-red-500 p-3 rounded-md text-sm">
+                    <div className="bg-destructive/10 text-destructive px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest border border-destructive/20">
                         {form.formState.errors.root.message}
                     </div>
                 )}
@@ -463,7 +481,12 @@ const CreateChannelForm = () => {
                 {/* FOOTER */}
                 <div className="flex justify-between pt-6 border-t mt-6">
                     {step > 0 ? (
-                        <Button type="button" variant="outline" onClick={back}>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={back}
+                            className="hover:bg-surface-2 font-black uppercase text-[11px] tracking-widest rounded-xl transition-all h-12 px-8"
+                        >
                             Back
                         </Button>
                     ) : (
@@ -479,6 +502,7 @@ const CreateChannelForm = () => {
                                 handleStatus === "checking" ||
                                 handleStatus === "taken"
                             }
+                            className="bg-primary hover:bg-primary/90 text-black font-black uppercase text-[11px] tracking-widest rounded-xl transition-all h-12 px-10 shadow-[0_0_20px_-5px_oklch(var(--primary)/0.4)]"
                         >
                             Next
                         </Button>
@@ -490,6 +514,7 @@ const CreateChannelForm = () => {
                                 handleStatus === "taken" ||
                                 handleStatus === "checking"
                             }
+                            className="bg-primary hover:bg-primary/90 text-black font-black uppercase text-[11px] tracking-widest rounded-xl transition-all h-12 px-10 shadow-[0_0_20px_-5px_oklch(var(--primary)/0.4)]"
                         >
                             {isPending && (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

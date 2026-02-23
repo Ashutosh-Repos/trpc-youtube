@@ -77,4 +77,18 @@ export const feedRouter = router({
                 input.cursor,
             );
         }),
+
+    getChannelShorts: publicProcedure
+        .input(
+            z.object({
+                channelId: z.string(),
+                cursor: feedCursorSchema.optional(),
+            }),
+        )
+        .query(async ({ input }) => {
+            return await FeedService.getChannelShorts(
+                input.channelId,
+                input.cursor,
+            );
+        }),
 });

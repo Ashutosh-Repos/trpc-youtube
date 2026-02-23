@@ -252,19 +252,19 @@ const ContentClient = ({
     // ─── Render ─────────────────────────────────────────────────────────
 
     return (
-        <div className="flex flex-col h-full bg-[#0f0f0f]">
-            <div className="p-6 border-b border-white/5 space-y-6">
+        <div className="flex flex-col h-full bg-background">
+            <div className="p-8 border-b border-border/10 space-y-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight text-white">
+                        <h1 className="text-3xl font-black tracking-tighter uppercase text-foreground/90">
                             Channel content
                         </h1>
-                        <p className="text-sm text-zinc-400">
+                        <p className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/40 mt-1">
                             Manage your channel's videos and reels.
                         </p>
                     </div>
                     <Button
-                        className="bg-primary hover:bg-primary/90 text-black font-bold"
+                        className="bg-primary hover:bg-primary/90 text-primary-foreground font-black uppercase tracking-widest text-[11px] h-10 px-8 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-95"
                         onClick={() => {
                             if (activeTab === "playlists") {
                                 setIsPlaylistModalOpen(true);
@@ -278,40 +278,40 @@ const ContentClient = ({
                 </div>
 
                 <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-                    <div className="flex bg-zinc-900 border border-white/5 p-1 rounded-lg">
+                    <div className="flex bg-surface-1 border border-border/10 p-1.5 rounded-2xl shadow-inner">
                         <button
                             onClick={() => onTabChange("videos")}
                             className={cn(
-                                "px-5 py-2 rounded-md transition-all gap-2 font-medium flex items-center text-sm",
+                                "px-6 py-2.5 rounded-xl transition-all gap-2 font-black uppercase tracking-widest text-[10px] flex items-center shadow-sm",
                                 activeTab === "videos"
-                                    ? "bg-zinc-800 text-white"
-                                    : "text-zinc-400 hover:text-zinc-200",
+                                    ? "bg-surface-2 text-foreground ring-1 ring-border/10"
+                                    : "text-muted-foreground/40 hover:text-foreground",
                             )}
                         >
-                            <VideoIcon className="w-4 h-4" /> Videos
+                            <VideoIcon className="w-3.5 h-3.5" /> Videos
                         </button>
                         <button
                             onClick={() => onTabChange("shorts")}
                             className={cn(
-                                "px-5 py-2 rounded-md transition-all gap-2 font-medium flex items-center text-sm",
+                                "px-6 py-2.5 rounded-xl transition-all gap-2 font-black uppercase tracking-widest text-[10px] flex items-center shadow-sm",
                                 activeTab === "shorts"
-                                    ? "bg-zinc-800 text-white"
-                                    : "text-zinc-400 hover:text-zinc-200",
+                                    ? "bg-surface-2 text-foreground ring-1 ring-border/10"
+                                    : "text-muted-foreground/40 hover:text-foreground",
                             )}
                         >
-                            <Zap className="w-4 h-4" /> Shorts
+                            <Zap className="w-3.5 h-3.5" /> Shorts
                         </button>
 
                         <button
                             onClick={() => onTabChange("playlists")}
                             className={cn(
-                                "px-5 py-2 rounded-md transition-all gap-2 font-medium flex items-center text-sm",
+                                "px-6 py-2.5 rounded-xl transition-all gap-2 font-black uppercase tracking-widest text-[10px] flex items-center shadow-sm",
                                 activeTab === "playlists"
-                                    ? "bg-zinc-800 text-white"
-                                    : "text-zinc-400 hover:text-zinc-200",
+                                    ? "bg-surface-2 text-foreground ring-1 ring-border/10"
+                                    : "text-muted-foreground/40 hover:text-foreground",
                             )}
                         >
-                            <ListVideo className="w-4 h-4" /> Playlists
+                            <ListVideo className="w-3.5 h-3.5" /> Playlists
                         </button>
                     </div>
 
@@ -319,22 +319,22 @@ const ContentClient = ({
                         <div className="relative group flex-1 md:w-72">
                             <Search
                                 className={cn(
-                                    "absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors",
+                                    "absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 transition-colors",
                                     isFetching
                                         ? "text-primary animate-pulse"
-                                        : "text-zinc-500 group-focus-within:text-primary",
+                                        : "text-muted-foreground/30 group-focus-within:text-primary",
                                 )}
                             />
                             <Input
                                 placeholder="Filter videos..."
-                                className="pl-10 bg-zinc-900 border-white/5 focus-visible:ring-primary/20 transition-all h-10 text-sm"
+                                className="pl-10 bg-surface-1 border-border/10 focus-visible:ring-primary/20 transition-all h-10 text-[11px] font-black uppercase tracking-widest rounded-xl"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                             />
                             {search && (
                                 <button
                                     onClick={() => setSearch("")}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/30 hover:text-foreground transition-colors"
                                 >
                                     <X className="w-4 h-4" />
                                 </button>
@@ -346,7 +346,7 @@ const ContentClient = ({
                                     variant="outline"
                                     size="icon"
                                     className={cn(
-                                        "h-10 w-10 border-white/5 bg-zinc-900 hover:bg-zinc-800 transition-colors",
+                                        "h-10 w-10 border-border/10 bg-surface-1 hover:bg-surface-2 transition-all rounded-xl",
                                         (visibilityFilter ||
                                             ageFilter !== undefined ||
                                             sortOrder !== "newest") &&
@@ -358,7 +358,7 @@ const ContentClient = ({
                             </PopoverTrigger>
                             <PopoverContent
                                 align="end"
-                                className="w-[280px] bg-[#1a1a1e] border-white/10 p-4 space-y-4 shadow-2xl"
+                                className="w-[280px] bg-surface-3/95 backdrop-blur-2xl border-border/40 p-4 space-y-4 shadow-2xl rounded-3xl"
                             >
                                 <div className="space-y-4">
                                     <div className="space-y-2">
@@ -373,21 +373,37 @@ const ContentClient = ({
                                                 )
                                             }
                                         >
-                                            <SelectTrigger className="bg-black/20 border-white/5 h-9 text-xs">
+                                            <SelectTrigger className="bg-surface-1 border-border/10 h-10 text-[11px] font-black uppercase tracking-widest rounded-xl focus:ring-primary/20 transition-all">
                                                 <SelectValue placeholder="All" />
                                             </SelectTrigger>
-                                            <SelectContent className="bg-[#1f1f23] border-white/10 text-white">
-                                                <SelectItem value="all">
-                                                    All
+                                            <SelectContent className="bg-surface-3 border-border/40 text-foreground rounded-2xl p-1.5 shadow-2xl">
+                                                <SelectItem
+                                                    value="all"
+                                                    className="focus:bg-primary/10 focus:text-primary rounded-lg"
+                                                >
+                                                    {" "}
+                                                    All{" "}
                                                 </SelectItem>
-                                                <SelectItem value="PUBLIC">
-                                                    Public
+                                                <SelectItem
+                                                    value="PUBLIC"
+                                                    className="focus:bg-primary/10 focus:text-primary rounded-lg"
+                                                >
+                                                    {" "}
+                                                    Public{" "}
                                                 </SelectItem>
-                                                <SelectItem value="PRIVATE">
-                                                    Private
+                                                <SelectItem
+                                                    value="PRIVATE"
+                                                    className="focus:bg-primary/10 focus:text-primary rounded-lg"
+                                                >
+                                                    {" "}
+                                                    Private{" "}
                                                 </SelectItem>
-                                                <SelectItem value="UNLISTED">
-                                                    Unlisted
+                                                <SelectItem
+                                                    value="UNLISTED"
+                                                    className="focus:bg-primary/10 focus:text-primary rounded-lg"
+                                                >
+                                                    {" "}
+                                                    Unlisted{" "}
                                                 </SelectItem>
                                             </SelectContent>
                                         </Select>
@@ -411,18 +427,30 @@ const ContentClient = ({
                                                 )
                                             }
                                         >
-                                            <SelectTrigger className="bg-black/20 border-white/5 h-9 text-xs">
+                                            <SelectTrigger className="bg-surface-1 border-border/10 h-10 text-[11px] font-black uppercase tracking-widest rounded-xl focus:ring-primary/20 transition-all">
                                                 <SelectValue placeholder="All" />
                                             </SelectTrigger>
-                                            <SelectContent className="bg-[#1f1f23] border-white/10 text-white">
-                                                <SelectItem value="all">
-                                                    All
+                                            <SelectContent className="bg-surface-3 border-border/40 text-foreground rounded-2xl p-1.5 shadow-2xl">
+                                                <SelectItem
+                                                    value="all"
+                                                    className="focus:bg-primary/10 focus:text-primary rounded-lg"
+                                                >
+                                                    {" "}
+                                                    All{" "}
                                                 </SelectItem>
-                                                <SelectItem value="true">
-                                                    Yes
+                                                <SelectItem
+                                                    value="true"
+                                                    className="focus:bg-primary/10 focus:text-primary rounded-lg"
+                                                >
+                                                    {" "}
+                                                    Yes{" "}
                                                 </SelectItem>
-                                                <SelectItem value="false">
-                                                    No
+                                                <SelectItem
+                                                    value="false"
+                                                    className="focus:bg-primary/10 focus:text-primary rounded-lg"
+                                                >
+                                                    {" "}
+                                                    No{" "}
                                                 </SelectItem>
                                             </SelectContent>
                                         </Select>
@@ -438,18 +466,30 @@ const ContentClient = ({
                                                 setSortOrder(v as any)
                                             }
                                         >
-                                            <SelectTrigger className="bg-black/20 border-white/5 h-9 text-xs">
+                                            <SelectTrigger className="bg-surface-1 border-border/10 h-10 text-[11px] font-black uppercase tracking-widest rounded-xl focus:ring-primary/20 transition-all">
                                                 <SelectValue placeholder="Newest" />
                                             </SelectTrigger>
-                                            <SelectContent className="bg-[#1f1f23] border-white/10 text-white">
-                                                <SelectItem value="newest">
-                                                    Newest first
+                                            <SelectContent className="bg-surface-3 border-border/40 text-foreground rounded-2xl p-1.5 shadow-2xl">
+                                                <SelectItem
+                                                    value="newest"
+                                                    className="focus:bg-primary/10 focus:text-primary rounded-lg"
+                                                >
+                                                    {" "}
+                                                    Newest first{" "}
                                                 </SelectItem>
-                                                <SelectItem value="oldest">
-                                                    Oldest first
+                                                <SelectItem
+                                                    value="oldest"
+                                                    className="focus:bg-primary/10 focus:text-primary rounded-lg"
+                                                >
+                                                    {" "}
+                                                    Oldest first{" "}
                                                 </SelectItem>
-                                                <SelectItem value="views">
-                                                    Most views
+                                                <SelectItem
+                                                    value="views"
+                                                    className="focus:bg-primary/10 focus:text-primary rounded-lg"
+                                                >
+                                                    {" "}
+                                                    Most views{" "}
                                                 </SelectItem>
                                             </SelectContent>
                                         </Select>
@@ -457,7 +497,7 @@ const ContentClient = ({
 
                                     <Button
                                         variant="ghost"
-                                        className="w-full h-8 text-[10px] font-bold border-t border-white/5 mt-2 hover:bg-white/5"
+                                        className="w-full h-10 text-[10px] font-black uppercase tracking-[0.2em] border-t border-border/10 mt-2 hover:bg-primary/10 hover:text-primary rounded-xl transition-all"
                                         onClick={() => {
                                             setVisibilityFilter(undefined);
                                             setAgeFilter(undefined);
@@ -475,16 +515,17 @@ const ContentClient = ({
 
             {/* Selection Toolbar (Bulk Actions) */}
             {selectedIds.length > 0 && (
-                <div className="bg-primary/10 border-b border-primary/20 px-6 py-2 flex items-center justify-between animate-in slide-in-from-top-1 duration-300">
-                    <div className="flex items-center gap-4">
-                        <span className="text-sm font-bold text-primary">
-                            {selectedIds.length} selected
+                <div className="bg-primary/10 border-b border-primary/20 px-8 py-3 flex items-center justify-between animate-in slide-in-from-top-1 duration-300 backdrop-blur-md">
+                    <div className="flex items-center gap-6">
+                        <span className="text-[11px] font-black uppercase tracking-widest text-primary">
+                            {selectedIds.length} video
+                            {selectedIds.length !== 1 ? "s" : ""} selected
                         </span>
                         <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => setSelectedIds([])}
-                            className="h-8 text-zinc-400 hover:text-white"
+                            className="h-8 text-primary/60 hover:text-primary hover:bg-primary/10 font-black uppercase tracking-widest text-[10px] rounded-lg px-4 transition-all"
                         >
                             Clear
                         </Button>
@@ -496,38 +537,38 @@ const ContentClient = ({
                                     size="sm"
                                     variant="outline"
                                     disabled={isPending}
-                                    className="h-8 border-white/10 bg-white/5 hover:bg-white/10 gap-2 font-bold text-[10px] tracking-widest uppercase"
+                                    className="h-10 border-primary/20 bg-primary/5 hover:bg-primary/10 gap-2.5 font-black text-[10px] tracking-widest uppercase rounded-xl text-primary transition-all px-5"
                                 >
                                     <Globe className="w-3.5 h-3.5" />
                                     Visibility
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent className="bg-[#1f1f23] border-white/10 text-white">
+                            <DropdownMenuContent className="bg-surface-3 border-border/10 text-foreground rounded-xl p-1.5 shadow-2xl">
                                 <DropdownMenuItem
                                     onClick={() =>
                                         handleBulkVisibility("PUBLIC")
                                     }
-                                    className="gap-2 focus:bg-white/10"
+                                    className="gap-2.5 focus:bg-primary/10 focus:text-primary rounded-lg transition-colors cursor-pointer"
                                 >
-                                    <Globe className="w-4 h-4 text-green-500" />{" "}
+                                    <Globe className="w-4 h-4 text-emerald-500" />{" "}
                                     Public
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={() =>
                                         handleBulkVisibility("PRIVATE")
                                     }
-                                    className="gap-2 focus:bg-white/10"
+                                    className="gap-2.5 focus:bg-primary/10 focus:text-primary rounded-lg transition-colors cursor-pointer"
                                 >
-                                    <Lock className="w-4 h-4 text-red-500" />{" "}
+                                    <Lock className="w-4 h-4 text-destructive" />{" "}
                                     Private
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={() =>
                                         handleBulkVisibility("UNLISTED")
                                     }
-                                    className="gap-2 focus:bg-white/10"
+                                    className="gap-2.5 focus:bg-primary/10 focus:text-primary rounded-lg transition-colors cursor-pointer"
                                 >
-                                    <EyeOff className="w-4 h-4 text-yellow-500" />{" "}
+                                    <EyeOff className="w-4 h-4 text-amber-500" />{" "}
                                     Unlisted
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -541,7 +582,7 @@ const ContentClient = ({
                                 setSelectorVideoIds(selectedIds);
                                 setIsPlaylistSelectorOpen(true);
                             }}
-                            className="h-8 gap-2 font-bold text-[10px] tracking-widest uppercase px-4 border-white/10 bg-white/5 hover:bg-white/10"
+                            className="h-10 border-primary/20 bg-primary/5 hover:bg-primary/10 gap-2.5 font-black text-[10px] tracking-widest uppercase rounded-xl text-primary transition-all px-5"
                         >
                             <ListVideo className="w-3.5 h-3.5" />
                             To Playlist
@@ -552,7 +593,7 @@ const ContentClient = ({
                             variant="destructive"
                             disabled={isPending}
                             onClick={handleBulkDelete}
-                            className="h-8 gap-2 font-bold text-[10px] tracking-widest uppercase px-4"
+                            className="h-10 gap-2.5 font-black text-[10px] tracking-widest uppercase rounded-xl px-6 shadow-lg shadow-destructive/20 transition-all active:scale-95"
                         >
                             <Trash2 className="w-3.5 h-3.5" />
                             Delete
@@ -571,24 +612,24 @@ const ContentClient = ({
                                 className="grid grid-cols-12 gap-4 px-6 py-4 animate-pulse"
                             >
                                 <div className="col-span-5 flex gap-4">
-                                    <div className="w-5 h-5 rounded bg-zinc-800" />
-                                    <div className="w-32 h-20 rounded bg-zinc-800" />
+                                    <div className="w-5 h-5 rounded bg-surface-2" />
+                                    <div className="w-32 h-20 rounded-xl bg-surface-2" />
                                     <div className="flex-1 space-y-2">
-                                        <div className="h-4 w-3/4 bg-zinc-800 rounded" />
-                                        <div className="h-3 w-1/2 bg-zinc-800 rounded" />
+                                        <div className="h-4 w-3/4 bg-surface-2 rounded-lg" />
+                                        <div className="h-3 w-1/2 bg-surface-2 rounded-lg" />
                                     </div>
                                 </div>
                                 <div className="col-span-2 flex items-center">
-                                    <div className="h-3 w-16 bg-zinc-800 rounded" />
+                                    <div className="h-3 w-16 bg-surface-2 rounded shrink-0" />
                                 </div>
                                 <div className="col-span-2 flex items-center">
-                                    <div className="h-3 w-20 bg-zinc-800 rounded" />
+                                    <div className="h-3 w-20 bg-surface-2 rounded shrink-0" />
                                 </div>
                                 <div className="col-span-1 flex items-center justify-end">
-                                    <div className="h-3 w-8 bg-zinc-800 rounded" />
+                                    <div className="h-3 w-8 bg-surface-2 rounded shrink-0" />
                                 </div>
-                                <div className="col-span-2 flex items-center justify-end">
-                                    <div className="h-3 w-8 bg-zinc-800 rounded" />
+                                <div className="col-span-2 flex items-center justify-end pr-8">
+                                    <div className="h-3 w-8 bg-surface-2 rounded shrink-0" />
                                 </div>
                             </div>
                         ))}
@@ -601,62 +642,64 @@ const ContentClient = ({
                                 className="grid grid-cols-12 gap-4 px-6 py-4 animate-pulse"
                             >
                                 <div className="col-span-6 flex gap-4">
-                                    <div className="w-5 h-5 rounded bg-zinc-800" />
-                                    <div className="w-32 h-20 rounded bg-zinc-800" />
+                                    <div className="w-5 h-5 rounded bg-surface-2" />
+                                    <div className="w-32 h-20 rounded-xl bg-surface-2" />
                                     <div className="flex-1 space-y-2">
-                                        <div className="h-4 w-3/4 bg-zinc-800 rounded" />
+                                        <div className="h-4 w-3/4 bg-surface-2 rounded-lg" />
                                     </div>
                                 </div>
                                 <div className="col-span-2 flex items-center">
-                                    <div className="h-3 w-16 bg-zinc-800 rounded" />
+                                    <div className="h-3 w-16 bg-surface-2 rounded shrink-0" />
                                 </div>
                                 <div className="col-span-2 flex items-center">
-                                    <div className="h-3 w-20 bg-zinc-800 rounded" />
+                                    <div className="h-3 w-20 bg-surface-2 rounded shrink-0" />
                                 </div>
                                 <div className="col-span-2 flex items-center justify-end">
-                                    <div className="h-3 w-8 bg-zinc-800 rounded" />
+                                    <div className="h-3 w-8 bg-surface-2 rounded shrink-0" />
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : allItems.length === 0 && activeTab !== "playlists" ? (
-                    <div className="h-full flex flex-col items-center justify-center text-center p-12 space-y-4">
-                        <div className="w-20 h-20 rounded-full bg-zinc-900 flex items-center justify-center">
-                            <VideoIcon className="w-10 h-10 text-zinc-700" />
+                    <div className="h-full flex flex-col items-center justify-center text-center p-20 space-y-6">
+                        <div className="w-24 h-24 rounded-3xl bg-surface-2 flex items-center justify-center rotate-3 hover:rotate-0 transition-transform duration-500 shadow-xl border border-border/10">
+                            <VideoIcon className="w-10 h-10 text-muted-foreground/20" />
                         </div>
                         <div className="space-y-2">
-                            <h3 className="font-bold text-lg text-white">
+                            <h3 className="text-3xl font-black tracking-tighter uppercase text-foreground/90 leading-tight">
                                 No {activeTab} available
                             </h3>
-                            <p className="text-sm text-zinc-500 max-w-xs mx-auto">
-                                You haven't uploaded any {activeTab} yet.
+                            <p className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/40 max-w-sm mx-auto">
+                                You haven't uploaded any {activeTab} yet. Start
+                                sharing your creativity with the world.
                             </p>
                         </div>
                         <Button
-                            className="font-bold gap-2"
+                            className="bg-primary hover:bg-primary/90 text-primary-foreground font-black uppercase tracking-widest text-[11px] h-12 px-10 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-95 flex items-center gap-3"
                             onClick={() =>
                                 toast.info("Upload flow coming soon!")
                             }
                         >
-                            <Zap className="w-4 h-4" /> Upload video
+                            <Zap className="w-4 h-4 fill-current" /> Upload
+                            video
                         </Button>
                     </div>
                 ) : activeTab === "playlists" && playlists.length === 0 ? (
-                    <div className="h-full flex flex-col items-center justify-center text-center p-12 space-y-4">
-                        <div className="w-20 h-20 rounded-full bg-zinc-900 flex items-center justify-center">
-                            <ListVideo className="w-10 h-10 text-zinc-700" />
+                    <div className="h-full flex flex-col items-center justify-center text-center p-20 space-y-6">
+                        <div className="w-24 h-24 rounded-3xl bg-surface-2 flex items-center justify-center -rotate-3 hover:rotate-0 transition-transform duration-500 shadow-xl border border-border/10">
+                            <ListVideo className="w-10 h-10 text-muted-foreground/20" />
                         </div>
                         <div className="space-y-2">
-                            <h3 className="font-bold text-lg text-white">
+                            <h3 className="text-3xl font-black tracking-tighter uppercase text-foreground/90 leading-tight">
                                 No playlists yet
                             </h3>
-                            <p className="text-sm text-zinc-500 max-w-xs mx-auto">
+                            <p className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/40 max-w-sm mx-auto">
                                 Playlists are a great way to group videos
-                                together for your viewers.
+                                together for your viewers and keep them engaged.
                             </p>
                         </div>
                         <Button
-                            className="font-bold gap-2 bg-primary text-black hover:bg-primary/90"
+                            className="bg-primary hover:bg-primary/90 text-primary-foreground font-black uppercase tracking-widest text-[11px] h-12 px-10 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-95 flex items-center gap-3"
                             onClick={() => setIsPlaylistModalOpen(true)}
                         >
                             <ListVideo className="w-4 h-4" /> Create playlist
@@ -682,7 +725,7 @@ const ContentClient = ({
                         ) : (
                             <>
                                 {/* Table Header */}
-                                <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-white/5 bg-[#0f0f0f] sticky top-0 z-20">
+                                <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-border/10 bg-background sticky top-0 z-20">
                                     <div className="col-span-5 flex gap-4">
                                         <div className="flex items-center">
                                             <Checkbox
@@ -697,28 +740,28 @@ const ContentClient = ({
                                                 className="border-white/20 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                                             />
                                         </div>
-                                        <span className="text-xs font-bold uppercase tracking-widest text-zinc-500 ml-4">
+                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 ml-4">
                                             {selectedIds.length > 0
                                                 ? `${selectedIds.length} Selected`
                                                 : "Video"}
                                         </span>
                                     </div>
-                                    <div className="col-span-2 text-xs font-bold uppercase tracking-widest text-zinc-500 flex items-center">
+                                    <div className="col-span-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 flex items-center">
                                         Visibility
                                     </div>
-                                    <div className="col-span-2 text-xs font-bold uppercase tracking-widest text-zinc-500 flex items-center">
+                                    <div className="col-span-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 flex items-center">
                                         Date
                                     </div>
-                                    <div className="col-span-1 text-xs font-bold uppercase tracking-widest text-zinc-500 flex items-center justify-end">
+                                    <div className="col-span-1 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 flex items-center justify-end">
                                         Views
                                     </div>
-                                    <div className="col-span-2 text-xs font-bold uppercase tracking-widest text-zinc-500 flex items-center justify-end pr-8">
+                                    <div className="col-span-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 flex items-center justify-end pr-8">
                                         Comments
                                     </div>
                                 </div>
 
                                 {/* Table Rows */}
-                                <div className="divide-y divide-white/5">
+                                <div className="divide-y divide-border/10">
                                     {allItems.map((video) => (
                                         <VideoRow
                                             key={video.id}
@@ -739,13 +782,13 @@ const ContentClient = ({
                                 </div>
 
                                 {/* Footer / Infinite scroll sentinel */}
-                                <div className="p-8 flex flex-col items-center gap-4 border-t border-white/5">
+                                <div className="p-12 flex flex-col items-center gap-6 border-t border-border/10 bg-surface-1/30">
                                     {contentQuery.hasNextPage && (
                                         <div ref={sentinelRef}>
                                             {contentQuery.isFetchingNextPage ? (
-                                                <div className="flex items-center gap-2 text-zinc-400">
-                                                    <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-                                                    <span className="text-xs font-bold uppercase tracking-widest">
+                                                <div className="flex items-center gap-3 text-primary">
+                                                    <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] animate-pulse">
                                                         Loading more...
                                                     </span>
                                                 </div>
@@ -753,14 +796,14 @@ const ContentClient = ({
                                                 <Button
                                                     variant="outline"
                                                     onClick={handleLoadMore}
-                                                    className="h-10 px-8 border-white/10 hover:bg-white/5 font-bold text-xs tracking-widest uppercase"
+                                                    className="h-12 px-10 border-border/10 bg-surface-2 hover:bg-surface-3 font-black text-[11px] tracking-widest uppercase rounded-xl transition-all shadow-sm"
                                                 >
-                                                    Load More
+                                                    Load More Content
                                                 </Button>
                                             )}
                                         </div>
                                     )}
-                                    <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">
+                                    <p className="text-[10px] text-muted-foreground/20 font-black uppercase tracking-[0.3em]">
                                         Showing {allItems.length} of{" "}
                                         {totalCount} videos
                                     </p>

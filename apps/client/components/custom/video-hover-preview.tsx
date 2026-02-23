@@ -83,12 +83,12 @@ export function VideoHoverPreview({
     const { x, y } = calculatePosition();
 
     if (!mounted) {
-        return <div className={`bg-neutral-900 ${className}`} />;
+        return <div className={`bg-surface-1 rounded-2xl ${className}`} />;
     }
 
     return (
         <div
-            className={`relative w-full h-full overflow-hidden bg-black flex items-center justify-center group ${className}`}
+            className={`relative w-full h-full overflow-hidden bg-background rounded-2xl flex items-center justify-center group border border-border/10 ${className}`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
@@ -117,8 +117,8 @@ export function VideoHoverPreview({
 
             {/* Overlay status if no preview available */}
             {isHovered && (!spriteUrl || !duration || duration <= 0) && (
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                    <span className="text-[10px] font-black uppercase text-white tracking-widest bg-black/60 px-2 py-1 rounded">
+                <div className="absolute inset-0 bg-background/60 backdrop-blur-sm flex items-center justify-center">
+                    <span className="text-[10px] font-black uppercase text-foreground tracking-[0.2em] bg-surface-3/90 border border-border/20 px-3 py-1.5 rounded-lg shadow-2xl">
                         No Preview
                     </span>
                 </div>

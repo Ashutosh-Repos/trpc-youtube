@@ -205,14 +205,18 @@ export function NotificationBell() {
     return (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative hover:bg-surface-2 transition-colors rounded-full h-10 w-10"
+                >
                     <Bell className="h-5 w-5" />
                     {unreadCount > 0 && (
                         <span
                             className={cn(
-                                "absolute -top-0.5 -right-0.5 rounded-full bg-red-500 ring-2 ring-background text-[10px] font-bold text-white flex items-center justify-center",
+                                "absolute -top-0.5 -right-0.5 rounded-full bg-primary ring-2 ring-background text-[10px] font-black text-primary-foreground flex items-center justify-center animate-in zoom-in duration-300 shadow-[0_0_10px_oklch(var(--primary)/0.4)]",
                                 unreadCount > 99
-                                    ? "h-5 min-w-5 px-1"
+                                    ? "h-5 min-w-5 px-1.5"
                                     : "h-4 w-4",
                             )}
                         >
@@ -221,18 +225,23 @@ export function NotificationBell() {
                     )}
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80 p-0" align="end">
-                <div className="flex items-center justify-between px-4 py-2 border-b">
-                    <h4 className="font-semibold text-sm">Notifications</h4>
+            <PopoverContent
+                className="w-[380px] p-0 bg-surface-3/95 backdrop-blur-2xl border-border/40 shadow-2xl rounded-3xl overflow-hidden"
+                align="end"
+            >
+                <div className="flex items-center justify-between px-5 py-4 border-b border-border/20">
+                    <h4 className="font-black text-sm tracking-tight uppercase">
+                        Notifications
+                    </h4>
                     {unreadCount > 0 && (
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="h-7 text-xs text-muted-foreground hover:text-foreground gap-1.5"
+                            className="h-8 px-3 text-[11px] font-black uppercase tracking-widest text-muted-foreground/60 hover:text-primary hover:bg-primary/10 rounded-xl transition-all"
                             onClick={() => markAllRead.mutate()}
                             disabled={markAllRead.isPending}
                         >
-                            <CheckCheck className="h-3.5 w-3.5" />
+                            <CheckCheck className="h-3.5 w-3.5 mr-1.5" />
                             Mark all read
                         </Button>
                     )}
@@ -264,11 +273,11 @@ export function NotificationBell() {
                 </ScrollArea>
                 {/* "See all" footer */}
                 {(hasMore || popoverItems.length > 0) && (
-                    <div className="border-t p-2">
+                    <div className="border-t border-border/20 p-2 bg-surface-2/50">
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="w-full text-xs text-muted-foreground hover:text-foreground"
+                            className="w-full h-10 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 hover:text-primary hover:bg-primary/10 rounded-xl transition-all"
                             onClick={() => {
                                 setIsOpen(false);
                                 router.push("/notifications");

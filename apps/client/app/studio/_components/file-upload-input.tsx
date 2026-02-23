@@ -187,69 +187,70 @@ export function FileUploadInput({
     return (
         <div className={cn("space-y-2", className)}>
             {label && (
-                <label className="text-sm font-medium leading-none">
+                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">
                     {label}
                 </label>
             )}
 
             <div
                 className={cn(
-                    "relative flex flex-col items-center justify-center border-2 border-dashed rounded-lg transition-all cursor-pointer hover:bg-muted/50",
+                    "relative flex flex-col items-center justify-center border-2 border-dashed rounded-2xl transition-all cursor-pointer hover:bg-surface-2/50 group/upload",
                     error
-                        ? "border-red-500 bg-red-50/10"
-                        : "border-muted-foreground/25",
+                        ? "border-destructive/50 bg-destructive/5"
+                        : "border-border/10 bg-surface-1",
                     type === "banner" || type === "channel-banner"
-                        ? "h-40 w-full aspect-video"
-                        : "h-32 w-32",
-                    value ? "border-none p-0 overflow-hidden" : "p-4",
+                        ? "h-48 w-full"
+                        : "h-36 w-36",
+                    value ? "border-none p-0 overflow-hidden shadow-xl" : "p-8",
                 )}
                 onClick={!value ? triggerSelect : undefined}
             >
                 {isUploading ? (
-                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                        <Loader2 className="h-6 w-6 animate-spin" />
-                        <span className="text-xs">Uploading...</span>
+                    <div className="flex flex-col items-center gap-3 text-primary">
+                        <Loader2 className="h-8 w-8 animate-spin" />
+                        <span className="text-[10px] font-black uppercase tracking-widest">
+                            Uploading...
+                        </span>
                     </div>
                 ) : value ? (
-                    <div className="relative w-full h-full group">
+                    <div className="relative w-full h-full group/preview">
                         <img
                             src={getMediaUrl(value)}
                             alt="Preview"
-                            className="w-full h-full object-cover rounded-md"
+                            className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                        <div className="absolute inset-0 bg-background/60 backdrop-blur-md opacity-0 group-hover/preview:opacity-100 transition-all flex items-center justify-center">
                             <Button
                                 size="icon"
                                 variant="destructive"
-                                className="h-8 w-8 rounded-full"
+                                className="h-10 w-10 rounded-full shadow-2xl scale-90 group-hover/preview:scale-100 transition-transform"
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     clearImage();
                                 }}
                             >
-                                <X className="h-4 w-4" />
+                                <X className="h-5 w-5" />
                             </Button>
                         </div>
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center gap-2 text-muted-foreground text-center">
-                        {String(type).includes("avatar") ||
-                        String(type).includes("logo") ? (
-                            <ImageIcon className="h-8 w-8 opacity-50" />
-                        ) : (
-                            <Upload className="h-8 w-8 opacity-50" />
-                        )}
-                        <div className="text-xs">
-                            <span className="font-semibold text-primary">
+                    <div className="flex flex-col items-center gap-4 text-center">
+                        <div className="p-4 rounded-2xl bg-surface-2 text-muted-foreground/40 group-hover/upload:bg-primary/10 group-hover/upload:text-primary transition-all">
+                            {String(type).includes("avatar") ||
+                            String(type).includes("logo") ? (
+                                <ImageIcon className="h-10 w-10" />
+                            ) : (
+                                <Upload className="h-10 w-10" />
+                            )}
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-[11px] font-black uppercase tracking-widest text-foreground/80 group-hover/upload:text-primary transition-colors">
                                 Click to upload
-                            </span>
+                            </p>
                             {validationText && (
-                                <>
-                                    <br />
-                                    <span className="text-[10px] opacity-70">
-                                        {validationText}
-                                    </span>
-                                </>
+                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">
+                                    {validationText}
+                                </p>
                             )}
                         </div>
                     </div>
@@ -266,7 +267,9 @@ export function FileUploadInput({
             </div>
 
             {error && (
-                <p className="text-xs text-red-500 font-medium">{error}</p>
+                <p className="text-[10px] text-destructive font-black uppercase tracking-widest">
+                    {error}
+                </p>
             )}
         </div>
     );

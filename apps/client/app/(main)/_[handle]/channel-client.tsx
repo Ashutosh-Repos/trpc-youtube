@@ -73,7 +73,7 @@ export function ChannelClient({
     return (
         <div className="flex flex-col min-h-screen">
             {/* Banner */}
-            <div className="relative w-full h-[160px] md:h-[220px] bg-gradient-to-br from-primary/20 via-secondary/30 to-background overflow-hidden">
+            <div className="relative w-full h-[160px] md:h-[220px] bg-linear-to-br from-primary/20 via-secondary/30 to-background overflow-hidden">
                 {channel.bannerUrl && (
                     <Image
                         src={getMediaUrl(channel.bannerUrl)}
@@ -107,15 +107,17 @@ export function ChannelClient({
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 flex-1 pb-2">
                         <div className="flex flex-col gap-1">
                             <div className="flex items-center gap-2">
-                                <h1 className="text-2xl md:text-3xl font-bold">
+                                <h1 className="text-3xl md:text-5xl font-black tracking-tighter">
                                     {channel.name}
                                 </h1>
                                 {channel.isVerified && (
-                                    <CheckCircle className="w-6 h-6 text-primary" />
+                                    <CheckCircle className="w-6 h-6 text-primary shadow-[0_0_15px_oklch(var(--primary)/0.4)]" />
                                 )}
                             </div>
-                            <div className="text-sm text-muted-foreground flex flex-row gap-3 flex-wrap mt-0.5">
-                                <span>@{channel.handle}</span>
+                            <div className="text-[13px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 flex flex-row gap-4 flex-wrap mt-2">
+                                <span className="text-foreground/60">
+                                    @{channel.handle}
+                                </span>
                                 <span>
                                     {formatViewCount(channel.subscriberCount)}{" "}
                                     subscribers
@@ -126,8 +128,8 @@ export function ChannelClient({
                                 </span>
                             </div>
                             {channel.location && (
-                                <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                                    <MapPin className="w-3 h-3" />
+                                <div className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-muted-foreground/30 mt-3">
+                                    <MapPin className="w-3.5 h-3.5" />
                                     {channel.location}
                                 </div>
                             )}
@@ -171,9 +173,10 @@ export function ChannelClient({
                     </div>
                 )}
 
-                {/* Videos Section */}
-                <div className="py-6">
-                    <h2 className="text-lg font-semibold mb-5">Videos</h2>
+                <div className="py-12">
+                    <h2 className="text-xl font-black tracking-tighter uppercase mb-6 text-foreground/90">
+                        Videos
+                    </h2>
                     {isLoading ? (
                         <div className="flex justify-center py-16">
                             <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />

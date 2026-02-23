@@ -36,12 +36,12 @@ export default async function StudioDashboardPage({ params }: PageProps) {
             <div className="p-8 space-y-8">
                 <div className="flex items-end justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold">Dashboard</h1>
-                        <p className="text-muted-foreground">
+                        <h1 className="text-4xl font-black tracking-tighter uppercase text-foreground/90">
+                            Dashboard
+                        </h1>
+                        <p className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/40 mt-1">
                             Manage videos and performance for{" "}
-                            <span className="font-medium text-foreground">
-                                {channel.name}
-                            </span>
+                            <span className="text-primary">{channel.name}</span>
                         </p>
                     </div>
                 </div>
@@ -51,13 +51,15 @@ export default async function StudioDashboardPage({ params }: PageProps) {
                         <VideoUploadZone channelId={channelId} />
                     </div>
 
-                    <div className="bg-card border rounded-xl p-6 h-fit">
-                        <h2 className="font-semibold mb-4">
+                    <div className="bg-surface-1 border border-border/10 rounded-2xl p-8 h-fit shadow-xl">
+                        <h2 className="text-[11px] font-black uppercase tracking-widest text-foreground/40 mb-6">
                             Channel Analytics
                         </h2>
-                        <p className="text-xs text-muted-foreground italic">
-                            Analytics data will be available here soon.
-                        </p>
+                        <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-border/10 rounded-xl bg-surface-2/50">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 italic">
+                                Analytics data will be available here soon
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

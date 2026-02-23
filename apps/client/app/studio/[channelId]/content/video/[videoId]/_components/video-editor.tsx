@@ -306,17 +306,20 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 {/* Sticky Header */}
-                <div className="sticky top-0 z-10 flex items-center justify-between border-b bg-background/95 px-6 py-4 backdrop-blur supports-backdrop-filter:bg-background/60">
+                <div className="sticky top-0 z-30 flex items-center justify-between border-b border-border/10 bg-background/80 px-8 py-5 backdrop-blur-xl">
                     <div>
-                        <h1 className="text-lg font-semibold">Video details</h1>
+                        <h1 className="text-2xl font-black tracking-tighter uppercase text-foreground/90">
+                            Video details
+                        </h1>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                         <Button
                             type="button"
                             variant="ghost"
                             size="sm"
                             onClick={handleUndo}
                             disabled={!isDirty || isSaving}
+                            className="rounded-xl font-black uppercase text-[11px] tracking-widest hover:bg-surface-2"
                         >
                             <Undo className="mr-2 h-4 w-4" />
                             Undo Changes
@@ -325,6 +328,7 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                             type="submit"
                             size="sm"
                             disabled={!isDirty || isSaving}
+                            className="rounded-xl font-black uppercase text-[11px] tracking-widest bg-primary text-black hover:bg-primary/90 shadow-[0_0_20px_-5px_oklch(var(--primary)/0.4)]"
                         >
                             {isSaving ? (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -340,9 +344,11 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                     <div className="grid gap-6 lg:grid-cols-3">
                         {/* LEFT COLUMN: Main Metadata */}
                         <div className="space-y-6 lg:col-span-2">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Details</CardTitle>
+                            <Card className="bg-surface-1 border-border/10 rounded-2xl overflow-hidden shadow-xl">
+                                <CardHeader className="px-8 pt-8 pb-4">
+                                    <CardTitle className="text-sm font-black uppercase tracking-widest text-foreground/40">
+                                        Details
+                                    </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <FormField
@@ -350,12 +356,13 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                         name="title"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>
+                                                <FormLabel className="text-[11px] font-black uppercase tracking-widest text-foreground/60">
                                                     Title (required)
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input
                                                         placeholder="Add a title that describes your video"
+                                                        className="bg-surface-2 border-border/10 focus-visible:ring-primary/20 focus-visible:border-primary/30 h-12 rounded-xl transition-all font-medium"
                                                         {...field}
                                                     />
                                                 </FormControl>
@@ -369,13 +376,13 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                         name="description"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>
+                                                <FormLabel className="text-[11px] font-black uppercase tracking-widest text-foreground/60">
                                                     Description
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Textarea
                                                         placeholder="Tell viewers about your video"
-                                                        className="min-h-[150px] resize-none"
+                                                        className="min-h-[200px] resize-none bg-surface-2 border-border/10 focus-visible:ring-primary/20 focus-visible:border-primary/30 rounded-xl transition-all font-medium p-4"
                                                         {...field}
                                                     />
                                                 </FormControl>
@@ -386,9 +393,11 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                 </CardContent>
                             </Card>
 
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Thumbnail</CardTitle>
+                            <Card className="bg-surface-1 border-border/10 rounded-2xl overflow-hidden shadow-xl">
+                                <CardHeader className="px-8 pt-8 pb-4">
+                                    <CardTitle className="text-sm font-black uppercase tracking-widest text-foreground/40">
+                                        Thumbnail
+                                    </CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <FormField
@@ -429,15 +438,15 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                                     {/* Custom Upload Placeholder */}
                                                     <div
                                                         className={cn(
-                                                            "flex aspect-video cursor-pointer items-center justify-center rounded-lg border-2 border-dashed transition-colors",
+                                                            "flex aspect-video cursor-pointer items-center justify-center rounded-xl border-2 border-dashed transition-all",
                                                             isUploadingThumbnail
-                                                                ? "border-muted-foreground/10 bg-muted/30 cursor-wait"
-                                                                : "border-muted-foreground/25 hover:border-muted-foreground/50",
+                                                                ? "border-muted-foreground/10 bg-surface-2 cursor-wait"
+                                                                : "border-border/20 hover:border-primary/50 hover:bg-primary/5",
                                                             field.value &&
                                                                 !video.thumbnailOptions?.includes(
                                                                     field.value,
                                                                 )
-                                                                ? "border-primary ring-2 ring-primary/20"
+                                                                ? "border-primary ring-4 ring-primary/10"
                                                                 : "",
                                                         )}
                                                         onClick={
@@ -452,7 +461,7 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                                           !video.thumbnailOptions?.includes(
                                                               field.value,
                                                           ) ? (
-                                                            <div className="relative h-full w-full overflow-hidden rounded-lg">
+                                                            <div className="relative h-full w-full overflow-hidden rounded-lg group/custom-thumb">
                                                                 <img
                                                                     src={getMediaUrl(
                                                                         field.value,
@@ -460,16 +469,16 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                                                     alt="Custom thumbnail"
                                                                     className="h-full w-full object-cover"
                                                                 />
-                                                                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity hover:opacity-100">
-                                                                    <ImageIcon className="h-6 w-6 text-white" />
+                                                                <div className="absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-sm opacity-0 group-hover/custom-thumb:opacity-100 transition-all">
+                                                                    <ImageIcon className="h-6 w-6 text-foreground" />
                                                                 </div>
                                                             </div>
                                                         ) : (
-                                                            <div className="flex flex-col items-center gap-1 text-center text-xs text-muted-foreground">
-                                                                <ImageIcon className="h-4 w-4" />
-                                                                <span>
+                                                            <div className="flex flex-col items-center gap-2 text-center text-xs text-muted-foreground/40 group-hover:text-primary transition-colors">
+                                                                <ImageIcon className="h-5 w-5" />
+                                                                <p className="font-black uppercase tracking-widest text-[10px]">
                                                                     Upload file
-                                                                </span>
+                                                                </p>
                                                             </div>
                                                         )}
                                                     </div>
@@ -490,9 +499,9 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                 </CardContent>
                             </Card>
 
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>
+                            <Card className="bg-surface-1 border-border/10 rounded-2xl overflow-hidden shadow-xl">
+                                <CardHeader className="px-8 pt-8 pb-4">
+                                    <CardTitle className="text-sm font-black uppercase tracking-widest text-foreground/40">
                                         Category, Tags, and More
                                     </CardTitle>
                                 </CardHeader>
@@ -502,7 +511,9 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                         name="categoryId"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Category</FormLabel>
+                                                <FormLabel className="text-[11px] font-black uppercase tracking-widest text-foreground/60">
+                                                    Category
+                                                </FormLabel>
                                                 <Select
                                                     onValueChange={
                                                         field.onChange
@@ -512,12 +523,15 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                                     }
                                                 >
                                                     <FormControl>
-                                                        <SelectTrigger>
+                                                        <SelectTrigger className="bg-surface-2 border-border/10 focus:ring-primary/20 focus:border-primary/30 h-11 rounded-xl transition-all">
                                                             <SelectValue placeholder="Select a category" />
                                                         </SelectTrigger>
                                                     </FormControl>
-                                                    <SelectContent>
-                                                        <SelectItem value="null">
+                                                    <SelectContent className="bg-surface-3 border-border/10 rounded-xl shadow-2xl p-1">
+                                                        <SelectItem
+                                                            value="null"
+                                                            className="rounded-lg focus:bg-primary/10 focus:text-primary transition-colors"
+                                                        >
                                                             None
                                                         </SelectItem>
                                                         {categoriesData?.categories.map(
@@ -531,6 +545,7 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                                                     value={
                                                                         category.id
                                                                     }
+                                                                    className="rounded-lg focus:bg-primary/10 focus:text-primary transition-colors"
                                                                 >
                                                                     {
                                                                         category.name
@@ -550,7 +565,9 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                         name="tags"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Tags</FormLabel>
+                                                <FormLabel className="text-[11px] font-black uppercase tracking-widest text-foreground/60">
+                                                    Tags
+                                                </FormLabel>
                                                 <FormControl>
                                                     <div className="space-y-3">
                                                         <Input
@@ -565,6 +582,7 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                                             onKeyDown={
                                                                 handleTagKeyDown
                                                             }
+                                                            className="bg-surface-2 border-border/10 focus-visible:ring-primary/20 focus-visible:border-primary/30 h-11 rounded-xl transition-all"
                                                         />
                                                         <div className="flex flex-wrap gap-2">
                                                             {field.value?.map(
@@ -577,11 +595,11 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                                                             index
                                                                         }
                                                                         variant="secondary"
-                                                                        className="flex items-center gap-1"
+                                                                        className="flex items-center gap-1.5 bg-primary/10 text-primary hover:bg-primary/20 border-transparent transition-all rounded-lg px-2.5 py-1 font-bold text-[10px] uppercase tracking-wider"
                                                                     >
                                                                         {tag}
                                                                         <X
-                                                                            className="h-3 w-3 cursor-pointer"
+                                                                            className="h-3 w-3 cursor-pointer opacity-60 hover:opacity-100"
                                                                             onClick={() =>
                                                                                 removeTag(
                                                                                     tag,
@@ -609,8 +627,8 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                         {/* RIGHT COLUMN: Visibility & Schedule */}
                         <div className="space-y-6">
                             {/* ── Video preview / processing panel ── */}
-                            <Card>
-                                <CardContent className="pt-6">
+                            <Card className="bg-surface-1 border-border/10 rounded-2xl overflow-hidden shadow-xl border-none">
+                                <CardContent className="p-0">
                                     {videoIsViewable ? (
                                         /* ── Player (video ready) ── */
                                         <div className="aspect-video w-full overflow-hidden rounded-lg bg-black">
@@ -631,7 +649,7 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                         </div>
                                     ) : (
                                         /* ── Processing panel ── */
-                                        <div className="aspect-video w-full overflow-hidden rounded-lg bg-secondary/40 p-6 flex flex-col justify-center">
+                                        <div className="aspect-video w-full overflow-hidden rounded-none bg-surface-2 p-12 flex flex-col justify-center items-center text-center border-b border-border/10">
                                             <VideoProcessingPanel
                                                 status={processingStatus}
                                                 progress={progress}
@@ -642,20 +660,20 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                     )}
 
                                     {/* ── Status badge row ── */}
-                                    <div className="mt-3 flex items-center gap-2">
+                                    <div className="mt-0 py-4 px-8 flex items-center gap-3 bg-surface-1">
                                         {processingStatus === "READY" ? (
-                                            <span className="flex items-center gap-1 text-xs text-emerald-500 font-medium">
-                                                <CheckCircle2 className="h-3.5 w-3.5" />
+                                            <span className="flex items-center gap-2 text-[10px] text-emerald-500 font-black uppercase tracking-widest">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                                                 Processing complete
                                             </span>
                                         ) : processingStatus === "FAILED" ? (
-                                            <span className="flex items-center gap-1 text-xs text-destructive font-medium">
+                                            <span className="flex items-center gap-2 text-[10px] text-destructive font-black uppercase tracking-widest">
                                                 <AlertTriangle className="h-3.5 w-3.5" />
                                                 Processing failed
                                             </span>
                                         ) : processingStatus ? (
-                                            <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                            <span className="flex items-center gap-2 text-[10px] text-muted-foreground/60 font-black uppercase tracking-widest">
+                                                <Loader2 className="h-3 w-3 animate-spin" />
                                                 {processingStatus ===
                                                 "UPLOADING"
                                                     ? "Uploading…"
@@ -665,24 +683,28 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                     </div>
 
                                     {/* ── Video link ── */}
-                                    <div className="mt-3 break-all bg-muted/50 p-3 text-xs text-muted-foreground">
-                                        <p>Video Link</p>
+                                    <div className="mt-0 break-all bg-surface-2/50 p-6 text-[11px] border-t border-border/10">
+                                        <p className="font-black uppercase tracking-widest text-foreground/30 mb-2">
+                                            Video Link
+                                        </p>
                                         <a
                                             href={`/watch/${video.id}`}
                                             target="_blank"
-                                            className="text-primary hover:underline"
+                                            className="text-primary hover:underline font-bold text-sm"
                                         >
                                             {typeof window !== "undefined"
-                                                ? `${window.location.origin}/watch/${video.id}`
+                                                ? `${window.location.host}/watch/${video.id}`
                                                 : `/watch/${video.id}`}
                                         </a>
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Visibility</CardTitle>
+                            <Card className="bg-surface-1 border-border/10 rounded-2xl overflow-hidden shadow-xl">
+                                <CardHeader className="px-8 pt-8 pb-4">
+                                    <CardTitle className="text-sm font-black uppercase tracking-widest text-foreground/40">
+                                        Visibility
+                                    </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <FormField
@@ -718,7 +740,13 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                                                 key={
                                                                     option.value
                                                                 }
-                                                                className="flex items-start space-x-3 space-y-0 text-sm"
+                                                                className="flex items-start space-x-3 space-y-0 text-sm p-3 rounded-xl hover:bg-surface-2 transition-all cursor-pointer group"
+                                                                onClick={(
+                                                                    e,
+                                                                ) => {
+                                                                    // Only trigger if we didn't click the checkbox itself (already handled by checkbox)
+                                                                    // but actually Checkbox component usually handles this via label peer logic
+                                                                }}
                                                             >
                                                                 <Checkbox
                                                                     checked={
@@ -748,15 +776,15 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                                                             );
                                                                         }
                                                                     }}
-                                                                    className="mt-0.5 rounded-full"
+                                                                    className="mt-0.5 border-border/20 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                                                                 />
-                                                                <div className="grid gap-1.5 leading-none">
-                                                                    <label className="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                                                <div className="grid gap-1 leading-none">
+                                                                    <label className="text-[13px] font-black uppercase tracking-widest text-foreground/80 group-hover:text-primary transition-colors cursor-pointer">
                                                                         {
                                                                             option.label
                                                                         }
                                                                     </label>
-                                                                    <p className="text-xs text-muted-foreground">
+                                                                    <p className="text-[11px] text-muted-foreground/40 font-medium">
                                                                         {
                                                                             option.desc
                                                                         }
@@ -778,8 +806,8 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                                             render={({
                                                                 field: dateField,
                                                             }) => (
-                                                                <FormItem className="flex flex-col">
-                                                                    <FormLabel>
+                                                                <FormItem className="flex flex-col gap-2 pt-4">
+                                                                    <FormLabel className="text-[11px] font-black uppercase tracking-widest text-foreground/60">
                                                                         Schedule
                                                                         Date
                                                                     </FormLabel>
@@ -793,9 +821,9 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                                                                         "outline"
                                                                                     }
                                                                                     className={cn(
-                                                                                        "w-[240px] pl-3 text-left font-normal",
+                                                                                        "w-full bg-surface-2 border-border/10 h-12 rounded-xl text-left font-black uppercase text-[11px] tracking-widest px-4 hover:bg-surface-3 transition-all",
                                                                                         !dateField.value &&
-                                                                                            "text-muted-foreground",
+                                                                                            "text-muted-foreground/40",
                                                                                     )}
                                                                                 >
                                                                                     {dateField.value ? (
@@ -810,7 +838,7 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                                                                             date
                                                                                         </span>
                                                                                     )}
-                                                                                    <Calendar className="ml-auto h-4 w-4 opacity-50" />
+                                                                                    <Calendar className="ml-auto h-4 w-4 opacity-30" />
                                                                                 </Button>
                                                                             </FormControl>
                                                                         </PopoverTrigger>

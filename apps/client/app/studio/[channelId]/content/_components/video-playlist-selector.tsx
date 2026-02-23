@@ -109,35 +109,37 @@ export const VideoPlaylistSelector = ({
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="bg-[#1f1f23] border-white/10 text-white max-w-sm p-0 overflow-hidden">
-                <DialogHeader className="p-4 border-b border-white/5">
-                    <DialogTitle className="text-lg font-bold">
+            <DialogContent className="bg-surface-3/95 backdrop-blur-2xl border-border/40 text-foreground max-w-sm p-0 overflow-hidden rounded-3xl shadow-2xl">
+                <DialogHeader className="p-6 border-b border-border/10">
+                    <DialogTitle className="text-xl font-black tracking-tighter uppercase">
                         Save video to...
                     </DialogTitle>
                 </DialogHeader>
 
-                <div className="p-2">
-                    <div className="relative mb-2">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                <div className="p-4">
+                    <div className="relative mb-4 group">
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/30 group-focus-within:text-primary transition-colors" />
                         <Input
                             placeholder="Filter playlists"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="bg-black/20 border-half border-white/5 pl-9 h-10 focus-visible:ring-primary"
+                            className="bg-surface-1 border-border/10 pl-10 h-10 text-[11px] font-black uppercase tracking-widest rounded-xl focus-visible:ring-primary/20 transition-all"
                         />
                     </div>
 
                     <ScrollArea className="h-[300px] pr-4">
                         {loading ? (
                             <div className="flex items-center justify-center h-full">
-                                <p className="text-xs text-zinc-500 animate-pulse">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/30 animate-pulse">
                                     Loading playlists...
                                 </p>
                             </div>
                         ) : filteredPlaylists.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-full gap-2 opacity-50">
-                                <ListVideo className="w-8 h-8" />
-                                <p className="text-xs">No playlists found</p>
+                                <ListVideo className="w-10 h-10 text-muted-foreground/20" />
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">
+                                    No playlists found
+                                </p>
                             </div>
                         ) : (
                             <div className="space-y-1">
@@ -161,16 +163,16 @@ export const VideoPlaylistSelector = ({
                                                     !!checked,
                                                 )
                                             }
-                                            className="border-white/20 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                                            className="border-border/20 data-[state=checked]:bg-primary data-[state=checked]:border-primary rounded-md h-5 w-5"
                                         />
                                         <div className="flex flex-col min-w-0">
                                             <Label
                                                 htmlFor={playlist.id}
-                                                className="text-sm font-semibold truncate cursor-pointer group-hover:text-primary transition-colors"
+                                                className="text-[13px] font-black tracking-tight truncate cursor-pointer group-hover:text-primary transition-colors uppercase"
                                             >
                                                 {playlist.title}
                                             </Label>
-                                            <span className="text-[10px] text-zinc-500 capitalize">
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40">
                                                 {playlist.visibility.toLowerCase()}
                                             </span>
                                         </div>
@@ -181,10 +183,10 @@ export const VideoPlaylistSelector = ({
                     </ScrollArea>
                 </div>
 
-                <div className="p-2 border-t border-white/5 bg-black/20">
+                <div className="p-3 border-t border-border/10 bg-surface-1/50">
                     <Button
                         variant="ghost"
-                        className="w-full justify-start gap-3 h-12 hover:bg-white/5 font-bold text-sm"
+                        className="w-full justify-start gap-4 h-12 hover:bg-primary/10 hover:text-primary rounded-xl font-black text-[11px] uppercase tracking-widest transition-all"
                         onClick={() => {
                             toast.info(
                                 "Feature coming soon: New playlist from here",

@@ -16,7 +16,7 @@ export function ShortCard({ video }: ShortCardProps) {
             className="group relative flex w-[160px] sm:w-[190px] md:w-[210px] flex-col shrink-0 gap-2 cursor-pointer"
         >
             {/* 9:16 Container */}
-            <div className="relative aspect-9/16 w-full overflow-hidden rounded-xl transition-all duration-300 group-hover:rounded-none bg-muted">
+            <div className="relative aspect-9/16 w-full overflow-hidden rounded-2xl transition-all duration-300 group-hover:rounded-none bg-surface-2 border border-border/10">
                 {/* Fallback to original thumbnail if no vertical specific one exists, object-cover will handle it */}
                 {video.thumbnailUrl ? (
                     <img
@@ -27,17 +27,17 @@ export function ShortCard({ video }: ShortCardProps) {
                 ) : null}
 
                 {/* Bottom Gradient overlay */}
-                <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent opacity-90 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-linear-to-t from-background/90 via-background/20 to-transparent opacity-90 transition-opacity duration-300" />
 
                 {/* Text Overlay */}
-                <div className="absolute bottom-0 left-0 flex w-full flex-col justify-end p-3 text-white">
+                <div className="absolute bottom-0 left-0 flex w-full flex-col justify-end p-4 text-foreground">
                     <span
-                        className="font-medium text-sm line-clamp-2 leading-snug drop-shadow-md"
+                        className="font-black text-sm line-clamp-2 leading-tight tracking-tight drop-shadow-sm"
                         title={video.title}
                     >
                         {video.title}
                     </span>
-                    <span className="text-[13px] text-white/90 mt-1.5 drop-shadow">
+                    <span className="text-[11px] font-black uppercase tracking-widest text-foreground/60 mt-1.5 drop-shadow">
                         {formatViewCount(video.viewCount)} views
                     </span>
                 </div>

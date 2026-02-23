@@ -18,14 +18,14 @@ export function CompactVideoCard({ video }: CompactVideoCardProps) {
         <div className="flex gap-2 group cursor-pointer items-start w-full">
             <Link
                 href={videoUrl}
-                className="relative w-[168px] h-[94px] bg-secondary rounded-lg shrink-0 overflow-hidden"
+                className="relative w-[168px] h-[94px] bg-surface-2 rounded-xl shrink-0 overflow-hidden border border-border/10 group-hover:shadow-lg transition-all"
             >
                 <VideoHoverPreview
                     thumbnailUrl={getMediaUrl(video.thumbnailUrl)}
                     spriteUrl={getMediaUrl(video.previewSprite)}
                     duration={video.duration}
                 />
-                <div className="absolute bottom-1 right-1 bg-black/80 px-1 rounded text-[10px] font-medium text-white group-hover:opacity-0 transition-opacity">
+                <div className="absolute bottom-1 right-1 bg-surface-3/90 backdrop-blur-md px-1.5 py-0.5 rounded-lg border border-border/20 text-[10px] font-black tracking-widest text-foreground group-hover:scale-105 transition-all">
                     {formatDuration(video.duration)}
                 </div>
             </Link>
@@ -38,13 +38,13 @@ export function CompactVideoCard({ video }: CompactVideoCardProps) {
                 </Link>
                 <Link
                     href={channelUrl}
-                    className="text-xs text-muted-foreground line-clamp-1 mt-1 hover:text-foreground transition-colors"
+                    className="text-[12px] font-black uppercase tracking-widest text-muted-foreground/40 hover:text-primary transition-colors line-clamp-1 mt-1"
                 >
                     {video.channels.name}
                 </Link>
-                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                <div className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/30 flex items-center gap-2">
                     <span>{formatViewCount(video.viewCount)} views</span>
-                    <span>•</span>
+                    <span className="w-1 h-1 rounded-full bg-border/40" />
                     <span>
                         {formatDistanceToNowStrict(new Date(video.createdAt), {
                             addSuffix: true,

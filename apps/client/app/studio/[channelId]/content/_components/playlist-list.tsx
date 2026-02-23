@@ -25,7 +25,7 @@ export const PlaylistList = ({
     return (
         <div className="w-full min-w-[1000px]">
             {/* Table Header */}
-            <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-white/5 bg-[#0f0f0f] sticky top-0 z-20">
+            <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-border/10 bg-background sticky top-0 z-20">
                 <div className="col-span-6 flex gap-4">
                     <div className="flex items-center">
                         <Checkbox
@@ -36,26 +36,28 @@ export const PlaylistList = ({
                             onCheckedChange={(checked) =>
                                 onSelectAll(!!checked)
                             }
-                            className="border-white/20 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                            className="border-border/20 data-[state=checked]:bg-primary data-[state=checked]:border-primary rounded-md h-5 w-5"
                         />
                     </div>
-                    <span className="text-xs font-bold uppercase tracking-widest text-zinc-500 ml-4">
-                        Playlist
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 ml-4">
+                        {selectedIds.length > 0
+                            ? `${selectedIds.length} Selected`
+                            : "Playlist"}
                     </span>
                 </div>
-                <div className="col-span-2 text-xs font-bold uppercase tracking-widest text-zinc-500 flex items-center">
+                <div className="col-span-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 flex items-center">
                     Visibility
                 </div>
-                <div className="col-span-2 text-xs font-bold uppercase tracking-widest text-zinc-500 flex items-center">
+                <div className="col-span-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 flex items-center">
                     Last Updated
                 </div>
-                <div className="col-span-2 text-xs font-bold uppercase tracking-widest text-zinc-500 flex items-center justify-end pr-6">
-                    Videos
+                <div className="col-span-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 flex items-center justify-end pr-8">
+                    Video Count
                 </div>
             </div>
 
             {/* List Body */}
-            <div className="divide-y divide-white/5">
+            <div className="divide-y divide-border/10">
                 {playlists.map((playlist) => (
                     <PlaylistRow
                         key={playlist.id}

@@ -86,20 +86,28 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
     if (!mounted) {
         return (
-            <div className="w-full aspect-video bg-black rounded-xl animate-pulse flex items-center justify-center text-white/20 text-xs">
-                Initializing Player...
+            <div className="w-full aspect-video bg-surface-1 rounded-2xl animate-pulse flex flex-col items-center justify-center text-muted-foreground/40 gap-3 border border-border/10">
+                <div className="w-12 h-12 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em]">
+                    Initializing Engine...
+                </span>
             </div>
         );
     }
 
     return (
-        <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl relative group">
+        <div className="w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl relative group border border-border/10">
             <MediaThemeSutro
                 style={
                     {
                         width: "100%",
                         height: "100%",
-                        ["--media-primary-color" as any]: "rgb(59, 130, 246)",
+                        ["--media-primary-color" as any]:
+                            "oklch(var(--primary))",
+                        ["--media-accent-color" as any]:
+                            "oklch(var(--primary))",
+                        ["--media-secondary-color" as any]:
+                            "oklch(var(--surface-3)/0.8)",
                     } as React.CSSProperties
                 }
             >

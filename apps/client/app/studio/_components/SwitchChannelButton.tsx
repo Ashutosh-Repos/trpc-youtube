@@ -22,10 +22,12 @@ export const SwitchChannelButton = () => {
             variant="ghost"
             size="sm"
             onClick={clearActiveChannel}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2.5 h-10 px-4 rounded-xl hover:bg-surface-2 transition-all group border border-transparent hover:border-border/10"
         >
-            <LayoutGridIcon className="w-4 h-4" />
-            <span>Switch Channel</span>
+            <LayoutGridIcon className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
+            <span className="text-[11px] font-black uppercase tracking-widest text-foreground/80">
+                Switch Channel
+            </span>
         </Button>
     );
 };

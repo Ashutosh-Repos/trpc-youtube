@@ -75,14 +75,14 @@ const ResetPasswordForm = () => {
                     </CardItem>
                     <CardItem
                         translateZ="50"
-                        className="text-2xl font-bold text-red-500 w-full flex items-center justify-center text-center"
+                        className="text-2xl font-black tracking-tighter uppercase text-destructive w-full flex items-center justify-center text-center"
                     >
                         Invalid or Missing Token
                     </CardItem>
                     <CardItem
                         as="p"
                         translateZ="60"
-                        className="text-zinc-500 text-sm mt-4 dark:text-zinc-300 w-full text-center"
+                        className="text-muted-foreground/40 text-[11px] font-black uppercase tracking-widest w-full text-center"
                     >
                         The password reset token is missing or has expired.
                     </CardItem>
@@ -113,20 +113,20 @@ const ResetPasswordForm = () => {
                 </CardItem>
                 <div className="flex flex-col items-center justify-center mb-6">
                     <CardItem translateZ="50">
-                        <div className="p-3 bg-blue-900/40 rounded-full mb-3">
-                            <ShieldCheck className="w-8 h-8 text-blue-400" />
+                        <div className="p-4 bg-primary/10 rounded-full mb-4 shadow-[0_0_20px_-5px_oklch(var(--primary)/0.2)]">
+                            <ShieldCheck className="w-8 h-8 text-primary" />
                         </div>
                     </CardItem>
                     <CardItem
                         translateZ="60"
-                        className="text-2xl font-bold text-zinc-600 dark:text-white w-full text-center"
+                        className="text-3xl font-black tracking-tighter uppercase text-foreground/90 w-full text-center"
                     >
                         Set New Password
                     </CardItem>
                     <CardItem
                         as="p"
                         translateZ="40"
-                        className="text-zinc-500 text-xs mt-2 dark:text-zinc-300 w-full text-center"
+                        className="text-muted-foreground/40 text-[10px] font-black uppercase tracking-[0.2em] mt-2 w-full text-center"
                     >
                         Please choose a strong password to protect your account.
                     </CardItem>
@@ -149,7 +149,7 @@ const ResetPasswordForm = () => {
                                 name="newPassword"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-neutral-300">
+                                        <FormLabel className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/60">
                                             New Password
                                         </FormLabel>
                                         <FormControl>
@@ -159,7 +159,7 @@ const ResetPasswordForm = () => {
                                                 {...field}
                                             />
                                         </FormControl>
-                                        <FormMessage className="text-red-400 text-xs" />
+                                        <FormMessage className="text-destructive text-[10px] font-bold uppercase tracking-widest" />
                                     </FormItem>
                                 )}
                             />

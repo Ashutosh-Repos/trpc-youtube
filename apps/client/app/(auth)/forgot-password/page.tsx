@@ -65,20 +65,20 @@ const ForgotPasswordPage = () => {
                     </CardItem>
                     <div className="flex flex-col items-center justify-center space-y-4">
                         <CardItem translateZ="50">
-                            <div className="p-3 bg-zinc-800 rounded-full">
-                                <MailCheck className="w-8 h-8 text-white" />
+                            <div className="p-4 bg-primary/10 rounded-full mb-2 shadow-[0_0_20px_-5px_oklch(var(--primary)/0.2)]">
+                                <MailCheck className="w-8 h-8 text-primary" />
                             </div>
                         </CardItem>
                         <CardItem
                             translateZ="60"
-                            className="text-2xl font-bold text-zinc-600 dark:text-white w-full text-center"
+                            className="text-3xl font-black tracking-tighter uppercase text-foreground/90 w-full text-center"
                         >
                             Email Sent
                         </CardItem>
                         <CardItem
                             as="p"
                             translateZ="70"
-                            className="text-zinc-500 text-sm dark:text-zinc-300 w-full text-center"
+                            className="text-muted-foreground/40 text-[10px] font-black uppercase tracking-[0.2em] w-full text-center"
                         >
                             Check your inbox for a link to reset your password.
                         </CardItem>
@@ -107,14 +107,14 @@ const ForgotPasswordPage = () => {
                 </CardItem>
                 <CardItem
                     translateZ="50"
-                    className="text-2xl font-bold text-zinc-600 dark:text-white w-full flex items-center justify-center"
+                    className="text-3xl font-black tracking-tighter uppercase text-foreground/90 w-full flex items-center justify-center"
                 >
                     Forgot Password?
                 </CardItem>
                 <CardItem
                     as="p"
                     translateZ="20"
-                    className="text-zinc-500 text-xs mt-2 dark:text-zinc-300 w-full flex items-center justify-center text-center"
+                    className="text-muted-foreground/40 text-[10px] font-black uppercase tracking-[0.2em] mt-2 w-full flex items-center justify-center text-center"
                 >
                     Don&apos;t worry! It happens. Please enter the email
                     associated with your account.
@@ -130,7 +130,7 @@ const ForgotPasswordPage = () => {
                                 name="email"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-neutral-300">
+                                        <FormLabel className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/60">
                                             Email Address
                                         </FormLabel>
                                         <FormControl>
@@ -139,7 +139,7 @@ const ForgotPasswordPage = () => {
                                                 {...field}
                                             />
                                         </FormControl>
-                                        <FormMessage className="text-red-400 text-xs" />
+                                        <FormMessage className="text-destructive text-[10px] font-bold uppercase tracking-widest" />
                                     </FormItem>
                                 )}
                             />
@@ -162,7 +162,7 @@ const ForgotPasswordPage = () => {
                                 </Button>
                                 <Link
                                     href="/login"
-                                    className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-white transition-colors"
+                                    className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/30 hover:text-primary transition-colors"
                                 >
                                     Remembered? Back to login
                                 </Link>

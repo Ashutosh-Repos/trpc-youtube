@@ -106,9 +106,9 @@ export const PlaylistFormModal = ({
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="bg-[#1f1f23] border-white/10 text-white max-w-md">
-                <DialogHeader>
-                    <DialogTitle className="text-xl font-bold tracking-tight">
+            <DialogContent className="bg-surface-1 border-border/10 text-foreground max-w-md rounded-2xl shadow-2xl">
+                <DialogHeader className="pt-8 px-8">
+                    <DialogTitle className="text-2xl font-black tracking-tighter uppercase text-foreground/90">
                         {playlist ? "Edit Playlist" : "New Playlist"}
                     </DialogTitle>
                 </DialogHeader>
@@ -117,37 +117,37 @@ export const PlaylistFormModal = ({
                     <div className="space-y-2">
                         <Label
                             htmlFor="title"
-                            className="text-zinc-400 font-semibold uppercase text-[10px] tracking-widest"
+                            className="text-[11px] font-black uppercase tracking-widest text-foreground/40"
                         >
                             Title (required)
                         </Label>
                         <Input
                             id="title"
-                            placeholder="Add title"
+                            placeholder="Give your playlist a title"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="bg-black/20 border-white/5 focus-visible:ring-primary h-12"
+                            className="bg-surface-2 border-border/10 focus-visible:ring-primary/20 focus-visible:border-primary/30 h-12 rounded-xl transition-all font-medium"
                         />
                     </div>
 
                     <div className="space-y-2">
                         <Label
                             htmlFor="description"
-                            className="text-zinc-400 font-semibold uppercase text-[10px] tracking-widest"
+                            className="text-[11px] font-black uppercase tracking-widest text-foreground/40"
                         >
                             Description
                         </Label>
                         <Textarea
                             id="description"
-                            placeholder="Add description"
+                            placeholder="Tell viewers what your playlist is about"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            className="bg-black/20 border-white/5 focus-visible:ring-primary min-h-[100px] resize-none"
+                            className="bg-surface-2 border-border/10 focus-visible:ring-primary/20 focus-visible:border-primary/30 min-h-[120px] resize-none rounded-xl transition-all font-medium p-4"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <Label className="text-zinc-400 font-semibold uppercase text-[10px] tracking-widest">
+                        <Label className="text-[11px] font-black uppercase tracking-widest text-foreground/40">
                             Visibility
                         </Label>
                         <Select
@@ -158,41 +158,59 @@ export const PlaylistFormModal = ({
                                 )
                             }
                         >
-                            <SelectTrigger className="bg-black/20 border-white/5 h-12">
+                            <SelectTrigger className="bg-surface-2 border-border/10 focus:ring-primary/20 focus:border-primary/30 h-12 rounded-xl transition-all">
                                 <SelectValue placeholder="Select visibility" />
                             </SelectTrigger>
-                            <SelectContent className="bg-[#1f1f23] border-white/10 text-white">
-                                <SelectItem value="PUBLIC">Public</SelectItem>
-                                <SelectItem value="UNLISTED">
+                            <SelectContent className="bg-surface-3 border-border/10 text-foreground rounded-xl shadow-2xl p-1.5">
+                                <SelectItem
+                                    value="PUBLIC"
+                                    className="rounded-lg focus:bg-primary/10 focus:text-primary transition-colors cursor-pointer"
+                                >
+                                    Public
+                                </SelectItem>
+                                <SelectItem
+                                    value="UNLISTED"
+                                    className="rounded-lg focus:bg-primary/10 focus:text-primary transition-colors cursor-pointer"
+                                >
                                     Unlisted
                                 </SelectItem>
-                                <SelectItem value="PRIVATE">Private</SelectItem>
+                                <SelectItem
+                                    value="PRIVATE"
+                                    className="rounded-lg focus:bg-primary/10 focus:text-primary transition-colors cursor-pointer"
+                                >
+                                    Private
+                                </SelectItem>
                             </SelectContent>
                         </Select>
-                        <p className="text-[10px] text-zinc-500 mt-1 pl-1">
+                        <p className="text-[10px] text-muted-foreground/30 mt-1.5 pl-1 font-black uppercase tracking-widest">
                             {visibility === "PUBLIC" &&
-                                "Anyone can search for and view"}
+                                "Public • Anyone can search for and view"}
                             {visibility === "UNLISTED" &&
-                                "Anyone with the link can view"}
-                            {visibility === "PRIVATE" && "Only you can view"}
+                                "Unlisted • Anyone with the link can view"}
+                            {visibility === "PRIVATE" &&
+                                "Private • Only you can view"}
                         </p>
                     </div>
                 </div>
 
-                <DialogFooter className="gap-2 sm:gap-0">
+                <DialogFooter className="gap-3 sm:gap-0 px-8 pb-8 pt-4">
                     <Button
                         variant="ghost"
                         onClick={onClose}
-                        className="hover:bg-white/5 font-bold"
+                        className="hover:bg-surface-2 font-black uppercase text-[11px] tracking-widest rounded-xl transition-all"
                     >
                         Cancel
                     </Button>
                     <Button
                         onClick={handleSubmit}
                         disabled={isPending}
-                        className="bg-primary hover:bg-primary/90 text-black font-bold px-8"
+                        className="bg-primary hover:bg-primary/90 text-black font-black uppercase text-[11px] tracking-widest rounded-xl px-10 transition-all shadow-[0_0_20px_-5px_oklch(var(--primary)/0.4)]"
                     >
-                        {isPending ? "Saving..." : playlist ? "Save" : "Create"}
+                        {isPending
+                            ? "Saving..."
+                            : playlist
+                              ? "Save Changes"
+                              : "Create Playlist"}
                     </Button>
                 </DialogFooter>
             </DialogContent>

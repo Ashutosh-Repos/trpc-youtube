@@ -8,8 +8,10 @@ export default async function Home() {
     // const hello = await trpcServer.hello.query({ name: "Next.js Server" });
 
     return (
-        <div className="w-full h-full p-4 sm:p-6 pb-20 overflow-y-auto">
-            <h1 className="text-2xl font-bold mb-4">Recommended</h1>
+        <div className="w-full h-full p-6 pb-24 overflow-y-auto font-sans">
+            <h1 className="text-3xl font-black tracking-[calc(-0.02em*var(--font-sans))] uppercase mb-8 text-foreground/90">
+                Recommended
+            </h1>
             <HomeFeedClient />
         </div>
     );

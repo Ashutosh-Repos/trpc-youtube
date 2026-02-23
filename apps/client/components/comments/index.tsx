@@ -242,8 +242,8 @@ export const CommentInput = memo(
                         onChange={(e) => setContent(e.target.value)}
                         onFocus={() => setIsFocused(true)}
                         className={cn(
-                            "min-h-[40px] bg-transparent border-0 border-b border-muted-foreground/20 rounded-none focus-visible:ring-0 px-0 resize-none transition-colors",
-                            "focus-visible:border-primary focus-visible:border-b-2 placeholder:text-muted-foreground/70",
+                            "min-h-[44px] bg-surface-2/40 border-border/10 rounded-2xl focus-visible:ring-1 focus-visible:ring-primary/20 px-4 py-3 resize-none transition-all placeholder:text-[11px] placeholder:font-black placeholder:uppercase placeholder:tracking-widest placeholder:text-muted-foreground/40",
+                            "focus-visible:bg-surface-2 placeholder:text-muted-foreground/70",
                         )}
                         rows={isFocused || content.length > 0 ? 3 : 1}
                     />
@@ -309,7 +309,7 @@ const CommentReplies = memo(({ parentId, videoId }: CommentRepliesProps) => {
                 <Button
                     variant="ghost"
                     size="sm"
-                    className="text-blue-400 hover:text-blue-300 w-fit h-auto p-0"
+                    className="text-[11px] font-black uppercase tracking-widest text-primary hover:text-primary/80 hover:bg-primary/10 px-4 rounded-full w-fit h-auto"
                     onClick={() => fetchNextPage()}
                     disabled={isFetchingNextPage}
                 >
@@ -350,18 +350,18 @@ export const CommentItem = memo(({ comment, videoId }: CommentItemProps) => {
             <div className="flex-1 flex flex-col gap-1 min-w-0">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-sm">
-                        <span className="font-bold hover:text-white cursor-pointer">
+                        <span className="font-black text-foreground/90 tracking-tight hover:text-primary cursor-pointer transition-colors">
                             {authorChannel
                                 ? `@${authorChannel.handle}`
                                 : comment.user.name}
                         </span>
-                        <span className="text-muted-foreground text-xs">
+                        <span className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/30">
                             {formatDistanceToNow(new Date(comment.createdAt), {
                                 addSuffix: true,
                             })}
                         </span>
                         {comment.isEdited && (
-                            <span className="text-[10px] text-muted-foreground">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/20">
                                 (edited)
                             </span>
                         )}
@@ -438,7 +438,7 @@ export const CommentItem = memo(({ comment, videoId }: CommentItemProps) => {
                     <Button
                         variant="ghost"
                         size="sm"
-                        className="rounded-full h-8 text-xs font-semibold ml-2"
+                        className="rounded-full h-8 text-[11px] font-black uppercase tracking-widest text-muted-foreground/40 hover:text-foreground hover:bg-surface-2 ml-2"
                         onClick={() => setIsReplying(!isReplying)}
                     >
                         Reply
@@ -463,7 +463,7 @@ export const CommentItem = memo(({ comment, videoId }: CommentItemProps) => {
                     <Button
                         variant="ghost"
                         size="sm"
-                        className="text-blue-400 hover:text-blue-300 w-fit h-auto p-0 font-semibold text-xs mt-2"
+                        className="text-[11px] font-black uppercase tracking-widest text-primary hover:text-primary/80 hover:bg-primary/10 px-4 rounded-full w-fit h-auto mt-2"
                         onClick={() => setShowReplies(!showReplies)}
                     >
                         {showReplies
@@ -588,8 +588,10 @@ export function CommentSectionInner({
     if (isLoading && allComments.length === 0) return <CommentListSkeleton />;
 
     return (
-        <div className="w-full max-w-[1280px] mx-auto mt-6">
-            <h3 className="text-xl font-bold mb-6">Comments</h3>
+        <div className="w-full max-w-[1280px] mx-auto mt-12">
+            <h3 className="text-2xl font-black mb-8 tracking-tighter uppercase text-foreground/90">
+                Comments
+            </h3>
             <CommentInput videoId={videoId} />
 
             {/* Highlighted Linked Comment */}
@@ -599,8 +601,8 @@ export function CommentSectionInner({
                 </div>
             )}
             {lc && highlightedComment && (
-                <div className="mt-8 mb-6 p-4 rounded-xl border border-primary/20 bg-primary/5">
-                    <div className="text-xs font-semibold text-primary mb-4 uppercase tracking-wider flex items-center gap-2">
+                <div className="mt-8 mb-8 p-6 rounded-3xl border border-primary/20 bg-primary/5 shadow-[0_0_30px_-10px_oklch(var(--primary)/0.1)]">
+                    <div className="text-[10px] font-black text-primary mb-6 uppercase tracking-[0.2em] flex items-center gap-2">
                         <span>Highlighted Comment</span>
                     </div>
                     <CommentItem

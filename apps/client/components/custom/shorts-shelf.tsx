@@ -28,7 +28,7 @@ export function ShortsShelf({ source }: ShortsShelfProps) {
                     {Array.from({ length: 6 }).map((_, i) => (
                         <div
                             key={i}
-                            className="w-[210px] aspect-9/16 bg-muted rounded-xl shrink-0"
+                            className="w-[210px] aspect-9/16 bg-surface-2 rounded-2xl shrink-0 animate-pulse border border-border/10"
                         />
                     ))}
                 </div>
@@ -46,16 +46,16 @@ export function ShortsShelf({ source }: ShortsShelfProps) {
             <div className="flex items-center justify-between px-2 mb-6 w-full">
                 <div className="flex items-center gap-2">
                     <Youtube
-                        className="w-7 h-7 text-red-600"
+                        className="w-7 h-7 text-primary"
                         fill="currentColor"
                     />
-                    <h2 className="text-xl font-bold flex items-center gap-2">
+                    <h2 className="text-xl font-black tracking-tighter uppercase text-foreground/90">
                         Shorts
                     </h2>
                 </div>
                 <button
                     onClick={() => setIsVisible(false)}
-                    className="p-2 hover:bg-muted rounded-full transition-colors text-muted-foreground"
+                    className="p-2 hover:bg-surface-2 rounded-full transition-all text-muted-foreground/60 hover:text-foreground active:scale-90"
                     title="Not interested"
                 >
                     <X className="w-5 h-5" />

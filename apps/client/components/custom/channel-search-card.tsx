@@ -30,14 +30,14 @@ export function ChannelSearchCard({ channel }: ChannelSearchCardProps) {
         });
 
     return (
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-4 border-b border-border/10 w-full hover:bg-neutral-900/40 transition-colors">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 p-6 border-b border-border/10 w-full hover:bg-surface-2/60 transition-all duration-300 font-sans group">
             <Link href={channelUrl} className="shrink-0">
                 <Avatar className="w-24 h-24 sm:w-32 sm:h-32 mb-2 sm:mb-0">
                     <AvatarImage
                         src={getMediaUrl(channel.image)}
                         alt={channel.name}
                     />
-                    <AvatarFallback className="text-2xl">
+                    <AvatarFallback className="font-black text-2xl bg-surface-2 uppercase tracking-widest">
                         {channel.name?.charAt(0) || "C"}
                     </AvatarFallback>
                 </Avatar>
@@ -45,16 +45,18 @@ export function ChannelSearchCard({ channel }: ChannelSearchCardProps) {
             <div className="flex flex-col justify-center flex-1 text-center sm:text-left h-full sm:min-h-[128px]">
                 <Link
                     href={channelUrl}
-                    className="text-lg font-semibold hover:text-white transition-colors"
+                    className="text-xl font-black tracking-tighter hover:text-primary transition-colors"
                 >
                     {channel.name}
                 </Link>
-                <div className="text-sm text-muted-foreground mt-1 flex flex-col sm:flex-row items-center sm:items-start gap-1">
-                    <span>@{channel.handle}</span>
-                    <span className="hidden sm:inline">•</span>
+                <div className="text-[13px] font-bold uppercase tracking-widest text-muted-foreground/60 mt-2 flex flex-col sm:flex-row items-center sm:items-start gap-2">
+                    <span className="text-foreground/80">
+                        @{channel.handle}
+                    </span>
+                    <span className="hidden sm:inline text-border/40">•</span>
                     <span>{formatViewCount(subscriberCount)} subscribers</span>
-                    <span className="hidden sm:inline">•</span>
-                    <span>{formatViewCount(channel.videoCount)} videos</span>
+                    <span className="hidden sm:inline text-border/40">•</span>
+                    <span>{channel.videoCount} videos</span>
                 </div>
                 <div className="mt-4 flex justify-center sm:justify-start">
                     <SubscribeButton
