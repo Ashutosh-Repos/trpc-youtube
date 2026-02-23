@@ -302,7 +302,6 @@ export type playlistsOrderByWithRelationInput = {
   playlist_videos?: Prisma.playlist_videosOrderByRelationAggregateInput
   channels?: Prisma.channelsOrderByWithRelationInput
   user?: Prisma.userOrderByWithRelationInput
-  _relevance?: Prisma.playlistsOrderByRelevanceInput
 }
 
 export type playlistsWhereUniqueInput = Prisma.AtLeast<{
@@ -495,12 +494,6 @@ export type playlistsOrderByRelationAggregateInput = {
 export type PlaylistsScalarRelationFilter = {
   is?: Prisma.playlistsWhereInput
   isNot?: Prisma.playlistsWhereInput
-}
-
-export type playlistsOrderByRelevanceInput = {
-  fields: Prisma.playlistsOrderByRelevanceFieldEnum | Prisma.playlistsOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type playlistsUserIdSystemTypeCompoundUniqueInput = {

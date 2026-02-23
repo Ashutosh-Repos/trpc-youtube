@@ -20,18 +20,8 @@ export type notificationsModel = runtime.Types.Result.DefaultSelection<Prisma.$n
 
 export type AggregateNotifications = {
   _count: NotificationsCountAggregateOutputType | null
-  _avg: NotificationsAvgAggregateOutputType | null
-  _sum: NotificationsSumAggregateOutputType | null
   _min: NotificationsMinAggregateOutputType | null
   _max: NotificationsMaxAggregateOutputType | null
-}
-
-export type NotificationsAvgAggregateOutputType = {
-  groupCount: number | null
-}
-
-export type NotificationsSumAggregateOutputType = {
-  groupCount: number | null
 }
 
 export type NotificationsMinAggregateOutputType = {
@@ -50,9 +40,6 @@ export type NotificationsMinAggregateOutputType = {
   isRead: boolean | null
   readAt: Date | null
   createdAt: Date | null
-  groupCount: number | null
-  groupKey: string | null
-  isHidden: boolean | null
 }
 
 export type NotificationsMaxAggregateOutputType = {
@@ -71,9 +58,6 @@ export type NotificationsMaxAggregateOutputType = {
   isRead: boolean | null
   readAt: Date | null
   createdAt: Date | null
-  groupCount: number | null
-  groupKey: string | null
-  isHidden: boolean | null
 }
 
 export type NotificationsCountAggregateOutputType = {
@@ -92,21 +76,9 @@ export type NotificationsCountAggregateOutputType = {
   isRead: number
   readAt: number
   createdAt: number
-  groupCount: number
-  groupKey: number
-  isHidden: number
-  metadata: number
   _all: number
 }
 
-
-export type NotificationsAvgAggregateInputType = {
-  groupCount?: true
-}
-
-export type NotificationsSumAggregateInputType = {
-  groupCount?: true
-}
 
 export type NotificationsMinAggregateInputType = {
   id?: true
@@ -124,9 +96,6 @@ export type NotificationsMinAggregateInputType = {
   isRead?: true
   readAt?: true
   createdAt?: true
-  groupCount?: true
-  groupKey?: true
-  isHidden?: true
 }
 
 export type NotificationsMaxAggregateInputType = {
@@ -145,9 +114,6 @@ export type NotificationsMaxAggregateInputType = {
   isRead?: true
   readAt?: true
   createdAt?: true
-  groupCount?: true
-  groupKey?: true
-  isHidden?: true
 }
 
 export type NotificationsCountAggregateInputType = {
@@ -166,10 +132,6 @@ export type NotificationsCountAggregateInputType = {
   isRead?: true
   readAt?: true
   createdAt?: true
-  groupCount?: true
-  groupKey?: true
-  isHidden?: true
-  metadata?: true
   _all?: true
 }
 
@@ -211,18 +173,6 @@ export type NotificationsAggregateArgs<ExtArgs extends runtime.Types.Extensions.
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
-   * Select which fields to average
-  **/
-  _avg?: NotificationsAvgAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
-   * Select which fields to sum
-  **/
-  _sum?: NotificationsSumAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
    * Select which fields to find the minimum value
   **/
   _min?: NotificationsMinAggregateInputType
@@ -253,8 +203,6 @@ export type notificationsGroupByArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   _count?: NotificationsCountAggregateInputType | true
-  _avg?: NotificationsAvgAggregateInputType
-  _sum?: NotificationsSumAggregateInputType
   _min?: NotificationsMinAggregateInputType
   _max?: NotificationsMaxAggregateInputType
 }
@@ -275,13 +223,7 @@ export type NotificationsGroupByOutputType = {
   isRead: boolean
   readAt: Date | null
   createdAt: Date
-  groupCount: number
-  groupKey: string | null
-  isHidden: boolean
-  metadata: runtime.JsonValue | null
   _count: NotificationsCountAggregateOutputType | null
-  _avg: NotificationsAvgAggregateOutputType | null
-  _sum: NotificationsSumAggregateOutputType | null
   _min: NotificationsMinAggregateOutputType | null
   _max: NotificationsMaxAggregateOutputType | null
 }
@@ -320,10 +262,6 @@ export type notificationsWhereInput = {
   isRead?: Prisma.BoolFilter<"notifications"> | boolean
   readAt?: Prisma.DateTimeNullableFilter<"notifications"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"notifications"> | Date | string
-  groupCount?: Prisma.IntFilter<"notifications"> | number
-  groupKey?: Prisma.StringNullableFilter<"notifications"> | string | null
-  isHidden?: Prisma.BoolFilter<"notifications"> | boolean
-  metadata?: Prisma.JsonNullableFilter<"notifications">
   user_notifications_actorIdTouser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.userWhereInput> | null
   channels?: Prisma.XOR<Prisma.ChannelsNullableScalarRelationFilter, Prisma.channelsWhereInput> | null
   comments?: Prisma.XOR<Prisma.CommentsNullableScalarRelationFilter, Prisma.commentsWhereInput> | null
@@ -347,16 +285,11 @@ export type notificationsOrderByWithRelationInput = {
   isRead?: Prisma.SortOrder
   readAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  groupCount?: Prisma.SortOrder
-  groupKey?: Prisma.SortOrderInput | Prisma.SortOrder
-  isHidden?: Prisma.SortOrder
-  metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   user_notifications_actorIdTouser?: Prisma.userOrderByWithRelationInput
   channels?: Prisma.channelsOrderByWithRelationInput
   comments?: Prisma.commentsOrderByWithRelationInput
   user_notifications_userIdTouser?: Prisma.userOrderByWithRelationInput
   videos?: Prisma.videosOrderByWithRelationInput
-  _relevance?: Prisma.notificationsOrderByRelevanceInput
 }
 
 export type notificationsWhereUniqueInput = Prisma.AtLeast<{
@@ -378,10 +311,6 @@ export type notificationsWhereUniqueInput = Prisma.AtLeast<{
   isRead?: Prisma.BoolFilter<"notifications"> | boolean
   readAt?: Prisma.DateTimeNullableFilter<"notifications"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"notifications"> | Date | string
-  groupCount?: Prisma.IntFilter<"notifications"> | number
-  groupKey?: Prisma.StringNullableFilter<"notifications"> | string | null
-  isHidden?: Prisma.BoolFilter<"notifications"> | boolean
-  metadata?: Prisma.JsonNullableFilter<"notifications">
   user_notifications_actorIdTouser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.userWhereInput> | null
   channels?: Prisma.XOR<Prisma.ChannelsNullableScalarRelationFilter, Prisma.channelsWhereInput> | null
   comments?: Prisma.XOR<Prisma.CommentsNullableScalarRelationFilter, Prisma.commentsWhereInput> | null
@@ -405,15 +334,9 @@ export type notificationsOrderByWithAggregationInput = {
   isRead?: Prisma.SortOrder
   readAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  groupCount?: Prisma.SortOrder
-  groupKey?: Prisma.SortOrderInput | Prisma.SortOrder
-  isHidden?: Prisma.SortOrder
-  metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.notificationsCountOrderByAggregateInput
-  _avg?: Prisma.notificationsAvgOrderByAggregateInput
   _max?: Prisma.notificationsMaxOrderByAggregateInput
   _min?: Prisma.notificationsMinOrderByAggregateInput
-  _sum?: Prisma.notificationsSumOrderByAggregateInput
 }
 
 export type notificationsScalarWhereWithAggregatesInput = {
@@ -435,10 +358,6 @@ export type notificationsScalarWhereWithAggregatesInput = {
   isRead?: Prisma.BoolWithAggregatesFilter<"notifications"> | boolean
   readAt?: Prisma.DateTimeNullableWithAggregatesFilter<"notifications"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"notifications"> | Date | string
-  groupCount?: Prisma.IntWithAggregatesFilter<"notifications"> | number
-  groupKey?: Prisma.StringNullableWithAggregatesFilter<"notifications"> | string | null
-  isHidden?: Prisma.BoolWithAggregatesFilter<"notifications"> | boolean
-  metadata?: Prisma.JsonNullableWithAggregatesFilter<"notifications">
 }
 
 export type notificationsCreateInput = {
@@ -452,10 +371,6 @@ export type notificationsCreateInput = {
   isRead?: boolean
   readAt?: Date | string | null
   createdAt?: Date | string
-  groupCount?: number
-  groupKey?: string | null
-  isHidden?: boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user_notifications_actorIdTouser?: Prisma.userCreateNestedOneWithoutNotifications_notifications_actorIdTouserInput
   channels?: Prisma.channelsCreateNestedOneWithoutNotificationsInput
   comments?: Prisma.commentsCreateNestedOneWithoutNotificationsInput
@@ -479,10 +394,6 @@ export type notificationsUncheckedCreateInput = {
   isRead?: boolean
   readAt?: Date | string | null
   createdAt?: Date | string
-  groupCount?: number
-  groupKey?: string | null
-  isHidden?: boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsUpdateInput = {
@@ -496,10 +407,6 @@ export type notificationsUpdateInput = {
   isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  groupCount?: Prisma.IntFieldUpdateOperationsInput | number
-  groupKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isHidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user_notifications_actorIdTouser?: Prisma.userUpdateOneWithoutNotifications_notifications_actorIdTouserNestedInput
   channels?: Prisma.channelsUpdateOneWithoutNotificationsNestedInput
   comments?: Prisma.commentsUpdateOneWithoutNotificationsNestedInput
@@ -523,10 +430,6 @@ export type notificationsUncheckedUpdateInput = {
   isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  groupCount?: Prisma.IntFieldUpdateOperationsInput | number
-  groupKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isHidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsCreateManyInput = {
@@ -545,10 +448,6 @@ export type notificationsCreateManyInput = {
   isRead?: boolean
   readAt?: Date | string | null
   createdAt?: Date | string
-  groupCount?: number
-  groupKey?: string | null
-  isHidden?: boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsUpdateManyMutationInput = {
@@ -562,10 +461,6 @@ export type notificationsUpdateManyMutationInput = {
   isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  groupCount?: Prisma.IntFieldUpdateOperationsInput | number
-  groupKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isHidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsUncheckedUpdateManyInput = {
@@ -584,10 +479,6 @@ export type notificationsUncheckedUpdateManyInput = {
   isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  groupCount?: Prisma.IntFieldUpdateOperationsInput | number
-  groupKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isHidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type NotificationsListRelationFilter = {
@@ -598,12 +489,6 @@ export type NotificationsListRelationFilter = {
 
 export type notificationsOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type notificationsOrderByRelevanceInput = {
-  fields: Prisma.notificationsOrderByRelevanceFieldEnum | Prisma.notificationsOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type notificationsCountOrderByAggregateInput = {
@@ -622,14 +507,6 @@ export type notificationsCountOrderByAggregateInput = {
   isRead?: Prisma.SortOrder
   readAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  groupCount?: Prisma.SortOrder
-  groupKey?: Prisma.SortOrder
-  isHidden?: Prisma.SortOrder
-  metadata?: Prisma.SortOrder
-}
-
-export type notificationsAvgOrderByAggregateInput = {
-  groupCount?: Prisma.SortOrder
 }
 
 export type notificationsMaxOrderByAggregateInput = {
@@ -648,9 +525,6 @@ export type notificationsMaxOrderByAggregateInput = {
   isRead?: Prisma.SortOrder
   readAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  groupCount?: Prisma.SortOrder
-  groupKey?: Prisma.SortOrder
-  isHidden?: Prisma.SortOrder
 }
 
 export type notificationsMinOrderByAggregateInput = {
@@ -669,13 +543,6 @@ export type notificationsMinOrderByAggregateInput = {
   isRead?: Prisma.SortOrder
   readAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  groupCount?: Prisma.SortOrder
-  groupKey?: Prisma.SortOrder
-  isHidden?: Prisma.SortOrder
-}
-
-export type notificationsSumOrderByAggregateInput = {
-  groupCount?: Prisma.SortOrder
 }
 
 export type notificationsCreateNestedManyWithoutChannelsInput = {
@@ -903,10 +770,6 @@ export type notificationsCreateWithoutChannelsInput = {
   isRead?: boolean
   readAt?: Date | string | null
   createdAt?: Date | string
-  groupCount?: number
-  groupKey?: string | null
-  isHidden?: boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user_notifications_actorIdTouser?: Prisma.userCreateNestedOneWithoutNotifications_notifications_actorIdTouserInput
   comments?: Prisma.commentsCreateNestedOneWithoutNotificationsInput
   user_notifications_userIdTouser: Prisma.userCreateNestedOneWithoutNotifications_notifications_userIdTouserInput
@@ -928,10 +791,6 @@ export type notificationsUncheckedCreateWithoutChannelsInput = {
   isRead?: boolean
   readAt?: Date | string | null
   createdAt?: Date | string
-  groupCount?: number
-  groupKey?: string | null
-  isHidden?: boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsCreateOrConnectWithoutChannelsInput = {
@@ -979,10 +838,6 @@ export type notificationsScalarWhereInput = {
   isRead?: Prisma.BoolFilter<"notifications"> | boolean
   readAt?: Prisma.DateTimeNullableFilter<"notifications"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"notifications"> | Date | string
-  groupCount?: Prisma.IntFilter<"notifications"> | number
-  groupKey?: Prisma.StringNullableFilter<"notifications"> | string | null
-  isHidden?: Prisma.BoolFilter<"notifications"> | boolean
-  metadata?: Prisma.JsonNullableFilter<"notifications">
 }
 
 export type notificationsCreateWithoutCommentsInput = {
@@ -996,10 +851,6 @@ export type notificationsCreateWithoutCommentsInput = {
   isRead?: boolean
   readAt?: Date | string | null
   createdAt?: Date | string
-  groupCount?: number
-  groupKey?: string | null
-  isHidden?: boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user_notifications_actorIdTouser?: Prisma.userCreateNestedOneWithoutNotifications_notifications_actorIdTouserInput
   channels?: Prisma.channelsCreateNestedOneWithoutNotificationsInput
   user_notifications_userIdTouser: Prisma.userCreateNestedOneWithoutNotifications_notifications_userIdTouserInput
@@ -1021,10 +872,6 @@ export type notificationsUncheckedCreateWithoutCommentsInput = {
   isRead?: boolean
   readAt?: Date | string | null
   createdAt?: Date | string
-  groupCount?: number
-  groupKey?: string | null
-  isHidden?: boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsCreateOrConnectWithoutCommentsInput = {
@@ -1064,10 +911,6 @@ export type notificationsCreateWithoutUser_notifications_actorIdTouserInput = {
   isRead?: boolean
   readAt?: Date | string | null
   createdAt?: Date | string
-  groupCount?: number
-  groupKey?: string | null
-  isHidden?: boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   channels?: Prisma.channelsCreateNestedOneWithoutNotificationsInput
   comments?: Prisma.commentsCreateNestedOneWithoutNotificationsInput
   user_notifications_userIdTouser: Prisma.userCreateNestedOneWithoutNotifications_notifications_userIdTouserInput
@@ -1089,10 +932,6 @@ export type notificationsUncheckedCreateWithoutUser_notifications_actorIdTouserI
   isRead?: boolean
   readAt?: Date | string | null
   createdAt?: Date | string
-  groupCount?: number
-  groupKey?: string | null
-  isHidden?: boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsCreateOrConnectWithoutUser_notifications_actorIdTouserInput = {
@@ -1116,10 +955,6 @@ export type notificationsCreateWithoutUser_notifications_userIdTouserInput = {
   isRead?: boolean
   readAt?: Date | string | null
   createdAt?: Date | string
-  groupCount?: number
-  groupKey?: string | null
-  isHidden?: boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user_notifications_actorIdTouser?: Prisma.userCreateNestedOneWithoutNotifications_notifications_actorIdTouserInput
   channels?: Prisma.channelsCreateNestedOneWithoutNotificationsInput
   comments?: Prisma.commentsCreateNestedOneWithoutNotificationsInput
@@ -1141,10 +976,6 @@ export type notificationsUncheckedCreateWithoutUser_notifications_userIdTouserIn
   isRead?: boolean
   readAt?: Date | string | null
   createdAt?: Date | string
-  groupCount?: number
-  groupKey?: string | null
-  isHidden?: boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsCreateOrConnectWithoutUser_notifications_userIdTouserInput = {
@@ -1200,10 +1031,6 @@ export type notificationsCreateWithoutVideosInput = {
   isRead?: boolean
   readAt?: Date | string | null
   createdAt?: Date | string
-  groupCount?: number
-  groupKey?: string | null
-  isHidden?: boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user_notifications_actorIdTouser?: Prisma.userCreateNestedOneWithoutNotifications_notifications_actorIdTouserInput
   channels?: Prisma.channelsCreateNestedOneWithoutNotificationsInput
   comments?: Prisma.commentsCreateNestedOneWithoutNotificationsInput
@@ -1225,10 +1052,6 @@ export type notificationsUncheckedCreateWithoutVideosInput = {
   isRead?: boolean
   readAt?: Date | string | null
   createdAt?: Date | string
-  groupCount?: number
-  groupKey?: string | null
-  isHidden?: boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsCreateOrConnectWithoutVideosInput = {
@@ -1272,10 +1095,6 @@ export type notificationsCreateManyChannelsInput = {
   isRead?: boolean
   readAt?: Date | string | null
   createdAt?: Date | string
-  groupCount?: number
-  groupKey?: string | null
-  isHidden?: boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsUpdateWithoutChannelsInput = {
@@ -1289,10 +1108,6 @@ export type notificationsUpdateWithoutChannelsInput = {
   isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  groupCount?: Prisma.IntFieldUpdateOperationsInput | number
-  groupKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isHidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user_notifications_actorIdTouser?: Prisma.userUpdateOneWithoutNotifications_notifications_actorIdTouserNestedInput
   comments?: Prisma.commentsUpdateOneWithoutNotificationsNestedInput
   user_notifications_userIdTouser?: Prisma.userUpdateOneRequiredWithoutNotifications_notifications_userIdTouserNestedInput
@@ -1314,10 +1129,6 @@ export type notificationsUncheckedUpdateWithoutChannelsInput = {
   isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  groupCount?: Prisma.IntFieldUpdateOperationsInput | number
-  groupKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isHidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsUncheckedUpdateManyWithoutChannelsInput = {
@@ -1335,10 +1146,6 @@ export type notificationsUncheckedUpdateManyWithoutChannelsInput = {
   isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  groupCount?: Prisma.IntFieldUpdateOperationsInput | number
-  groupKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isHidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsCreateManyCommentsInput = {
@@ -1356,10 +1163,6 @@ export type notificationsCreateManyCommentsInput = {
   isRead?: boolean
   readAt?: Date | string | null
   createdAt?: Date | string
-  groupCount?: number
-  groupKey?: string | null
-  isHidden?: boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsUpdateWithoutCommentsInput = {
@@ -1373,10 +1176,6 @@ export type notificationsUpdateWithoutCommentsInput = {
   isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  groupCount?: Prisma.IntFieldUpdateOperationsInput | number
-  groupKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isHidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user_notifications_actorIdTouser?: Prisma.userUpdateOneWithoutNotifications_notifications_actorIdTouserNestedInput
   channels?: Prisma.channelsUpdateOneWithoutNotificationsNestedInput
   user_notifications_userIdTouser?: Prisma.userUpdateOneRequiredWithoutNotifications_notifications_userIdTouserNestedInput
@@ -1398,10 +1197,6 @@ export type notificationsUncheckedUpdateWithoutCommentsInput = {
   isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  groupCount?: Prisma.IntFieldUpdateOperationsInput | number
-  groupKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isHidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsUncheckedUpdateManyWithoutCommentsInput = {
@@ -1419,10 +1214,6 @@ export type notificationsUncheckedUpdateManyWithoutCommentsInput = {
   isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  groupCount?: Prisma.IntFieldUpdateOperationsInput | number
-  groupKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isHidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsCreateManyUser_notifications_actorIdTouserInput = {
@@ -1440,10 +1231,6 @@ export type notificationsCreateManyUser_notifications_actorIdTouserInput = {
   isRead?: boolean
   readAt?: Date | string | null
   createdAt?: Date | string
-  groupCount?: number
-  groupKey?: string | null
-  isHidden?: boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsCreateManyUser_notifications_userIdTouserInput = {
@@ -1461,10 +1248,6 @@ export type notificationsCreateManyUser_notifications_userIdTouserInput = {
   isRead?: boolean
   readAt?: Date | string | null
   createdAt?: Date | string
-  groupCount?: number
-  groupKey?: string | null
-  isHidden?: boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsUpdateWithoutUser_notifications_actorIdTouserInput = {
@@ -1478,10 +1261,6 @@ export type notificationsUpdateWithoutUser_notifications_actorIdTouserInput = {
   isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  groupCount?: Prisma.IntFieldUpdateOperationsInput | number
-  groupKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isHidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   channels?: Prisma.channelsUpdateOneWithoutNotificationsNestedInput
   comments?: Prisma.commentsUpdateOneWithoutNotificationsNestedInput
   user_notifications_userIdTouser?: Prisma.userUpdateOneRequiredWithoutNotifications_notifications_userIdTouserNestedInput
@@ -1503,10 +1282,6 @@ export type notificationsUncheckedUpdateWithoutUser_notifications_actorIdTouserI
   isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  groupCount?: Prisma.IntFieldUpdateOperationsInput | number
-  groupKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isHidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsUncheckedUpdateManyWithoutUser_notifications_actorIdTouserInput = {
@@ -1524,10 +1299,6 @@ export type notificationsUncheckedUpdateManyWithoutUser_notifications_actorIdTou
   isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  groupCount?: Prisma.IntFieldUpdateOperationsInput | number
-  groupKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isHidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsUpdateWithoutUser_notifications_userIdTouserInput = {
@@ -1541,10 +1312,6 @@ export type notificationsUpdateWithoutUser_notifications_userIdTouserInput = {
   isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  groupCount?: Prisma.IntFieldUpdateOperationsInput | number
-  groupKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isHidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user_notifications_actorIdTouser?: Prisma.userUpdateOneWithoutNotifications_notifications_actorIdTouserNestedInput
   channels?: Prisma.channelsUpdateOneWithoutNotificationsNestedInput
   comments?: Prisma.commentsUpdateOneWithoutNotificationsNestedInput
@@ -1566,10 +1333,6 @@ export type notificationsUncheckedUpdateWithoutUser_notifications_userIdTouserIn
   isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  groupCount?: Prisma.IntFieldUpdateOperationsInput | number
-  groupKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isHidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsUncheckedUpdateManyWithoutUser_notifications_userIdTouserInput = {
@@ -1587,10 +1350,6 @@ export type notificationsUncheckedUpdateManyWithoutUser_notifications_userIdTous
   isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  groupCount?: Prisma.IntFieldUpdateOperationsInput | number
-  groupKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isHidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsCreateManyVideosInput = {
@@ -1608,10 +1367,6 @@ export type notificationsCreateManyVideosInput = {
   isRead?: boolean
   readAt?: Date | string | null
   createdAt?: Date | string
-  groupCount?: number
-  groupKey?: string | null
-  isHidden?: boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsUpdateWithoutVideosInput = {
@@ -1625,10 +1380,6 @@ export type notificationsUpdateWithoutVideosInput = {
   isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  groupCount?: Prisma.IntFieldUpdateOperationsInput | number
-  groupKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isHidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user_notifications_actorIdTouser?: Prisma.userUpdateOneWithoutNotifications_notifications_actorIdTouserNestedInput
   channels?: Prisma.channelsUpdateOneWithoutNotificationsNestedInput
   comments?: Prisma.commentsUpdateOneWithoutNotificationsNestedInput
@@ -1650,10 +1401,6 @@ export type notificationsUncheckedUpdateWithoutVideosInput = {
   isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  groupCount?: Prisma.IntFieldUpdateOperationsInput | number
-  groupKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isHidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type notificationsUncheckedUpdateManyWithoutVideosInput = {
@@ -1671,10 +1418,6 @@ export type notificationsUncheckedUpdateManyWithoutVideosInput = {
   isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  groupCount?: Prisma.IntFieldUpdateOperationsInput | number
-  groupKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isHidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 
@@ -1695,10 +1438,6 @@ export type notificationsSelect<ExtArgs extends runtime.Types.Extensions.Interna
   isRead?: boolean
   readAt?: boolean
   createdAt?: boolean
-  groupCount?: boolean
-  groupKey?: boolean
-  isHidden?: boolean
-  metadata?: boolean
   user_notifications_actorIdTouser?: boolean | Prisma.notifications$user_notifications_actorIdTouserArgs<ExtArgs>
   channels?: boolean | Prisma.notifications$channelsArgs<ExtArgs>
   comments?: boolean | Prisma.notifications$commentsArgs<ExtArgs>
@@ -1722,10 +1461,6 @@ export type notificationsSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   isRead?: boolean
   readAt?: boolean
   createdAt?: boolean
-  groupCount?: boolean
-  groupKey?: boolean
-  isHidden?: boolean
-  metadata?: boolean
   user_notifications_actorIdTouser?: boolean | Prisma.notifications$user_notifications_actorIdTouserArgs<ExtArgs>
   channels?: boolean | Prisma.notifications$channelsArgs<ExtArgs>
   comments?: boolean | Prisma.notifications$commentsArgs<ExtArgs>
@@ -1749,10 +1484,6 @@ export type notificationsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   isRead?: boolean
   readAt?: boolean
   createdAt?: boolean
-  groupCount?: boolean
-  groupKey?: boolean
-  isHidden?: boolean
-  metadata?: boolean
   user_notifications_actorIdTouser?: boolean | Prisma.notifications$user_notifications_actorIdTouserArgs<ExtArgs>
   channels?: boolean | Prisma.notifications$channelsArgs<ExtArgs>
   comments?: boolean | Prisma.notifications$commentsArgs<ExtArgs>
@@ -1776,13 +1507,9 @@ export type notificationsSelectScalar = {
   isRead?: boolean
   readAt?: boolean
   createdAt?: boolean
-  groupCount?: boolean
-  groupKey?: boolean
-  isHidden?: boolean
-  metadata?: boolean
 }
 
-export type notificationsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "type" | "title" | "message" | "thumbnailUrl" | "actionUrl" | "actorId" | "videoId" | "channelId" | "commentId" | "liveStreamId" | "isRead" | "readAt" | "createdAt" | "groupCount" | "groupKey" | "isHidden" | "metadata", ExtArgs["result"]["notifications"]>
+export type notificationsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "type" | "title" | "message" | "thumbnailUrl" | "actionUrl" | "actorId" | "videoId" | "channelId" | "commentId" | "liveStreamId" | "isRead" | "readAt" | "createdAt", ExtArgs["result"]["notifications"]>
 export type notificationsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user_notifications_actorIdTouser?: boolean | Prisma.notifications$user_notifications_actorIdTouserArgs<ExtArgs>
   channels?: boolean | Prisma.notifications$channelsArgs<ExtArgs>
@@ -1830,10 +1557,6 @@ export type $notificationsPayload<ExtArgs extends runtime.Types.Extensions.Inter
     isRead: boolean
     readAt: Date | null
     createdAt: Date
-    groupCount: number
-    groupKey: string | null
-    isHidden: boolean
-    metadata: runtime.JsonValue | null
   }, ExtArgs["result"]["notifications"]>
   composites: {}
 }
@@ -2277,10 +2000,6 @@ export interface notificationsFieldRefs {
   readonly isRead: Prisma.FieldRef<"notifications", 'Boolean'>
   readonly readAt: Prisma.FieldRef<"notifications", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"notifications", 'DateTime'>
-  readonly groupCount: Prisma.FieldRef<"notifications", 'Int'>
-  readonly groupKey: Prisma.FieldRef<"notifications", 'String'>
-  readonly isHidden: Prisma.FieldRef<"notifications", 'Boolean'>
-  readonly metadata: Prisma.FieldRef<"notifications", 'Json'>
 }
     
 

@@ -322,7 +322,6 @@ export type strikesOrderByWithRelationInput = {
   user_strikes_adminIdTouser?: Prisma.userOrderByWithRelationInput
   channels?: Prisma.channelsOrderByWithRelationInput
   user_strikes_userIdTouser?: Prisma.userOrderByWithRelationInput
-  _relevance?: Prisma.strikesOrderByRelevanceInput
 }
 
 export type strikesWhereUniqueInput = Prisma.AtLeast<{
@@ -534,12 +533,6 @@ export type strikesOrderByRelationAggregateInput = {
 export type StrikesNullableScalarRelationFilter = {
   is?: Prisma.strikesWhereInput | null
   isNot?: Prisma.strikesWhereInput | null
-}
-
-export type strikesOrderByRelevanceInput = {
-  fields: Prisma.strikesOrderByRelevanceFieldEnum | Prisma.strikesOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type strikesCountOrderByAggregateInput = {

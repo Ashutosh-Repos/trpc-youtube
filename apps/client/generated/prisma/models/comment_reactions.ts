@@ -194,7 +194,6 @@ export type comment_reactionsOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   comments?: Prisma.commentsOrderByWithRelationInput
   user?: Prisma.userOrderByWithRelationInput
-  _relevance?: Prisma.comment_reactionsOrderByRelevanceInput
 }
 
 export type comment_reactionsWhereUniqueInput = Prisma.AtLeast<{
@@ -285,12 +284,6 @@ export type comment_reactionsUncheckedUpdateManyInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumReactionTypeFieldUpdateOperationsInput | $Enums.ReactionType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type comment_reactionsOrderByRelevanceInput = {
-  fields: Prisma.comment_reactionsOrderByRelevanceFieldEnum | Prisma.comment_reactionsOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type comment_reactionsCommentIdUserIdCompoundUniqueInput = {

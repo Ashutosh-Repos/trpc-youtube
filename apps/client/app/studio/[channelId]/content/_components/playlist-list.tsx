@@ -58,7 +58,7 @@ export const PlaylistList = ({
 
             {/* List Body */}
             <div className="divide-y divide-border/10">
-                {playlists.map((playlist) => (
+                {playlists.map((playlist: any) => (
                     <PlaylistRow
                         key={playlist.id}
                         playlist={playlist}

@@ -187,7 +187,6 @@ export type tagsOrderByWithRelationInput = {
   user_interests?: Prisma.user_interestsOrderByRelationAggregateInput
   channels?: Prisma.channelsOrderByRelationAggregateInput
   videos?: Prisma.videosOrderByRelationAggregateInput
-  _relevance?: Prisma.tagsOrderByRelevanceInput
 }
 
 export type tagsWhereUniqueInput = Prisma.AtLeast<{
@@ -292,12 +291,6 @@ export type TagsListRelationFilter = {
 
 export type tagsOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type tagsOrderByRelevanceInput = {
-  fields: Prisma.tagsOrderByRelevanceFieldEnum | Prisma.tagsOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type tagsCountOrderByAggregateInput = {

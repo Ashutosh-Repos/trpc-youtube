@@ -146,7 +146,7 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                 : null,
             categoryId: videoData.categoryId,
             tags: (videoData.tags
-                ? videoData.tags.map((t) => t.name)
+                ? videoData.tags.map((t: any) => t.name)
                 : []) as string[],
             thumbnailUrl: videoData.thumbnailUrl || "",
             isAgeRestricted: videoData.isAgeRestricted,
@@ -180,7 +180,7 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                     ? new Date(data.scheduledAt)
                     : null,
                 categoryId: data.categoryId,
-                tags: data.tags ? data.tags.map((t) => t.name) : [],
+                tags: data.tags ? data.tags.map((t: any) => t.name) : [],
                 thumbnailUrl: data.thumbnailUrl || "",
                 isAgeRestricted: data.isAgeRestricted,
                 allowComments: data.allowComments,

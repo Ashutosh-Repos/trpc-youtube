@@ -60,8 +60,7 @@ export const NotificationType = {
   COMMENT_LIKE: 'COMMENT_LIKE',
   LIVE_STARTED: 'LIVE_STARTED',
   LIVE_SCHEDULED: 'LIVE_SCHEDULED',
-  SYSTEM: 'SYSTEM',
-  MENTION: 'MENTION'
+  SYSTEM: 'SYSTEM'
 } as const
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]

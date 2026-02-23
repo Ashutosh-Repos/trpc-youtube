@@ -59,36 +59,38 @@ export function NotificationBell() {
             let isUpdate = false;
 
             // Prepend/Update cache directly
-            utils.notification.list.setInfiniteData({ limit: 10 }, (old) => {
-                if (!old) return old;
+            utils.notification.list.setInfiniteData(
+                { limit: 10 },
+                (old: any) => {
+                    if (!old) return old;
+                    // Remove existing if present to avoid duplicate keys when grouping
+                    const newPages = old.pages.map((page: any) => ({
+                        ...page,
+                        items: page.items.filter((item: any) => {
+                            if (item.id === notification.id) {
+                                isUpdate = true;
+                                if (!item.isRead) wasUnread = true;
+                                return false;
+                            }
+                            return true;
+                        }),
+                    }));
 
-                // Remove existing if present to avoid duplicate keys when grouping
-                const newPages = old.pages.map((page) => ({
-                    ...page,
-                    items: page.items.filter((item) => {
-                        if (item.id === notification.id) {
-                            isUpdate = true;
-                            if (!item.isRead) wasUnread = true;
-                            return false;
-                        }
-                        return true;
-                    }),
-                }));
+                    const firstPage = newPages[0];
+                    if (!firstPage) return old;
 
-                const firstPage = newPages[0];
-                if (!firstPage) return old;
-
-                return {
-                    ...old,
-                    pages: [
-                        {
-                            ...firstPage,
-                            items: [notification, ...firstPage.items],
-                        },
-                        ...newPages.slice(1),
-                    ],
-                };
-            });
+                    return {
+                        ...old,
+                        pages: [
+                            {
+                                ...firstPage,
+                                items: [notification, ...firstPage.items],
+                            },
+                            ...newPages.slice(1),
+                        ],
+                    };
+                },
+            );
 
             // Only increment if it's a new notification, OR an update to a previously read notification
             if (!isUpdate || (isUpdate && !wasUnread)) {
@@ -124,20 +126,23 @@ export function NotificationBell() {
     const markAllRead = trpc.notification.markAllRead.useMutation({
         onSuccess: () => {
             setUnreadCount(0);
-            utils.notification.list.setInfiniteData({ limit: 10 }, (old) => {
-                if (!old) return old;
-                return {
-                    ...old,
-                    pages: old.pages.map((page) => ({
-                        ...page,
-                        items: page.items.map((item) => ({
-                            ...item,
-                            isRead: true,
-                            readAt: new Date(),
+            utils.notification.list.setInfiniteData(
+                { limit: 10 },
+                (old: any) => {
+                    if (!old) return old;
+                    return {
+                        ...old,
+                        pages: old.pages.map((page: any) => ({
+                            ...page,
+                            items: page.items.map((item: any) => ({
+                                ...item,
+                                isRead: true,
+                                readAt: new Date(),
+                            })),
                         })),
-                    })),
-                };
-            });
+                    };
+                },
+            );
             utils.notification.getUnreadCount.setData(undefined, 0);
         },
     });
@@ -145,16 +150,21 @@ export function NotificationBell() {
     const deleteNotification = trpc.notification.delete.useMutation({
         onMutate: async ({ id }) => {
             // Optimistic removal from cache
-            utils.notification.list.setInfiniteData({ limit: 10 }, (old) => {
-                if (!old) return old;
-                return {
-                    ...old,
-                    pages: old.pages.map((page) => ({
-                        ...page,
-                        items: page.items.filter((item) => item.id !== id),
-                    })),
-                };
-            });
+            utils.notification.list.setInfiniteData(
+                { limit: 10 },
+                (old: any) => {
+                    if (!old) return old;
+                    return {
+                        ...old,
+                        pages: old.pages.map((page: any) => ({
+                            ...page,
+                            items: page.items.filter(
+                                (item: any) => item.id !== id,
+                            ),
+                        })),
+                    };
+                },
+            );
         },
     });
 

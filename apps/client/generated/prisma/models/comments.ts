@@ -336,7 +336,6 @@ export type commentsOrderByWithRelationInput = {
   videos?: Prisma.videosOrderByWithRelationInput
   notifications?: Prisma.notificationsOrderByRelationAggregateInput
   reports?: Prisma.reportsOrderByRelationAggregateInput
-  _relevance?: Prisma.commentsOrderByRelevanceInput
 }
 
 export type commentsWhereUniqueInput = Prisma.AtLeast<{
@@ -568,12 +567,6 @@ export type CommentsListRelationFilter = {
 
 export type commentsOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type commentsOrderByRelevanceInput = {
-  fields: Prisma.commentsOrderByRelevanceFieldEnum | Prisma.commentsOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type commentsCountOrderByAggregateInput = {

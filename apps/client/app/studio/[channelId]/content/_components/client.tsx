@@ -186,7 +186,7 @@ const ContentClient = ({
 
     const toggleSelectAll = (checked: boolean) => {
         if (checked) {
-            setSelectedIds(allItems.map((i) => i.id));
+            setSelectedIds(allItems.map((i: any) => i.id));
         } else {
             setSelectedIds([]);
         }

@@ -87,6 +87,7 @@ export type VideosMinAggregateOutputType = {
   uploadStartedAt: Date | null
   uploadCompletedAt: Date | null
   uploadAttempts: number | null
+  idempotencyKey: string | null
   hlsPlaylistUrl: string | null
   thumbnailUrl: string | null
   previewSprite: string | null
@@ -112,7 +113,6 @@ export type VideosMinAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
-  idempotencyKey: string | null
 }
 
 export type VideosMaxAggregateOutputType = {
@@ -142,6 +142,7 @@ export type VideosMaxAggregateOutputType = {
   uploadStartedAt: Date | null
   uploadCompletedAt: Date | null
   uploadAttempts: number | null
+  idempotencyKey: string | null
   hlsPlaylistUrl: string | null
   thumbnailUrl: string | null
   previewSprite: string | null
@@ -167,7 +168,6 @@ export type VideosMaxAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
-  idempotencyKey: string | null
 }
 
 export type VideosCountAggregateOutputType = {
@@ -197,6 +197,7 @@ export type VideosCountAggregateOutputType = {
   uploadStartedAt: number
   uploadCompletedAt: number
   uploadAttempts: number
+  idempotencyKey: number
   hlsPlaylistUrl: number
   thumbnailUrl: number
   thumbnailOptions: number
@@ -224,7 +225,6 @@ export type VideosCountAggregateOutputType = {
   createdAt: number
   updatedAt: number
   deletedAt: number
-  idempotencyKey: number
   _all: number
 }
 
@@ -290,6 +290,7 @@ export type VideosMinAggregateInputType = {
   uploadStartedAt?: true
   uploadCompletedAt?: true
   uploadAttempts?: true
+  idempotencyKey?: true
   hlsPlaylistUrl?: true
   thumbnailUrl?: true
   previewSprite?: true
@@ -315,7 +316,6 @@ export type VideosMinAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
-  idempotencyKey?: true
 }
 
 export type VideosMaxAggregateInputType = {
@@ -345,6 +345,7 @@ export type VideosMaxAggregateInputType = {
   uploadStartedAt?: true
   uploadCompletedAt?: true
   uploadAttempts?: true
+  idempotencyKey?: true
   hlsPlaylistUrl?: true
   thumbnailUrl?: true
   previewSprite?: true
@@ -370,7 +371,6 @@ export type VideosMaxAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
-  idempotencyKey?: true
 }
 
 export type VideosCountAggregateInputType = {
@@ -400,6 +400,7 @@ export type VideosCountAggregateInputType = {
   uploadStartedAt?: true
   uploadCompletedAt?: true
   uploadAttempts?: true
+  idempotencyKey?: true
   hlsPlaylistUrl?: true
   thumbnailUrl?: true
   thumbnailOptions?: true
@@ -427,7 +428,6 @@ export type VideosCountAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
-  idempotencyKey?: true
   _all?: true
 }
 
@@ -544,6 +544,7 @@ export type VideosGroupByOutputType = {
   uploadStartedAt: Date | null
   uploadCompletedAt: Date | null
   uploadAttempts: number
+  idempotencyKey: string | null
   hlsPlaylistUrl: string | null
   thumbnailUrl: string | null
   thumbnailOptions: string[]
@@ -571,7 +572,6 @@ export type VideosGroupByOutputType = {
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
-  idempotencyKey: string | null
   _count: VideosCountAggregateOutputType | null
   _avg: VideosAvgAggregateOutputType | null
   _sum: VideosSumAggregateOutputType | null
@@ -624,6 +624,7 @@ export type videosWhereInput = {
   uploadStartedAt?: Prisma.DateTimeNullableFilter<"videos"> | Date | string | null
   uploadCompletedAt?: Prisma.DateTimeNullableFilter<"videos"> | Date | string | null
   uploadAttempts?: Prisma.IntFilter<"videos"> | number
+  idempotencyKey?: Prisma.StringNullableFilter<"videos"> | string | null
   hlsPlaylistUrl?: Prisma.StringNullableFilter<"videos"> | string | null
   thumbnailUrl?: Prisma.StringNullableFilter<"videos"> | string | null
   thumbnailOptions?: Prisma.StringNullableListFilter<"videos">
@@ -651,7 +652,6 @@ export type videosWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"videos"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"videos"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"videos"> | Date | string | null
-  idempotencyKey?: Prisma.StringNullableFilter<"videos"> | string | null
   comments?: Prisma.CommentsListRelationFilter
   notifications?: Prisma.NotificationsListRelationFilter
   playlist_videos?: Prisma.Playlist_videosListRelationFilter
@@ -692,6 +692,7 @@ export type videosOrderByWithRelationInput = {
   uploadStartedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   uploadCompletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   uploadAttempts?: Prisma.SortOrder
+  idempotencyKey?: Prisma.SortOrderInput | Prisma.SortOrder
   hlsPlaylistUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   thumbnailUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   thumbnailOptions?: Prisma.SortOrder
@@ -719,7 +720,6 @@ export type videosOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  idempotencyKey?: Prisma.SortOrderInput | Prisma.SortOrder
   comments?: Prisma.commentsOrderByRelationAggregateInput
   notifications?: Prisma.notificationsOrderByRelationAggregateInput
   playlist_videos?: Prisma.playlist_videosOrderByRelationAggregateInput
@@ -731,7 +731,6 @@ export type videosOrderByWithRelationInput = {
   channels?: Prisma.channelsOrderByWithRelationInput
   watch_history?: Prisma.watch_historyOrderByRelationAggregateInput
   tags?: Prisma.tagsOrderByRelationAggregateInput
-  _relevance?: Prisma.videosOrderByRelevanceInput
 }
 
 export type videosWhereUniqueInput = Prisma.AtLeast<{
@@ -832,6 +831,7 @@ export type videosOrderByWithAggregationInput = {
   uploadStartedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   uploadCompletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   uploadAttempts?: Prisma.SortOrder
+  idempotencyKey?: Prisma.SortOrderInput | Prisma.SortOrder
   hlsPlaylistUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   thumbnailUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   thumbnailOptions?: Prisma.SortOrder
@@ -859,7 +859,6 @@ export type videosOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  idempotencyKey?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.videosCountOrderByAggregateInput
   _avg?: Prisma.videosAvgOrderByAggregateInput
   _max?: Prisma.videosMaxOrderByAggregateInput
@@ -897,6 +896,7 @@ export type videosScalarWhereWithAggregatesInput = {
   uploadStartedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"videos"> | Date | string | null
   uploadCompletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"videos"> | Date | string | null
   uploadAttempts?: Prisma.IntWithAggregatesFilter<"videos"> | number
+  idempotencyKey?: Prisma.StringNullableWithAggregatesFilter<"videos"> | string | null
   hlsPlaylistUrl?: Prisma.StringNullableWithAggregatesFilter<"videos"> | string | null
   thumbnailUrl?: Prisma.StringNullableWithAggregatesFilter<"videos"> | string | null
   thumbnailOptions?: Prisma.StringNullableListFilter<"videos">
@@ -924,7 +924,6 @@ export type videosScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"videos"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"videos"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"videos"> | Date | string | null
-  idempotencyKey?: Prisma.StringNullableWithAggregatesFilter<"videos"> | string | null
 }
 
 export type videosCreateInput = {
@@ -952,6 +951,7 @@ export type videosCreateInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -979,7 +979,6 @@ export type videosCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsCreateNestedManyWithoutVideosInput
   notifications?: Prisma.notificationsCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosCreateNestedManyWithoutVideosInput
@@ -1020,6 +1019,7 @@ export type videosUncheckedCreateInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -1047,7 +1047,6 @@ export type videosUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsUncheckedCreateNestedManyWithoutVideosInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosUncheckedCreateNestedManyWithoutVideosInput
@@ -1084,6 +1083,7 @@ export type videosUpdateInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -1111,7 +1111,6 @@ export type videosUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUpdateManyWithoutVideosNestedInput
   notifications?: Prisma.notificationsUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUpdateManyWithoutVideosNestedInput
@@ -1152,6 +1151,7 @@ export type videosUncheckedUpdateInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -1179,7 +1179,6 @@ export type videosUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUncheckedUpdateManyWithoutVideosNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUncheckedUpdateManyWithoutVideosNestedInput
@@ -1218,6 +1217,7 @@ export type videosCreateManyInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -1245,7 +1245,6 @@ export type videosCreateManyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
 }
 
 export type videosUpdateManyMutationInput = {
@@ -1273,6 +1272,7 @@ export type videosUpdateManyMutationInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -1300,7 +1300,6 @@ export type videosUpdateManyMutationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type videosUncheckedUpdateManyInput = {
@@ -1330,6 +1329,7 @@ export type videosUncheckedUpdateManyInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -1357,7 +1357,6 @@ export type videosUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type VideosListRelationFilter = {
@@ -1378,12 +1377,6 @@ export type VideosScalarRelationFilter = {
 export type VideosNullableScalarRelationFilter = {
   is?: Prisma.videosWhereInput | null
   isNot?: Prisma.videosWhereInput | null
-}
-
-export type videosOrderByRelevanceInput = {
-  fields: Prisma.videosOrderByRelevanceFieldEnum | Prisma.videosOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type videosCountOrderByAggregateInput = {
@@ -1413,6 +1406,7 @@ export type videosCountOrderByAggregateInput = {
   uploadStartedAt?: Prisma.SortOrder
   uploadCompletedAt?: Prisma.SortOrder
   uploadAttempts?: Prisma.SortOrder
+  idempotencyKey?: Prisma.SortOrder
   hlsPlaylistUrl?: Prisma.SortOrder
   thumbnailUrl?: Prisma.SortOrder
   thumbnailOptions?: Prisma.SortOrder
@@ -1440,7 +1434,6 @@ export type videosCountOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
-  idempotencyKey?: Prisma.SortOrder
 }
 
 export type videosAvgOrderByAggregateInput = {
@@ -1487,6 +1480,7 @@ export type videosMaxOrderByAggregateInput = {
   uploadStartedAt?: Prisma.SortOrder
   uploadCompletedAt?: Prisma.SortOrder
   uploadAttempts?: Prisma.SortOrder
+  idempotencyKey?: Prisma.SortOrder
   hlsPlaylistUrl?: Prisma.SortOrder
   thumbnailUrl?: Prisma.SortOrder
   previewSprite?: Prisma.SortOrder
@@ -1512,7 +1506,6 @@ export type videosMaxOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
-  idempotencyKey?: Prisma.SortOrder
 }
 
 export type videosMinOrderByAggregateInput = {
@@ -1542,6 +1535,7 @@ export type videosMinOrderByAggregateInput = {
   uploadStartedAt?: Prisma.SortOrder
   uploadCompletedAt?: Prisma.SortOrder
   uploadAttempts?: Prisma.SortOrder
+  idempotencyKey?: Prisma.SortOrder
   hlsPlaylistUrl?: Prisma.SortOrder
   thumbnailUrl?: Prisma.SortOrder
   previewSprite?: Prisma.SortOrder
@@ -1567,7 +1561,6 @@ export type videosMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
-  idempotencyKey?: Prisma.SortOrder
 }
 
 export type videosSumOrderByAggregateInput = {
@@ -1872,6 +1865,7 @@ export type videosCreateWithoutCategoryInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -1899,7 +1893,6 @@ export type videosCreateWithoutCategoryInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsCreateNestedManyWithoutVideosInput
   notifications?: Prisma.notificationsCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosCreateNestedManyWithoutVideosInput
@@ -1938,6 +1931,7 @@ export type videosUncheckedCreateWithoutCategoryInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -1965,7 +1959,6 @@ export type videosUncheckedCreateWithoutCategoryInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsUncheckedCreateNestedManyWithoutVideosInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosUncheckedCreateNestedManyWithoutVideosInput
@@ -2033,6 +2026,7 @@ export type videosScalarWhereInput = {
   uploadStartedAt?: Prisma.DateTimeNullableFilter<"videos"> | Date | string | null
   uploadCompletedAt?: Prisma.DateTimeNullableFilter<"videos"> | Date | string | null
   uploadAttempts?: Prisma.IntFilter<"videos"> | number
+  idempotencyKey?: Prisma.StringNullableFilter<"videos"> | string | null
   hlsPlaylistUrl?: Prisma.StringNullableFilter<"videos"> | string | null
   thumbnailUrl?: Prisma.StringNullableFilter<"videos"> | string | null
   thumbnailOptions?: Prisma.StringNullableListFilter<"videos">
@@ -2060,7 +2054,6 @@ export type videosScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"videos"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"videos"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"videos"> | Date | string | null
-  idempotencyKey?: Prisma.StringNullableFilter<"videos"> | string | null
 }
 
 export type videosCreateWithoutChannelsInput = {
@@ -2088,6 +2081,7 @@ export type videosCreateWithoutChannelsInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -2115,7 +2109,6 @@ export type videosCreateWithoutChannelsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsCreateNestedManyWithoutVideosInput
   notifications?: Prisma.notificationsCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosCreateNestedManyWithoutVideosInput
@@ -2154,6 +2147,7 @@ export type videosUncheckedCreateWithoutChannelsInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -2181,7 +2175,6 @@ export type videosUncheckedCreateWithoutChannelsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsUncheckedCreateNestedManyWithoutVideosInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosUncheckedCreateNestedManyWithoutVideosInput
@@ -2244,6 +2237,7 @@ export type videosCreateWithoutCommentsInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -2271,7 +2265,6 @@ export type videosCreateWithoutCommentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   notifications?: Prisma.notificationsCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosCreateNestedManyWithoutVideosInput
   reports?: Prisma.reportsCreateNestedManyWithoutVideosInput
@@ -2311,6 +2304,7 @@ export type videosUncheckedCreateWithoutCommentsInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -2338,7 +2332,6 @@ export type videosUncheckedCreateWithoutCommentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosUncheckedCreateNestedManyWithoutVideosInput
   reports?: Prisma.reportsUncheckedCreateNestedManyWithoutVideosInput
@@ -2390,6 +2383,7 @@ export type videosUpdateWithoutCommentsInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -2417,7 +2411,6 @@ export type videosUpdateWithoutCommentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifications?: Prisma.notificationsUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUpdateManyWithoutVideosNestedInput
   reports?: Prisma.reportsUpdateManyWithoutVideosNestedInput
@@ -2457,6 +2450,7 @@ export type videosUncheckedUpdateWithoutCommentsInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -2484,7 +2478,6 @@ export type videosUncheckedUpdateWithoutCommentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUncheckedUpdateManyWithoutVideosNestedInput
   reports?: Prisma.reportsUncheckedUpdateManyWithoutVideosNestedInput
@@ -2520,6 +2513,7 @@ export type videosCreateWithoutNotificationsInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -2547,7 +2541,6 @@ export type videosCreateWithoutNotificationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosCreateNestedManyWithoutVideosInput
   reports?: Prisma.reportsCreateNestedManyWithoutVideosInput
@@ -2587,6 +2580,7 @@ export type videosUncheckedCreateWithoutNotificationsInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -2614,7 +2608,6 @@ export type videosUncheckedCreateWithoutNotificationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsUncheckedCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosUncheckedCreateNestedManyWithoutVideosInput
   reports?: Prisma.reportsUncheckedCreateNestedManyWithoutVideosInput
@@ -2666,6 +2659,7 @@ export type videosUpdateWithoutNotificationsInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -2693,7 +2687,6 @@ export type videosUpdateWithoutNotificationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUpdateManyWithoutVideosNestedInput
   reports?: Prisma.reportsUpdateManyWithoutVideosNestedInput
@@ -2733,6 +2726,7 @@ export type videosUncheckedUpdateWithoutNotificationsInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -2760,7 +2754,6 @@ export type videosUncheckedUpdateWithoutNotificationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUncheckedUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUncheckedUpdateManyWithoutVideosNestedInput
   reports?: Prisma.reportsUncheckedUpdateManyWithoutVideosNestedInput
@@ -2796,6 +2789,7 @@ export type videosCreateWithoutPlaylist_videosInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -2823,7 +2817,6 @@ export type videosCreateWithoutPlaylist_videosInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsCreateNestedManyWithoutVideosInput
   notifications?: Prisma.notificationsCreateNestedManyWithoutVideosInput
   reports?: Prisma.reportsCreateNestedManyWithoutVideosInput
@@ -2863,6 +2856,7 @@ export type videosUncheckedCreateWithoutPlaylist_videosInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -2890,7 +2884,6 @@ export type videosUncheckedCreateWithoutPlaylist_videosInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsUncheckedCreateNestedManyWithoutVideosInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutVideosInput
   reports?: Prisma.reportsUncheckedCreateNestedManyWithoutVideosInput
@@ -2942,6 +2935,7 @@ export type videosUpdateWithoutPlaylist_videosInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -2969,7 +2963,6 @@ export type videosUpdateWithoutPlaylist_videosInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUpdateManyWithoutVideosNestedInput
   notifications?: Prisma.notificationsUpdateManyWithoutVideosNestedInput
   reports?: Prisma.reportsUpdateManyWithoutVideosNestedInput
@@ -3009,6 +3002,7 @@ export type videosUncheckedUpdateWithoutPlaylist_videosInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -3036,7 +3030,6 @@ export type videosUncheckedUpdateWithoutPlaylist_videosInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUncheckedUpdateManyWithoutVideosNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutVideosNestedInput
   reports?: Prisma.reportsUncheckedUpdateManyWithoutVideosNestedInput
@@ -3072,6 +3065,7 @@ export type videosCreateWithoutReportsInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -3099,7 +3093,6 @@ export type videosCreateWithoutReportsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsCreateNestedManyWithoutVideosInput
   notifications?: Prisma.notificationsCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosCreateNestedManyWithoutVideosInput
@@ -3139,6 +3132,7 @@ export type videosUncheckedCreateWithoutReportsInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -3166,7 +3160,6 @@ export type videosUncheckedCreateWithoutReportsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsUncheckedCreateNestedManyWithoutVideosInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosUncheckedCreateNestedManyWithoutVideosInput
@@ -3218,6 +3211,7 @@ export type videosUpdateWithoutReportsInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -3245,7 +3239,6 @@ export type videosUpdateWithoutReportsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUpdateManyWithoutVideosNestedInput
   notifications?: Prisma.notificationsUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUpdateManyWithoutVideosNestedInput
@@ -3285,6 +3278,7 @@ export type videosUncheckedUpdateWithoutReportsInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -3312,7 +3306,6 @@ export type videosUncheckedUpdateWithoutReportsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUncheckedUpdateManyWithoutVideosNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUncheckedUpdateManyWithoutVideosNestedInput
@@ -3348,6 +3341,7 @@ export type videosCreateWithoutTagsInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -3375,7 +3369,6 @@ export type videosCreateWithoutTagsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsCreateNestedManyWithoutVideosInput
   notifications?: Prisma.notificationsCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosCreateNestedManyWithoutVideosInput
@@ -3415,6 +3408,7 @@ export type videosUncheckedCreateWithoutTagsInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -3442,7 +3436,6 @@ export type videosUncheckedCreateWithoutTagsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsUncheckedCreateNestedManyWithoutVideosInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosUncheckedCreateNestedManyWithoutVideosInput
@@ -3499,6 +3492,7 @@ export type videosCreateWithoutVideo_cardsInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -3526,7 +3520,6 @@ export type videosCreateWithoutVideo_cardsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsCreateNestedManyWithoutVideosInput
   notifications?: Prisma.notificationsCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosCreateNestedManyWithoutVideosInput
@@ -3566,6 +3559,7 @@ export type videosUncheckedCreateWithoutVideo_cardsInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -3593,7 +3587,6 @@ export type videosUncheckedCreateWithoutVideo_cardsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsUncheckedCreateNestedManyWithoutVideosInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosUncheckedCreateNestedManyWithoutVideosInput
@@ -3645,6 +3638,7 @@ export type videosUpdateWithoutVideo_cardsInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -3672,7 +3666,6 @@ export type videosUpdateWithoutVideo_cardsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUpdateManyWithoutVideosNestedInput
   notifications?: Prisma.notificationsUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUpdateManyWithoutVideosNestedInput
@@ -3712,6 +3705,7 @@ export type videosUncheckedUpdateWithoutVideo_cardsInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -3739,7 +3733,6 @@ export type videosUncheckedUpdateWithoutVideo_cardsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUncheckedUpdateManyWithoutVideosNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUncheckedUpdateManyWithoutVideosNestedInput
@@ -3775,6 +3768,7 @@ export type videosCreateWithoutChaptersInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -3802,7 +3796,6 @@ export type videosCreateWithoutChaptersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsCreateNestedManyWithoutVideosInput
   notifications?: Prisma.notificationsCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosCreateNestedManyWithoutVideosInput
@@ -3842,6 +3835,7 @@ export type videosUncheckedCreateWithoutChaptersInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -3869,7 +3863,6 @@ export type videosUncheckedCreateWithoutChaptersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsUncheckedCreateNestedManyWithoutVideosInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosUncheckedCreateNestedManyWithoutVideosInput
@@ -3921,6 +3914,7 @@ export type videosUpdateWithoutChaptersInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -3948,7 +3942,6 @@ export type videosUpdateWithoutChaptersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUpdateManyWithoutVideosNestedInput
   notifications?: Prisma.notificationsUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUpdateManyWithoutVideosNestedInput
@@ -3988,6 +3981,7 @@ export type videosUncheckedUpdateWithoutChaptersInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -4015,7 +4009,6 @@ export type videosUncheckedUpdateWithoutChaptersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUncheckedUpdateManyWithoutVideosNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUncheckedUpdateManyWithoutVideosNestedInput
@@ -4051,6 +4044,7 @@ export type videosCreateWithoutVideo_reactionsInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -4078,7 +4072,6 @@ export type videosCreateWithoutVideo_reactionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsCreateNestedManyWithoutVideosInput
   notifications?: Prisma.notificationsCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosCreateNestedManyWithoutVideosInput
@@ -4118,6 +4111,7 @@ export type videosUncheckedCreateWithoutVideo_reactionsInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -4145,7 +4139,6 @@ export type videosUncheckedCreateWithoutVideo_reactionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsUncheckedCreateNestedManyWithoutVideosInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosUncheckedCreateNestedManyWithoutVideosInput
@@ -4197,6 +4190,7 @@ export type videosUpdateWithoutVideo_reactionsInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -4224,7 +4218,6 @@ export type videosUpdateWithoutVideo_reactionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUpdateManyWithoutVideosNestedInput
   notifications?: Prisma.notificationsUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUpdateManyWithoutVideosNestedInput
@@ -4264,6 +4257,7 @@ export type videosUncheckedUpdateWithoutVideo_reactionsInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -4291,7 +4285,6 @@ export type videosUncheckedUpdateWithoutVideo_reactionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUncheckedUpdateManyWithoutVideosNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUncheckedUpdateManyWithoutVideosNestedInput
@@ -4327,6 +4320,7 @@ export type videosCreateWithoutWatch_historyInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -4354,7 +4348,6 @@ export type videosCreateWithoutWatch_historyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsCreateNestedManyWithoutVideosInput
   notifications?: Prisma.notificationsCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosCreateNestedManyWithoutVideosInput
@@ -4394,6 +4387,7 @@ export type videosUncheckedCreateWithoutWatch_historyInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -4421,7 +4415,6 @@ export type videosUncheckedCreateWithoutWatch_historyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
   comments?: Prisma.commentsUncheckedCreateNestedManyWithoutVideosInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutVideosInput
   playlist_videos?: Prisma.playlist_videosUncheckedCreateNestedManyWithoutVideosInput
@@ -4473,6 +4466,7 @@ export type videosUpdateWithoutWatch_historyInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -4500,7 +4494,6 @@ export type videosUpdateWithoutWatch_historyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUpdateManyWithoutVideosNestedInput
   notifications?: Prisma.notificationsUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUpdateManyWithoutVideosNestedInput
@@ -4540,6 +4533,7 @@ export type videosUncheckedUpdateWithoutWatch_historyInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -4567,7 +4561,6 @@ export type videosUncheckedUpdateWithoutWatch_historyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUncheckedUpdateManyWithoutVideosNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUncheckedUpdateManyWithoutVideosNestedInput
@@ -4604,6 +4597,7 @@ export type videosCreateManyCategoryInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -4631,7 +4625,6 @@ export type videosCreateManyCategoryInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
 }
 
 export type videosUpdateWithoutCategoryInput = {
@@ -4659,6 +4652,7 @@ export type videosUpdateWithoutCategoryInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -4686,7 +4680,6 @@ export type videosUpdateWithoutCategoryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUpdateManyWithoutVideosNestedInput
   notifications?: Prisma.notificationsUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUpdateManyWithoutVideosNestedInput
@@ -4725,6 +4718,7 @@ export type videosUncheckedUpdateWithoutCategoryInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -4752,7 +4746,6 @@ export type videosUncheckedUpdateWithoutCategoryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUncheckedUpdateManyWithoutVideosNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUncheckedUpdateManyWithoutVideosNestedInput
@@ -4790,6 +4783,7 @@ export type videosUncheckedUpdateManyWithoutCategoryInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -4817,7 +4811,6 @@ export type videosUncheckedUpdateManyWithoutCategoryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type videosCreateManyChannelsInput = {
@@ -4846,6 +4839,7 @@ export type videosCreateManyChannelsInput = {
   uploadStartedAt?: Date | string | null
   uploadCompletedAt?: Date | string | null
   uploadAttempts?: number
+  idempotencyKey?: string | null
   hlsPlaylistUrl?: string | null
   thumbnailUrl?: string | null
   thumbnailOptions?: Prisma.videosCreatethumbnailOptionsInput | string[]
@@ -4873,7 +4867,6 @@ export type videosCreateManyChannelsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  idempotencyKey?: string | null
 }
 
 export type videosUpdateWithoutChannelsInput = {
@@ -4901,6 +4894,7 @@ export type videosUpdateWithoutChannelsInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -4928,7 +4922,6 @@ export type videosUpdateWithoutChannelsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUpdateManyWithoutVideosNestedInput
   notifications?: Prisma.notificationsUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUpdateManyWithoutVideosNestedInput
@@ -4967,6 +4960,7 @@ export type videosUncheckedUpdateWithoutChannelsInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -4994,7 +4988,6 @@ export type videosUncheckedUpdateWithoutChannelsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUncheckedUpdateManyWithoutVideosNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUncheckedUpdateManyWithoutVideosNestedInput
@@ -5032,6 +5025,7 @@ export type videosUncheckedUpdateManyWithoutChannelsInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -5059,7 +5053,6 @@ export type videosUncheckedUpdateManyWithoutChannelsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type videosUpdateWithoutTagsInput = {
@@ -5087,6 +5080,7 @@ export type videosUpdateWithoutTagsInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -5114,7 +5108,6 @@ export type videosUpdateWithoutTagsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUpdateManyWithoutVideosNestedInput
   notifications?: Prisma.notificationsUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUpdateManyWithoutVideosNestedInput
@@ -5154,6 +5147,7 @@ export type videosUncheckedUpdateWithoutTagsInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -5181,7 +5175,6 @@ export type videosUncheckedUpdateWithoutTagsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.commentsUncheckedUpdateManyWithoutVideosNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutVideosNestedInput
   playlist_videos?: Prisma.playlist_videosUncheckedUpdateManyWithoutVideosNestedInput
@@ -5219,6 +5212,7 @@ export type videosUncheckedUpdateManyWithoutTagsInput = {
   uploadStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hlsPlaylistUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailOptions?: Prisma.videosUpdatethumbnailOptionsInput | string[]
@@ -5246,7 +5240,6 @@ export type videosUncheckedUpdateManyWithoutTagsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -5379,6 +5372,7 @@ export type videosSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   uploadStartedAt?: boolean
   uploadCompletedAt?: boolean
   uploadAttempts?: boolean
+  idempotencyKey?: boolean
   hlsPlaylistUrl?: boolean
   thumbnailUrl?: boolean
   thumbnailOptions?: boolean
@@ -5406,7 +5400,6 @@ export type videosSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
-  idempotencyKey?: boolean
   comments?: boolean | Prisma.videos$commentsArgs<ExtArgs>
   notifications?: boolean | Prisma.videos$notificationsArgs<ExtArgs>
   playlist_videos?: boolean | Prisma.videos$playlist_videosArgs<ExtArgs>
@@ -5448,6 +5441,7 @@ export type videosSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   uploadStartedAt?: boolean
   uploadCompletedAt?: boolean
   uploadAttempts?: boolean
+  idempotencyKey?: boolean
   hlsPlaylistUrl?: boolean
   thumbnailUrl?: boolean
   thumbnailOptions?: boolean
@@ -5475,7 +5469,6 @@ export type videosSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
-  idempotencyKey?: boolean
   category?: boolean | Prisma.videos$categoryArgs<ExtArgs>
   channels?: boolean | Prisma.channelsDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["videos"]>
@@ -5507,6 +5500,7 @@ export type videosSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   uploadStartedAt?: boolean
   uploadCompletedAt?: boolean
   uploadAttempts?: boolean
+  idempotencyKey?: boolean
   hlsPlaylistUrl?: boolean
   thumbnailUrl?: boolean
   thumbnailOptions?: boolean
@@ -5534,7 +5528,6 @@ export type videosSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
-  idempotencyKey?: boolean
   category?: boolean | Prisma.videos$categoryArgs<ExtArgs>
   channels?: boolean | Prisma.channelsDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["videos"]>
@@ -5566,6 +5559,7 @@ export type videosSelectScalar = {
   uploadStartedAt?: boolean
   uploadCompletedAt?: boolean
   uploadAttempts?: boolean
+  idempotencyKey?: boolean
   hlsPlaylistUrl?: boolean
   thumbnailUrl?: boolean
   thumbnailOptions?: boolean
@@ -5593,10 +5587,9 @@ export type videosSelectScalar = {
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
-  idempotencyKey?: boolean
 }
 
-export type videosOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "channelId" | "title" | "description" | "categoryId" | "language" | "channelHandle" | "channelName" | "channelImage" | "visibility" | "scheduledAt" | "publishedAt" | "adminStatus" | "adminNote" | "processingStatus" | "processingError" | "processingProgress" | "originalFileName" | "originalFileSize" | "originalFilePath" | "originalMimeType" | "uploadId" | "uploadExpiresAt" | "uploadStartedAt" | "uploadCompletedAt" | "uploadAttempts" | "hlsPlaylistUrl" | "thumbnailUrl" | "thumbnailOptions" | "previewSprite" | "previewSpriteVtt" | "duration" | "width" | "height" | "fps" | "resolutions" | "viewCount" | "likeCount" | "dislikeCount" | "commentCount" | "engagementScore" | "trendingScore" | "hotScore" | "lastScoredAt" | "allowComments" | "allowEmbedding" | "isAgeRestricted" | "isShort" | "isPremiere" | "premiereStartsAt" | "createdAt" | "updatedAt" | "deletedAt" | "idempotencyKey", ExtArgs["result"]["videos"]>
+export type videosOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "channelId" | "title" | "description" | "categoryId" | "language" | "channelHandle" | "channelName" | "channelImage" | "visibility" | "scheduledAt" | "publishedAt" | "adminStatus" | "adminNote" | "processingStatus" | "processingError" | "processingProgress" | "originalFileName" | "originalFileSize" | "originalFilePath" | "originalMimeType" | "uploadId" | "uploadExpiresAt" | "uploadStartedAt" | "uploadCompletedAt" | "uploadAttempts" | "idempotencyKey" | "hlsPlaylistUrl" | "thumbnailUrl" | "thumbnailOptions" | "previewSprite" | "previewSpriteVtt" | "duration" | "width" | "height" | "fps" | "resolutions" | "viewCount" | "likeCount" | "dislikeCount" | "commentCount" | "engagementScore" | "trendingScore" | "hotScore" | "lastScoredAt" | "allowComments" | "allowEmbedding" | "isAgeRestricted" | "isShort" | "isPremiere" | "premiereStartsAt" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["videos"]>
 export type videosInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   comments?: boolean | Prisma.videos$commentsArgs<ExtArgs>
   notifications?: boolean | Prisma.videos$notificationsArgs<ExtArgs>
@@ -5662,6 +5655,7 @@ export type $videosPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     uploadStartedAt: Date | null
     uploadCompletedAt: Date | null
     uploadAttempts: number
+    idempotencyKey: string | null
     hlsPlaylistUrl: string | null
     thumbnailUrl: string | null
     thumbnailOptions: string[]
@@ -5689,7 +5683,6 @@ export type $videosPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
-    idempotencyKey: string | null
   }, ExtArgs["result"]["videos"]>
   composites: {}
 }
@@ -6150,6 +6143,7 @@ export interface videosFieldRefs {
   readonly uploadStartedAt: Prisma.FieldRef<"videos", 'DateTime'>
   readonly uploadCompletedAt: Prisma.FieldRef<"videos", 'DateTime'>
   readonly uploadAttempts: Prisma.FieldRef<"videos", 'Int'>
+  readonly idempotencyKey: Prisma.FieldRef<"videos", 'String'>
   readonly hlsPlaylistUrl: Prisma.FieldRef<"videos", 'String'>
   readonly thumbnailUrl: Prisma.FieldRef<"videos", 'String'>
   readonly thumbnailOptions: Prisma.FieldRef<"videos", 'String[]'>
@@ -6177,7 +6171,6 @@ export interface videosFieldRefs {
   readonly createdAt: Prisma.FieldRef<"videos", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"videos", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"videos", 'DateTime'>
-  readonly idempotencyKey: Prisma.FieldRef<"videos", 'String'>
 }
     
 

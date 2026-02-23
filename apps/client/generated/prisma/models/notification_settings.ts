@@ -264,7 +264,6 @@ export type notification_settingsOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.userOrderByWithRelationInput
-  _relevance?: Prisma.notification_settingsOrderByRelevanceInput
 }
 
 export type notification_settingsWhereUniqueInput = Prisma.AtLeast<{
@@ -434,12 +433,6 @@ export type notification_settingsUncheckedUpdateManyInput = {
   pushEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type notification_settingsOrderByRelevanceInput = {
-  fields: Prisma.notification_settingsOrderByRelevanceFieldEnum | Prisma.notification_settingsOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type notification_settingsCountOrderByAggregateInput = {

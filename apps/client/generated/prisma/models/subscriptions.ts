@@ -194,7 +194,6 @@ export type subscriptionsOrderByWithRelationInput = {
   subscribedAt?: Prisma.SortOrder
   channels?: Prisma.channelsOrderByWithRelationInput
   user?: Prisma.userOrderByWithRelationInput
-  _relevance?: Prisma.subscriptionsOrderByRelevanceInput
 }
 
 export type subscriptionsWhereUniqueInput = Prisma.AtLeast<{
@@ -295,12 +294,6 @@ export type SubscriptionsListRelationFilter = {
 
 export type subscriptionsOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type subscriptionsOrderByRelevanceInput = {
-  fields: Prisma.subscriptionsOrderByRelevanceFieldEnum | Prisma.subscriptionsOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type subscriptionsSubscriberIdChannelIdCompoundUniqueInput = {

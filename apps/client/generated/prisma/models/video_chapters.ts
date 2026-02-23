@@ -217,7 +217,6 @@ export type video_chaptersOrderByWithRelationInput = {
   title?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   videos?: Prisma.videosOrderByWithRelationInput
-  _relevance?: Prisma.video_chaptersOrderByRelevanceInput
 }
 
 export type video_chaptersWhereUniqueInput = Prisma.AtLeast<{
@@ -299,12 +298,6 @@ export type video_chaptersUncheckedUpdateManyInput = {
   videoId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   startTime?: Prisma.IntFieldUpdateOperationsInput | number
-}
-
-export type video_chaptersOrderByRelevanceInput = {
-  fields: Prisma.video_chaptersOrderByRelevanceFieldEnum | Prisma.video_chaptersOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type video_chaptersCountOrderByAggregateInput = {

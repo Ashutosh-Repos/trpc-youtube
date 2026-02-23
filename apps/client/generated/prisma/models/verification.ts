@@ -199,7 +199,6 @@ export type verificationOrderByWithRelationInput = {
   expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  _relevance?: Prisma.verificationOrderByRelevanceInput
 }
 
 export type verificationWhereUniqueInput = Prisma.AtLeast<{
@@ -299,12 +298,6 @@ export type verificationUncheckedUpdateManyInput = {
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type verificationOrderByRelevanceInput = {
-  fields: Prisma.verificationOrderByRelevanceFieldEnum | Prisma.verificationOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type verificationCountOrderByAggregateInput = {

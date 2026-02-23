@@ -281,7 +281,6 @@ export type watch_historyOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   user?: Prisma.userOrderByWithRelationInput
   videos?: Prisma.videosOrderByWithRelationInput
-  _relevance?: Prisma.watch_historyOrderByRelevanceInput
 }
 
 export type watch_historyWhereUniqueInput = Prisma.AtLeast<{
@@ -434,12 +433,6 @@ export type Watch_historyListRelationFilter = {
 
 export type watch_historyOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type watch_historyOrderByRelevanceInput = {
-  fields: Prisma.watch_historyOrderByRelevanceFieldEnum | Prisma.watch_historyOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type watch_historyUserIdVideoIdCompoundUniqueInput = {
