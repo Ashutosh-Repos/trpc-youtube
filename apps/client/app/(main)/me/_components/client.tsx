@@ -113,7 +113,7 @@ const Client = ({ user }: MePageContentProps) => {
         onSuccess: (data) => {
             toast.success("Changes saved");
             setIsEditing(false);
-            utils.user.getProfile.setData(undefined, (oldData) => {
+            utils.user.getProfile.setData(undefined, (oldData: any) => {
                 if (!oldData) return undefined;
                 return {
                     ...oldData,
