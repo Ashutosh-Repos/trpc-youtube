@@ -51,13 +51,15 @@ export default function NotificationsPage() {
         onMutate: async ({ id }) => {
             utils.notification.list.setInfiniteData(
                 { limit: 20, typeFilter: activeTab },
-                (old) => {
+                (old: any) => {
                     if (!old) return old;
                     return {
                         ...old,
-                        pages: old.pages.map((page) => ({
+                        pages: old.pages.map((page: any) => ({
                             ...page,
-                            items: page.items.filter((item) => item.id !== id),
+                            items: page.items.filter(
+                                (item: any) => item.id !== id,
+                            ),
                         })),
                     };
                 },
@@ -76,13 +78,13 @@ export default function NotificationsPage() {
             // Optimistic
             utils.notification.list.setInfiniteData(
                 { limit: 20, typeFilter: activeTab },
-                (old) => {
+                (old: any) => {
                     if (!old) return old;
                     return {
                         ...old,
-                        pages: old.pages.map((page) => ({
+                        pages: old.pages.map((page: any) => ({
                             ...page,
-                            items: page.items.map((item) =>
+                            items: page.items.map((item: any) =>
                                 item.id === notification.id
                                     ? { ...item, isRead: true }
                                     : item,
