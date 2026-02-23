@@ -641,7 +641,7 @@ export const VideoRow = ({
                                     <SelectContent className="bg-surface-3 border-border/10 text-foreground rounded-2xl shadow-2xl p-1.5">
                                         {Array.from({ length: 12 }, (_, i) =>
                                             (i + 1).toString(),
-                                        ).map((hour) => (
+                                        ).map((hour: string) => (
                                             <SelectItem
                                                 key={hour}
                                                 value={hour}

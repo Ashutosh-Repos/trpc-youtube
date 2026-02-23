@@ -143,7 +143,7 @@ export const VideoPlaylistSelector = ({
                             </div>
                         ) : (
                             <div className="space-y-1">
-                                {filteredPlaylists.map((playlist) => (
+                                {filteredPlaylists.map((playlist: any) => (
                                     <div
                                         key={playlist.id}
                                         className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-white/5 transition-colors cursor-pointer group"

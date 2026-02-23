@@ -192,7 +192,7 @@ export function ChannelClient({
                                     <div className="flex flex-wrap gap-4 mt-4">
                                         {channel.links
                                             .slice(0, 1)
-                                            .map((link, i) => (
+                                            .map((link: any, i: number) => (
                                                 <a
                                                     key={i}
                                                     href={link.url}

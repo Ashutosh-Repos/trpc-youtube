@@ -551,95 +551,103 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <AnimatePresence>
-                                        {linkFields.map((field, index) => (
-                                            <motion.div
-                                                key={field.id}
-                                                layout
-                                                initial={{ opacity: 0, y: 10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{
-                                                    opacity: 0,
-                                                    scale: 0.95,
-                                                }}
-                                                className="p-6 rounded-2xl bg-surface-1 border border-border/10 group/link shadow-xl"
-                                            >
-                                                {isEditing ? (
-                                                    <div className="space-y-3">
-                                                        <div className="flex justify-between items-center">
-                                                            <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest">
-                                                                Link #
-                                                                {index + 1}
-                                                            </span>
-                                                            <Button
-                                                                type="button"
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                className="h-8 w-8 text-destructive/40 hover:text-destructive hover:bg-destructive/10 rounded-full transition-all"
-                                                                onClick={() =>
-                                                                    removeLink(
-                                                                        index,
-                                                                    )
-                                                                }
-                                                            >
-                                                                <Trash2 className="w-4 h-4" />
-                                                            </Button>
+                                        {linkFields.map(
+                                            (field: any, index: number) => (
+                                                <motion.div
+                                                    key={field.id}
+                                                    layout
+                                                    initial={{
+                                                        opacity: 0,
+                                                        y: 10,
+                                                    }}
+                                                    animate={{
+                                                        opacity: 1,
+                                                        y: 0,
+                                                    }}
+                                                    exit={{
+                                                        opacity: 0,
+                                                        scale: 0.95,
+                                                    }}
+                                                    className="p-6 rounded-2xl bg-surface-1 border border-border/10 group/link shadow-xl"
+                                                >
+                                                    {isEditing ? (
+                                                        <div className="space-y-3">
+                                                            <div className="flex justify-between items-center">
+                                                                <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest">
+                                                                    Link #
+                                                                    {index + 1}
+                                                                </span>
+                                                                <Button
+                                                                    type="button"
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    className="h-8 w-8 text-destructive/40 hover:text-destructive hover:bg-destructive/10 rounded-full transition-all"
+                                                                    onClick={() =>
+                                                                        removeLink(
+                                                                            index,
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    <Trash2 className="w-4 h-4" />
+                                                                </Button>
+                                                            </div>
+                                                            <Input
+                                                                {...form.register(
+                                                                    `links.${index}.title`,
+                                                                )}
+                                                                placeholder="Title (e.g. Website)"
+                                                                className="h-10 text-sm bg-surface-2 border-border/10 rounded-xl focus-visible:ring-primary/20"
+                                                            />
+                                                            <Input
+                                                                {...form.register(
+                                                                    `links.${index}.url`,
+                                                                )}
+                                                                placeholder="https://..."
+                                                                className="h-10 text-sm bg-surface-2 border-border/10 rounded-xl focus-visible:ring-primary/20"
+                                                            />
                                                         </div>
-                                                        <Input
-                                                            {...form.register(
-                                                                `links.${index}.title`,
-                                                            )}
-                                                            placeholder="Title (e.g. Website)"
-                                                            className="h-10 text-sm bg-surface-2 border-border/10 rounded-xl focus-visible:ring-primary/20"
-                                                        />
-                                                        <Input
-                                                            {...form.register(
+                                                    ) : (
+                                                        <a
+                                                            href={form.getValues(
                                                                 `links.${index}.url`,
                                                             )}
-                                                            placeholder="https://..."
-                                                            className="h-10 text-sm bg-surface-2 border-border/10 rounded-xl focus-visible:ring-primary/20"
-                                                        />
-                                                    </div>
-                                                ) : (
-                                                    <a
-                                                        href={form.getValues(
-                                                            `links.${index}.url`,
-                                                        )}
-                                                        target="_blank"
-                                                        rel="noreferrer"
-                                                        className="flex items-center gap-3"
-                                                        onClick={(e) => {
-                                                            // Prevent navigation if no url
-                                                            if (
-                                                                !form.getValues(
-                                                                    `links.${index}.url`,
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            className="flex items-center gap-3"
+                                                            onClick={(e) => {
+                                                                // Prevent navigation if no url
+                                                                if (
+                                                                    !form.getValues(
+                                                                        `links.${index}.url`,
+                                                                    )
                                                                 )
-                                                            )
-                                                                e.preventDefault();
-                                                        }}
-                                                    >
-                                                        <div className="p-3 rounded-xl bg-primary/10 text-primary group-hover/link:bg-primary/20 transition-all">
-                                                            {getPlatformIcon(
-                                                                form.getValues(
-                                                                    `links.${index}.title`,
-                                                                ) || "",
-                                                            )}
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-sm font-bold">
-                                                                {form.getValues(
-                                                                    `links.${index}.title`,
+                                                                    e.preventDefault();
+                                                            }}
+                                                        >
+                                                            <div className="p-3 rounded-xl bg-primary/10 text-primary group-hover/link:bg-primary/20 transition-all">
+                                                                {getPlatformIcon(
+                                                                    form.getValues(
+                                                                        `links.${index}.title`,
+                                                                    ) || "",
                                                                 )}
-                                                            </p>
-                                                            <p className="text-[10px] text-muted-foreground truncate max-w-[150px]">
-                                                                {form.getValues(
-                                                                    `links.${index}.url`,
-                                                                )}
-                                                            </p>
-                                                        </div>
-                                                    </a>
-                                                )}
-                                            </motion.div>
-                                        ))}
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-sm font-bold">
+                                                                    {form.getValues(
+                                                                        `links.${index}.title`,
+                                                                    )}
+                                                                </p>
+                                                                <p className="text-[10px] text-muted-foreground truncate max-w-[150px]">
+                                                                    {form.getValues(
+                                                                        `links.${index}.url`,
+                                                                    )}
+                                                                </p>
+                                                            </div>
+                                                        </a>
+                                                    )}
+                                                </motion.div>
+                                            ),
+                                        )}
                                     </AnimatePresence>
                                     {linkFields.length === 0 && !isEditing && (
                                         <div className="col-span-full py-8 text-center border-2 border-dashed border-white/5 rounded-2xl">

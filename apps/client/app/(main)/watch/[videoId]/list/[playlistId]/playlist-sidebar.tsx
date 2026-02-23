@@ -98,7 +98,7 @@ export function PlaylistSidebar({
             </div>
 
             <div className="flex-1 overflow-y-auto p-2 space-y-1">
-                {store.shuffledOrder.map((orderIndex, i) => {
+                {store.shuffledOrder.map((orderIndex: number, i: number) => {
                     const video = store.playlistData!.videos[orderIndex];
                     const isPlaying = i === store.currentIndex;
                     return (

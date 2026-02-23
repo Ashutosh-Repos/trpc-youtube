@@ -101,7 +101,7 @@ export function ShortsFeedClient({ initialVideo }: ShortsFeedClientProps) {
             ref={containerRef}
             className="flex flex-col h-[calc(100vh-64px)] w-full overflow-y-auto snap-y snap-mandatory hide-scrollbar bg-[#0f0f0f] sm:bg-transparent"
         >
-            {videos.map((video) => (
+            {videos.map((video: any) => (
                 <div
                     key={video.id}
                     className="h-full w-full shrink-0 snap-always snap-center flex items-center justify-center"
