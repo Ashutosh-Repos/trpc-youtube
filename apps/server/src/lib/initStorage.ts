@@ -54,8 +54,11 @@ async function waitForMinIO(): Promise<boolean> {
             if (
                 err.name === "NotFound" ||
                 err.name === "NoSuchBucket" ||
-                err.$metadata?.httpStatusCode === 404
+                err.$metadata?.httpStatusCode === 404 ||
+                err.$metadata?.httpStatusCode === 403
             ) {
+                // 404 = bucket doesn't exist, 403 = bucket doesn't exist (MinIO auth mode)
+                // Either way, MinIO is reachable — proceed to create bucket
                 return true;
             }
 
@@ -101,6 +104,7 @@ export async function initStorage(): Promise<void> {
         if (
             err.name === "NotFound" ||
             err.$metadata?.httpStatusCode === 404 ||
+            err.$metadata?.httpStatusCode === 403 ||
             err.name === "NoSuchBucket"
         ) {
             try {
