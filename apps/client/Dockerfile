@@ -49,7 +49,8 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/client ./apps/client
 COPY apps/server ./apps/server
 
-# Generate Prisma client for the client app
+# Generate Prisma client for both apps (client depends on server types)
+RUN cd apps/server && npx prisma generate
 RUN cd apps/client && npx prisma generate
 
 # Build Next.js (produces standalone output in .next/standalone)
