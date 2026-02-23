@@ -59,14 +59,17 @@ async function waitForMinIO(): Promise<boolean> {
                 return true;
             }
 
-            console.log(
+            console.error(
                 `[Storage Init] ⏳ Waiting for MinIO... (${attempt}/${MAX_RETRIES})`,
                 JSON.stringify({
                     name: err.name,
-                    code: err.code,
                     message: err.message,
-                    cause: String(err.cause),
-                    endpoint: minioEndpoint,
+                    code: err.code,
+                    errno: err.errno,
+                    syscall: err.syscall,
+                    hostname: err.hostname,
+                    metadata: err.$metadata,
+                    stack: err.stack?.split("\n").slice(0, 3).join(" | "),
                 }),
             );
             await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
