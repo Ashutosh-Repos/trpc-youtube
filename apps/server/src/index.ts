@@ -274,7 +274,9 @@ if (!isClusterPrimary) {
     // --- MINIO EVENT MONITOR ---
     const startEventMonitor = async () => {
         const localRedisUrl =
-            process.env.LOCAL_REDIS_URL || "redis://localhost:6379";
+            process.env.LOCAL_REDIS_URL ||
+            process.env.REDIS_URL ||
+            "redis://localhost:6379";
         console.log(
             `[Monitor] Connecting to Redis for MinIO events: ${localRedisUrl.replace(/:[^:@]+@/, ":***@")}`,
         );
@@ -468,6 +470,14 @@ if (!isClusterPrimary) {
         console.log(
             `[Cluster] Worker ${process.pid} is designated as Singleton Orchestrator.`,
         );
+
+        // Initialize storage (bucket, policy, lifecycle) — replaces docker createbuckets
+        import("./lib/initStorage")
+            .then(({ initStorage }) => initStorage())
+            .catch((err) =>
+                console.error("[Startup] ❌ Storage init failed:", err),
+            );
+
         startupCleanup();
         startScheduledCleanup();
         startEventMonitor().catch((err) =>

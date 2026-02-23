@@ -64,8 +64,12 @@ export function getRedisConnection() {
         return {
             host: url.hostname,
             port: parseInt(url.port || "6379"),
-            username: url.username,
-            password: url.password,
+            username: url.username || undefined,
+            password: url.password || undefined,
+            // BullMQ needs TLS config if using rediss:// protocol
+            tls: urlStr.startsWith("rediss://")
+                ? { rejectUnauthorized: false }
+                : undefined,
         };
     } catch (e) {
         console.warn("Invalid Redis URL, falling back to localhost", e);

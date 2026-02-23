@@ -8,41 +8,55 @@ import config from "./config";
 import prisma from "./lib/prisma";
 
 async function start() {
-    console.log("👷 Starting Background Workers...");
+    const workerType = process.env.WORKER_TYPE;
+    console.log(
+        `👷 Starting Background Workers... ${workerType ? `(type: ${workerType})` : "(all)"}`,
+    );
 
     // 1. Video Transcoding Worker
-    if (process.env.WORKER_TYPE === "transcode" || !process.env.WORKER_TYPE) {
+    if (workerType === "transcode" || !workerType) {
         console.log("   - Initializing Transcode Worker...");
         setupWorker();
     }
 
     // 2. Scheduler (Cron)
-    if (process.env.WORKER_TYPE === "scheduler" || !process.env.WORKER_TYPE) {
+    if (
+        workerType === "scheduler" ||
+        workerType === "services" ||
+        !workerType
+    ) {
         console.log("   - Initializing Scheduler...");
         setupSchedulerWorker();
     }
 
     // 3. Engagement (Likes/Views)
-    if (process.env.WORKER_TYPE === "engagement" || !process.env.WORKER_TYPE) {
+    if (
+        workerType === "engagement" ||
+        workerType === "services" ||
+        !workerType
+    ) {
         console.log("   - Initializing Engagement Workers...");
         startEngagementWorker();
     }
 
     // 4. Scoring (Pool Calculation)
-    if (process.env.WORKER_TYPE === "scoring" || !process.env.WORKER_TYPE) {
+    if (workerType === "scoring" || workerType === "services" || !workerType) {
         console.log("   - Initializing Scoring Worker...");
         startScoringWorker();
     }
 
     // 5. Notification TTL Cleanup Cron (runs daily)
-    console.log("   - Scheduling Notification TTL Cleanup...");
-    NotificationService.cleanupOldNotifications(); // Run once on startup
-    setInterval(
-        () => {
-            NotificationService.cleanupOldNotifications();
-        },
-        24 * 60 * 60 * 1000,
-    ); // And every 24 hours
+    // Only run in "services" mode or when all workers are running
+    if (workerType === "services" || !workerType) {
+        console.log("   - Scheduling Notification TTL Cleanup...");
+        NotificationService.cleanupOldNotifications(); // Run once on startup
+        setInterval(
+            () => {
+                NotificationService.cleanupOldNotifications();
+            },
+            24 * 60 * 60 * 1000,
+        ); // And every 24 hours
+    }
 
     console.log("✅ Workers Initialized.");
 

@@ -37,6 +37,16 @@ import { updateChannelStats } from "../../lib/channels";
 import { StreamService } from "../../services/StreamService";
 import redis from "../../lib/redis";
 
+// --- Helpers ---
+
+/** Build the public WebSocket URL for a given video ID */
+function buildWsUrl(videoId: string): string {
+    const wsProtocol = config.nodeEnv === "production" ? "wss" : "ws";
+    const baseUrl =
+        config.publicWsUrl || `${wsProtocol}://localhost:${config.port}`;
+    return `${baseUrl}/ws/videos?id=${videoId}`;
+}
+
 // --- Input Schemas ---
 
 const initUploadSchema = z.object({
@@ -163,16 +173,10 @@ export const videoRouter = router({
                                 ownerId: userId,
                             });
 
-                            const wsProtocol =
-                                config.nodeEnv === "production" ? "wss" : "ws";
-                            const wsUrl = config.publicWsUrl
-                                ? `${config.publicWsUrl}/ws/videos?id=${existingVideo.id}`
-                                : `${wsProtocol}://localhost:${config.port}/ws/videos?id=${existingVideo.id}`;
-
                             return {
                                 videoId: existingVideo.id,
                                 uploadId: existingVideo.uploadId,
-                                wsUrl,
+                                wsUrl: buildWsUrl(existingVideo.id),
                                 expiresAt:
                                     existingVideo.uploadExpiresAt.toISOString(),
                             };
@@ -282,16 +286,10 @@ export const videoRouter = router({
                 ownerId: userId,
             });
 
-            // Build WebSocket URL
-            const wsProtocol = config.nodeEnv === "production" ? "wss" : "ws";
-            const wsUrl = config.publicWsUrl
-                ? `${config.publicWsUrl}/ws/videos?id=${video.id}`
-                : `${wsProtocol}://localhost:${config.port}/ws/videos?id=${video.id}`;
-
             return {
                 videoId: video.id,
                 uploadId,
-                wsUrl,
+                wsUrl: buildWsUrl(video.id),
                 expiresAt: uploadExpiresAt.toISOString(),
             };
         }),
@@ -413,15 +411,10 @@ export const videoRouter = router({
             });
         }
 
-        const wsProtocol = config.nodeEnv === "production" ? "wss" : "ws";
-        const wsUrl = config.publicWsUrl
-            ? `${config.publicWsUrl}/ws/videos?id=${video.id}`
-            : `${wsProtocol}://localhost:${config.port}/ws/videos?id=${video.id}`;
-
         return {
             videoId: video.id,
             uploadId: video.uploadId,
-            wsUrl,
+            wsUrl: buildWsUrl(video.id),
             parts: parts.map((p) => ({
                 PartNumber: p.PartNumber,
                 ETag: p.ETag,

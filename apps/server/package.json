@@ -2,7 +2,7 @@
     "name": "@youtube/server",
     "version": "1.0.0",
     "private": true,
-    "main": "dist/index.js",
+    "main": "dist/src/index.js",
     "types": "src/trpc/router.ts",
     "scripts": {
         "dev": "concurrently -c \"cyan,magenta\" -n \"api,worker\" \"nodemon src/index.ts\" \"tsx watch src/worker-entry.ts\"",
@@ -12,8 +12,11 @@
         "worker:transcode": "WORKER_TYPE=transcode tsx watch src/worker-entry.ts",
         "worker:engagement": "WORKER_TYPE=engagement tsx watch src/worker-entry.ts",
         "build": "tsc",
-        "start": "node dist/index.js",
-        "worker:start": "node dist/worker-entry.js"
+        "start": "node dist/src/index.js",
+        "start:api": "node dist/src/index.js",
+        "start:transcode": "WORKER_TYPE=transcode node dist/src/worker-entry.js",
+        "start:services": "WORKER_TYPE=services node dist/src/worker-entry.js",
+        "worker:start": "node dist/src/worker-entry.js"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.975.0",

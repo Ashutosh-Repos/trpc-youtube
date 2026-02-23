@@ -19,14 +19,32 @@ import { Readable } from "stream";
 import * as fs from "fs";
 import config from "../config";
 
+// Internal endpoint for server-to-server operations (download, upload, delete)
+const internalEndpoint = `${config.minio.useSsl ? "https" : "http"}://${config.minio.endpoint}:${config.minio.port}`;
+
 const s3Client = new S3Client({
-    region: "us-east-1", // MinIO default
-    endpoint: `${config.minio.useSsl ? "https" : "http"}://${config.minio.endpoint}:${config.minio.port}`,
+    region: "us-east-1",
+    endpoint: internalEndpoint,
     credentials: {
         accessKeyId: config.minio.accessKey,
         secretAccessKey: config.minio.secretKey,
     },
-    forcePathStyle: true, // Required for MinIO
+    forcePathStyle: true,
+});
+
+// Public endpoint for browser-facing presigned URLs
+// On Railway: PUBLIC_MINIO_URL = "https://bucket-xxx.up.railway.app"
+// Locally: falls back to the same internal endpoint
+const publicEndpoint = config.minio.publicUrl || internalEndpoint;
+
+const signerClient = new S3Client({
+    region: "us-east-1",
+    endpoint: publicEndpoint,
+    credentials: {
+        accessKeyId: config.minio.accessKey,
+        secretAccessKey: config.minio.secretKey,
+    },
+    forcePathStyle: true,
 });
 
 const BUCKET_NAME = config.minio.bucket;
@@ -157,7 +175,8 @@ export async function getPresignedPartUrl(
     });
 
     // Expire in 1 hour (plenty for a 5MB chunk)
-    return await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+    // Use signerClient so the URL contains the public hostname
+    return await getSignedUrl(signerClient, command, { expiresIn: 3600 });
 }
 
 /**

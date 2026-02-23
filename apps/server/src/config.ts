@@ -19,6 +19,9 @@ export const config = {
         accessKey: process.env.MINIO_ACCESS_KEY || "minioadmin",
         secretKey: process.env.MINIO_SECRET_KEY || "minioadmin",
         bucket: process.env.MINIO_BUCKET || "youtube-videos",
+        // Public URL for browser-facing presigned URLs (Railway deployment)
+        // Falls back to constructed internal URL for local dev
+        publicUrl: process.env.PUBLIC_MINIO_URL || null,
     },
     redis: {
         url: process.env.REDIS_URL || "redis://localhost:6379",

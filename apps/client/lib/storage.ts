@@ -15,17 +15,21 @@ import {
 
 export type { UploadType } from "./utils";
 
-// Initialize S3 Client for MinIO
+// Initialize S3 Client for presigned URL generation
+// MINIO_SIGNING_URL: public URL for browser-reachable presigned URLs (Railway)
+// Falls back to internal endpoint for local development
+const defaultEndpoint = process.env.MINIO_ENDPOINT
+    ? `${process.env.MINIO_USE_SSL === "true" ? "https" : "http"}://${process.env.MINIO_ENDPOINT}:${process.env.MINIO_PORT || 9000}`
+    : "http://localhost:9000";
+
 const s3Client = new S3Client({
-    region: "us-east-1", // MinIO default
-    endpoint: process.env.MINIO_ENDPOINT
-        ? `${process.env.MINIO_USE_SSL === "true" ? "https" : "http"}://${process.env.MINIO_ENDPOINT}:${process.env.MINIO_PORT || 9000}`
-        : "http://localhost:9000",
+    region: "us-east-1",
+    endpoint: process.env.MINIO_SIGNING_URL || defaultEndpoint,
     credentials: {
         accessKeyId: process.env.MINIO_ACCESS_KEY || "minioadmin",
         secretAccessKey: process.env.MINIO_SECRET_KEY || "minioadmin",
     },
-    forcePathStyle: true, // Required for MinIO
+    forcePathStyle: true,
 });
 
 const BUCKET_NAME = process.env.MINIO_BUCKET || "youtube-videos";

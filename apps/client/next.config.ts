@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+    output: "standalone",
     /* config options here */
     images: {
         unoptimized: true,
@@ -42,6 +43,12 @@ const nextConfig: NextConfig = {
                 protocol: "http",
                 hostname: "192.168.1.43",
                 port: "9000",
+                pathname: "/**",
+            },
+            // Railway deployment — MinIO Bucket public domain
+            {
+                protocol: "https",
+                hostname: "**.up.railway.app",
                 pathname: "/**",
             },
         ],
