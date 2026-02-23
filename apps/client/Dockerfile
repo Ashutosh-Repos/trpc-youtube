@@ -1,6 +1,7 @@
 # ─── Stage 1: Install dependencies ───────────────────────────────────
 FROM node:20-slim AS deps
 
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 RUN corepack enable && corepack prepare pnpm@10.4.1 --activate
 
 WORKDIR /app
@@ -12,15 +13,11 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/client/package.json apps/client/package.json
 COPY apps/server/package.json apps/server/package.json
 
-# Install ALL dependencies
+# Install ALL dependencies (cached layer — only re-runs when manifests change)
 RUN pnpm install --frozen-lockfile
 
 # ─── Stage 2: Build ──────────────────────────────────────────────────
-FROM node:20-slim AS builder
-
-RUN corepack enable && corepack prepare pnpm@10.4.1 --activate
-
-WORKDIR /app
+FROM deps AS builder
 
 # ⚠️ CRITICAL: Next.js inlines NEXT_PUBLIC_* vars at BUILD time, not runtime.
 # These MUST be available during `next build` or they'll be undefined in production.
@@ -39,15 +36,15 @@ ENV NEXT_PUBLIC_PUBLIC_MINIO_URL=$NEXT_PUBLIC_PUBLIC_MINIO_URL
 ENV NEXT_PUBLIC_MINIO_BUCKET=$NEXT_PUBLIC_MINIO_BUCKET
 ENV NEXT_PUBLIC_TRANSCODER_URL=$NEXT_PUBLIC_TRANSCODER_URL
 
-# Copy deps
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/client/node_modules ./apps/client/node_modules
-COPY --from=deps /app/apps/server/node_modules ./apps/server/node_modules
-
 # Copy all source (server source needed for type imports via workspace:^)
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/client ./apps/client
 COPY apps/server ./apps/server
+
+# Re-run pnpm install to restore workspace symlinks destroyed by COPY
+# (pnpm creates symlinks in apps/server/node_modules/ → node_modules/.pnpm/
+#  but COPY overwrites apps/server/, destroying those symlinks)
+# Fast (~2-5s) since packages are already cached in the pnpm store from deps stage.
+RUN pnpm install --frozen-lockfile
 
 # Generate Prisma client for both apps (client depends on server types)
 RUN cd apps/server && npx prisma generate
@@ -59,6 +56,8 @@ RUN cd apps/client && pnpm build
 
 # ─── Stage 3: Production runtime ─────────────────────────────────────
 FROM node:20-slim AS runner
+
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
