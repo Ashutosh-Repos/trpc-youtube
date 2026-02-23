@@ -2,9 +2,15 @@ import Redis from "ioredis";
 
 const globalForRedis = global as unknown as { redis: Redis; redisUrl: string };
 
-const redisUrl = process.env.REDIS_URL!;
+const redisUrl = process.env.REDIS_URL || "";
 
 const createRedisClient = () => {
+    if (!redisUrl) {
+        console.warn(
+            "[Redis] REDIS_URL not set, skipping client initialization (build-time)",
+        );
+        return null as unknown as Redis;
+    }
     // Obfuscate sensitive part for logging
     const logUrl = redisUrl.replace(/\/\/.*@/, "//***:***@");
     console.log(`[Redis] Initializing client with: ${logUrl}`);
