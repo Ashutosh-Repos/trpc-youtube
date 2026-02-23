@@ -112,7 +112,7 @@ const TooltipContent = ({
 
     return (
         <div className="flex flex-row items-center">
-            {allItems.map((item, idx) => {
+            {allItems.map((item: any, idx: number) => {
                 const isAddIcon = addIcon && idx === allItems.length - 1;
 
                 const Content = (

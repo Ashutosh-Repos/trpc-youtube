@@ -24,7 +24,7 @@ export const SideNav = ({ navLinks }: { navLinks: NavItem[] }) => {
         <aside className="sm:w-20 sm:h-full w-full h-16 bg-surface-1/60 backdrop-blur-2xl flex flex-col items-center justify-center sm:p-2 gap-4 sm:py-8 border-r border-border/40">
             {/* main nav */}
             <nav className="w-full h-max flex items-center justify-evenly sm:flex-col gap-3 p-1">
-                {navLinks.map((item, idx) => {
+                {navLinks.map((item: NavItem, idx: number) => {
                     const Icon = item.icon;
                     const isActive = pathname === item.href;
 

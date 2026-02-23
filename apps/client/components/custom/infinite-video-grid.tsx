@@ -50,7 +50,7 @@ export function InfiniteVideoGrid({
     if (isLoading) {
         return (
             <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-x-4 gap-y-10 mt-6 relative z-0">
-                {Array.from({ length: 12 }).map((_, i) => (
+                {Array.from({ length: 12 }).map((_: any, i: number) => (
                     <div key={i} className="flex flex-col gap-3 animate-pulse">
                         <div className="aspect-video bg-muted rounded-xl w-full"></div>
                         <div className="flex gap-3 px-1">
@@ -77,7 +77,7 @@ export function InfiniteVideoGrid({
     return (
         <div className="w-full pb-20 mt-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-x-4 gap-y-10 relative z-0">
-                {videos.map((video, idx) => (
+                {videos.map((video: any, idx: number) => (
                     <React.Fragment key={`${video.id}-${idx}`}>
                         <VideoCard video={video} />
                         {showShortsShelf && idx === 7 && (

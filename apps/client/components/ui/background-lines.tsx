@@ -100,7 +100,7 @@ const SVG = ({
             transition={{ duration: 1 }}
             className="absolute inset-0 w-full h-full"
         >
-            {paths.map((path, idx) => (
+            {paths.map((path: string, idx: number) => (
                 <motion.path
                     d={path}
                     stroke={colors[idx]}
@@ -122,7 +122,7 @@ const SVG = ({
             ))}
 
             {/* duplicate for more paths */}
-            {paths.map((path, idx) => (
+            {paths.map((path: string, idx: number) => (
                 <motion.path
                     d={path}
                     stroke={colors[idx]}

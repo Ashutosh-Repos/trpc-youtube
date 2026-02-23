@@ -158,7 +158,7 @@ export function ChannelClient({
                 {/* Links */}
                 {channel.links && channel.links.length > 0 && (
                     <div className="py-3 flex flex-wrap gap-3 border-b border-border/20">
-                        {channel.links.map((link, i) => (
+                        {channel.links.map((link: any, i: number) => (
                             <a
                                 key={i}
                                 href={link.url}

@@ -69,7 +69,7 @@ export const SlotDatePicker: React.FC<SlotDatePickerProps> = ({
 
     const years = useMemo(
         () =>
-            Array.from({ length: toYear - fromYear + 1 }, (_, i) =>
+            Array.from({ length: toYear - fromYear + 1 }, (_: any, i: number) =>
                 (fromYear + i).toString(),
             ).reverse(),
         [fromYear, toYear],
@@ -81,7 +81,9 @@ export const SlotDatePicker: React.FC<SlotDatePickerProps> = ({
             selectedDate.getMonth() + 1,
             0,
         ).getDate();
-        return Array.from({ length: count }, (_, i) => (i + 1).toString());
+        return Array.from({ length: count }, (_: any, i: number) =>
+            (i + 1).toString(),
+        );
     }, [selectedDate.getFullYear(), selectedDate.getMonth()]);
 
     const handleUpdate = useCallback(
@@ -238,7 +240,7 @@ const SlotReel = React.memo(
                     style={{ y }}
                     className="absolute top-0 w-full"
                 >
-                    {items.map((item, i) => (
+                    {items.map((item: string, i: number) => (
                         <SlotItem
                             key={`${item}-${i}`}
                             item={item}

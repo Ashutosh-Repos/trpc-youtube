@@ -408,7 +408,10 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                                                     {video.thumbnailOptions &&
                                                         video.thumbnailOptions.map(
-                                                            (url, idx) => (
+                                                            (
+                                                                url: string,
+                                                                idx: number,
+                                                            ) => (
                                                                 <div
                                                                     key={idx}
                                                                     className={cn(

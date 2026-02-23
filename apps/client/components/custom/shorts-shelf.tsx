@@ -25,7 +25,7 @@ export function ShortsShelf({ source }: ShortsShelfProps) {
         return (
             <div className="col-span-full border-y border-border/40 py-6 my-4 w-full">
                 <div className="flex animate-pulse gap-4 overflow-x-hidden px-2">
-                    {Array.from({ length: 6 }).map((_, i) => (
+                    {Array.from({ length: 6 }).map((_: any, i: number) => (
                         <div
                             key={i}
                             className="w-[210px] aspect-9/16 bg-surface-2 rounded-2xl shrink-0 animate-pulse border border-border/10"

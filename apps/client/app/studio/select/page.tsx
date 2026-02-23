@@ -34,7 +34,7 @@ const SelectChannelPage = async () => {
         );
     }
 
-    const items = channels.map((channel, idx) => ({
+    const items = channels.map((channel: any, idx: number) => ({
         id: idx,
         originalId: channel.id,
         name: channel.name,

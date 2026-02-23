@@ -147,7 +147,7 @@ export default function NotificationsPage() {
             {/* Notification List */}
             {isLoading ? (
                 <div className="space-y-4">
-                    {Array.from({ length: 5 }).map((_, i) => (
+                    {Array.from({ length: 5 }).map((_: any, i: number) => (
                         <div
                             key={i}
                             className="h-16 bg-muted/30 rounded animate-pulse"

@@ -304,18 +304,20 @@ export function ChannelClient({
                         <div className="space-y-8">
                             {videosQuery.isLoading ? (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-10">
-                                    {Array.from({ length: 8 }).map((_, i) => (
-                                        <div
-                                            key={i}
-                                            className="space-y-4 animate-pulse"
-                                        >
-                                            <div className="aspect-video bg-surface-2 rounded-2xl border border-border/10" />
-                                            <div className="space-y-2">
-                                                <div className="h-4 bg-surface-2 rounded-lg w-3/4" />
-                                                <div className="h-3 bg-surface-2 rounded-lg w-1/2" />
+                                    {Array.from({ length: 8 }).map(
+                                        (_: any, i: number) => (
+                                            <div
+                                                key={i}
+                                                className="space-y-4 animate-pulse"
+                                            >
+                                                <div className="aspect-video bg-surface-2 rounded-2xl border border-border/10" />
+                                                <div className="space-y-2">
+                                                    <div className="h-4 bg-surface-2 rounded-lg w-3/4" />
+                                                    <div className="h-3 bg-surface-2 rounded-lg w-1/2" />
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ),
+                                    )}
                                 </div>
                             ) : videos.length === 0 ? (
                                 <div className="text-center py-32 space-y-4">
@@ -354,15 +356,17 @@ export function ChannelClient({
                         <div className="space-y-8">
                             {shortsQuery.isLoading ? (
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-4 gap-y-10">
-                                    {Array.from({ length: 12 }).map((_, i) => (
-                                        <div
-                                            key={i}
-                                            className="space-y-4 animate-pulse"
-                                        >
-                                            <div className="aspect-[9/16] bg-surface-2 rounded-2xl border border-border/10" />
-                                            <div className="h-4 bg-surface-2 rounded-lg w-3/4" />
-                                        </div>
-                                    ))}
+                                    {Array.from({ length: 12 }).map(
+                                        (_: any, i: number) => (
+                                            <div
+                                                key={i}
+                                                className="space-y-4 animate-pulse"
+                                            >
+                                                <div className="aspect-[9/16] bg-surface-2 rounded-2xl border border-border/10" />
+                                                <div className="h-4 bg-surface-2 rounded-lg w-3/4" />
+                                            </div>
+                                        ),
+                                    )}
                                 </div>
                             ) : shorts.length === 0 ? (
                                 <div className="text-center py-32 space-y-4">
@@ -420,18 +424,20 @@ export function ChannelClient({
                         <div className="space-y-8">
                             {playlistsQuery.isLoading ? (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
-                                    {Array.from({ length: 6 }).map((_, i) => (
-                                        <div
-                                            key={i}
-                                            className="space-y-4 animate-pulse"
-                                        >
-                                            <div className="aspect-video bg-surface-2 rounded-2xl border border-border/10" />
-                                            <div className="space-y-2">
-                                                <div className="h-4 bg-surface-2 rounded-lg w-3/4" />
-                                                <div className="h-3 bg-surface-2 rounded-lg w-1/4" />
+                                    {Array.from({ length: 6 }).map(
+                                        (_: any, i: number) => (
+                                            <div
+                                                key={i}
+                                                className="space-y-4 animate-pulse"
+                                            >
+                                                <div className="aspect-video bg-surface-2 rounded-2xl border border-border/10" />
+                                                <div className="space-y-2">
+                                                    <div className="h-4 bg-surface-2 rounded-lg w-3/4" />
+                                                    <div className="h-3 bg-surface-2 rounded-lg w-1/4" />
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ),
+                                    )}
                                 </div>
                             ) : playlists.length === 0 ? (
                                 <div className="text-center py-32 space-y-4">

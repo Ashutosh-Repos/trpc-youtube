@@ -415,7 +415,7 @@ const CreateChannelForm = () => {
                                 </Button>
                             </div>
 
-                            {fields.map((field, i) => (
+                            {fields.map((field: any, i: number) => (
                                 <div
                                     key={field.id}
                                     className="flex gap-2 items-start"

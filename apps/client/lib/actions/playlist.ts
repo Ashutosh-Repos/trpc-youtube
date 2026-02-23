@@ -190,7 +190,10 @@ export async function addVideoToPlaylist(
         // Verify playlist ownership
         const playlist = await prisma.playlists.findUnique({
             where: { id: playlistId },
-            select: { userId: true, _count: { select: { playlist_videos: true } } },
+            select: {
+                userId: true,
+                _count: { select: { playlist_videos: true } },
+            },
         });
 
         if (!playlist || playlist.userId !== user.id) {
@@ -344,7 +347,7 @@ export async function reorderPlaylistVideos(
 
         // Update positions in a transaction
         await prisma.$transaction(
-            videoIds.map((id, index) =>
+            videoIds.map((id: string, index: number) =>
                 prisma.playlist_videos.update({
                     where: {
                         playlistId_videoId: {

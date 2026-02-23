@@ -54,7 +54,7 @@ export function ShortsFeedClient({ initialVideo }: ShortsFeedClientProps) {
 
                 const containerHeight = container.clientHeight;
 
-                children.forEach((child, idx) => {
+                children.forEach((child: HTMLElement, idx: number) => {
                     const rect = child.getBoundingClientRect();
                     const visibleHeight =
                         Math.min(rect.bottom, containerHeight) -

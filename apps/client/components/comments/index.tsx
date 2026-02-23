@@ -59,7 +59,7 @@ CommentSkeleton.displayName = "CommentSkeleton";
 
 export const CommentListSkeleton = memo(() => (
     <div className="flex flex-col gap-6">
-        {Array.from({ length: 5 }).map((_, i) => (
+        {Array.from({ length: 5 }).map((_: any, i: number) => (
             <CommentSkeleton key={i} />
         ))}
     </div>
@@ -73,7 +73,7 @@ function useCommentInteractions(comment: Comment, videoId: string) {
     // Optimistic Update helper for infinite data
     const updateInfiniteData = (type: "LIKE" | "DISLIKE" | "REMOVE") => {
         // Optimistically update the single comment query (e.g. Highlighted Comment)
-        utils.comment.getById.setData({ id: comment.id }, (oldComment) => {
+        utils.comment.getById.setData({ id: comment.id }, (oldComment: any) => {
             if (!oldComment) return oldComment;
             let newLikeCount = oldComment.likeCount;
             if (type === "LIKE" && oldComment.userReaction !== "LIKE")

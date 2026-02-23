@@ -207,7 +207,7 @@ export function VideoProcessingPanel({
 
             {/* ── Step indicators ── */}
             <ol className="flex flex-col gap-2.5">
-                {STEPS.map((step, idx) => {
+                {STEPS.map((step: any, idx: number) => {
                     const state = getStepState(step, status, isFailed);
                     const Icon = step.icon;
 
