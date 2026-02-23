@@ -62,7 +62,7 @@ RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
 
 # Copy standalone server (includes all bundled dependencies — no node_modules needed)
 COPY --from=builder /app/apps/client/.next/standalone ./
