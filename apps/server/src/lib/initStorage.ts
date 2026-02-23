@@ -24,9 +24,11 @@ import {
 } from "@aws-sdk/client-s3";
 import config from "../config";
 
+const minioEndpoint = `${config.minio.useSsl ? "https" : "http"}://${config.minio.endpoint}:${config.minio.port}`;
+
 const s3Client = new S3Client({
     region: "us-east-1",
-    endpoint: `${config.minio.useSsl ? "https" : "http"}://${config.minio.endpoint}:${config.minio.port}`,
+    endpoint: minioEndpoint,
     credentials: {
         accessKeyId: config.minio.accessKey,
         secretAccessKey: config.minio.secretKey,
@@ -43,6 +45,7 @@ const RETRY_DELAY_MS = 3000;
  * Mirrors the `until (mc alias set ...)` loop in docker-compose.
  */
 async function waitForMinIO(): Promise<boolean> {
+    console.log(`[Storage Init] 🔗 Connecting to MinIO at: ${minioEndpoint}`);
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
         try {
             await s3Client.send(new HeadBucketCommand({ Bucket: BUCKET }));
@@ -57,7 +60,7 @@ async function waitForMinIO(): Promise<boolean> {
             }
 
             console.log(
-                `[Storage Init] ⏳ Waiting for MinIO... (${attempt}/${MAX_RETRIES})`,
+                `[Storage Init] ⏳ Waiting for MinIO... (${attempt}/${MAX_RETRIES}) - ${err.name || err.code || err.message}`,
             );
             await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
         }

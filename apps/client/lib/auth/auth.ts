@@ -41,6 +41,10 @@ const verifyPassword = async ({
 };
 
 export const auth = betterAuth({
+    baseURL:
+        process.env.BETTER_AUTH_URL ||
+        process.env.NEXT_PUBLIC_APP_URL ||
+        "http://localhost:3000",
     appName: "Youtube",
     database: prismaAdapter(prisma, {
         provider: "postgresql",
