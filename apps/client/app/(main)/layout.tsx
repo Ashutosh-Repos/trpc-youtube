@@ -18,7 +18,7 @@ const HomeLayout = ({
         {
             icon: CircleDollarSignIcon,
             title: "Subscription",
-            href: "/subscription",
+            href: "/", // TODO: create /subscription page
         },
         { icon: FlameIcon, title: "Trending", href: "/trending" },
         { icon: ClapIcon, title: "Studio", href: "/studio" },
