@@ -26,15 +26,15 @@ export async function proxy(request: NextRequest) {
     }
 
     // Fetch session from API (Node runtime) to avoid Edge Runtime issues with Prisma
+    // Use localhost to avoid SSL issues — the public HTTPS URL resolves internally
+    // to the container's HTTP port on Railway, causing ERR_SSL_WRONG_VERSION_NUMBER
     try {
-        const res = await fetch(
-            `${request.nextUrl.origin}/api/auth/get-session`,
-            {
-                headers: {
-                    cookie: request.headers.get("cookie") || "",
-                },
+        const internalOrigin = `http://localhost:${process.env.PORT || 3000}`;
+        const res = await fetch(`${internalOrigin}/api/auth/get-session`, {
+            headers: {
+                cookie: request.headers.get("cookie") || "",
             },
-        );
+        });
         const session = await res.json();
 
         if (!session?.user) {
