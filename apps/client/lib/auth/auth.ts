@@ -118,7 +118,7 @@ export const auth = betterAuth({
         accountLinking: {
             enabled: true,
             allowDifferentEmails: false,
-            trustedProviders: ["none"],
+            trustedProviders: ["google", "github"],
         },
     },
     verification: {
@@ -199,48 +199,24 @@ export const auth = betterAuth({
         },
         account: {
             create: {
-                before: async (account, ctx) => {
-                    // Start of Security Hook: Block Auto-Linking
+                before: async (account) => {
+                    // Audit log for account linking — non-blocking
                     if (account.providerId === "credential") return;
 
-                    const user = await prisma.user.findUnique({
+                    const existingUser = await prisma.user.findUnique({
                         where: { id: account.userId },
                     });
 
-                    if (user) {
+                    if (existingUser) {
                         const isNewUser =
-                            Date.now() - user.createdAt.getTime() < 30 * 1000; // 30 seconds threshold
+                            Date.now() - existingUser.createdAt.getTime() <
+                            30 * 1000;
                         if (!isNewUser) {
-                            // User exists and is not brand new (so this is a linking attempt)
-
-                            // Check if the request comes from an authenticated session
-                            // We look for the session cookie in the headers
-                            const cookieHeader =
-                                ctx?.headers?.get("cookie") || "";
-                            // In production with useSecureCookies, cookie is prefixed with __Secure-
-                            const hasSessionCookie =
-                                cookieHeader.includes(
-                                    "better-auth.session_token",
-                                ) ||
-                                cookieHeader.includes(
-                                    "__Secure-better-auth.session_token",
-                                );
-
-                            if (!hasSessionCookie) {
-                                console.warn(
-                                    `[AUTH] Blocked auto-linking attempt for user: ${user.email} with provider: ${account.providerId}`,
-                                );
-                                // Returning false cancels the operation in better-auth hooks
-                                // Ideally we would throw an error to inform the user, but false creates a generic failure
-                                // Let's throw to be explicit if possible, or return false.
-                                // Throwing might cause a 500 or proper error. Let's try throwing.
-                                throw new Error(
-                                    "Automatic account linking is disabled. Please log in with your existing account and link this provider from settings.",
-                                );
-                            }
+                            console.log(
+                                `[AUTH] Account linked: ${existingUser.email} ← ${account.providerId}`,
+                            );
                         }
                     }
-                    // End of Security Hook
                 },
             },
         },
