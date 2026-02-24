@@ -2,8 +2,16 @@ import { Resend } from "resend";
 import { Queue, Worker, type Job } from "bullmq";
 import IORedis from "ioredis";
 
+// ─── Build-time detection ────────────────────────────────────────────────────
+// Next.js sets NEXT_PHASE during build — skip heavy init during page collection
+const isBuildTime =
+    process.env.NEXT_PHASE === "phase-production-build" ||
+    (!process.env.RESEND_API_KEY && !process.env.REDIS_URL);
+
 // ─── Resend Client ───────────────────────────────────────────────────────────
-const resend = new Resend(process.env.RESEND_API_KEY || "");
+const resend = process.env.RESEND_API_KEY
+    ? new Resend(process.env.RESEND_API_KEY)
+    : null;
 
 // ─── Email Job Types ─────────────────────────────────────────────────────────
 interface EmailJob {
@@ -25,7 +33,7 @@ let emailWorker: Worker | null = null;
 // Lazy-init to avoid import-time crashes when Redis isn't available (build time)
 function getQueue(): Queue | null {
     if (emailQueue) return emailQueue;
-    if (!process.env.REDIS_URL) return null;
+    if (!process.env.REDIS_URL || isBuildTime) return null;
 
     try {
         const connection = new IORedis(process.env.REDIS_URL!, {
@@ -53,7 +61,8 @@ const globalForWorker = global as unknown as { emailWorker: Worker | null };
 
 function ensureWorker(): void {
     if (globalForWorker.emailWorker || emailWorker) return;
-    if (!process.env.REDIS_URL || !process.env.RESEND_API_KEY) return;
+    if (isBuildTime || !process.env.REDIS_URL || !process.env.RESEND_API_KEY)
+        return;
 
     try {
         const connection = new IORedis(process.env.REDIS_URL!, {
@@ -64,6 +73,7 @@ function ensureWorker(): void {
             QUEUE_NAME,
             async (job: Job<EmailJob>) => {
                 const { to, subject, html, from } = job.data;
+                if (!resend) throw new Error("Resend not initialized");
                 const { error } = await resend.emails.send({
                     from,
                     to,
@@ -145,6 +155,12 @@ class EmailService {
         }
 
         // Fallback: fire-and-forget direct send (non-blocking via .catch)
+        if (!resend) {
+            console.warn(
+                `[Email] Resend not initialized, dropping "${subject}" to ${to}`,
+            );
+            return;
+        }
         resend.emails
             .send(job)
             .then(({ error }) => {
