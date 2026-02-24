@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 import { Queue, Worker, type Job } from "bullmq";
-import type Redis from "ioredis";
+import IORedis from "ioredis";
 
 // ─── Resend Client ───────────────────────────────────────────────────────────
 const resend = new Resend(process.env.RESEND_API_KEY || "");
@@ -28,12 +28,12 @@ function getQueue(): Queue | null {
     if (!process.env.REDIS_URL) return null;
 
     try {
+        const connection = new IORedis(process.env.REDIS_URL!, {
+            maxRetriesPerRequest: null,
+            lazyConnect: true,
+        });
         emailQueue = new Queue(QUEUE_NAME, {
-            connection: {
-                url: process.env.REDIS_URL,
-                maxRetriesPerRequest: null,
-                lazyConnect: true,
-            } as unknown as Redis,
+            connection,
             defaultJobOptions: {
                 attempts: 3,
                 backoff: { type: "exponential", delay: 5000 },
@@ -56,6 +56,10 @@ function ensureWorker(): void {
     if (!process.env.REDIS_URL || !process.env.RESEND_API_KEY) return;
 
     try {
+        const connection = new IORedis(process.env.REDIS_URL!, {
+            maxRetriesPerRequest: null,
+            lazyConnect: true,
+        });
         const worker = new Worker(
             QUEUE_NAME,
             async (job: Job<EmailJob>) => {
@@ -78,11 +82,7 @@ function ensureWorker(): void {
                 );
             },
             {
-                connection: {
-                    url: process.env.REDIS_URL,
-                    maxRetriesPerRequest: null,
-                    lazyConnect: true,
-                } as unknown as Redis,
+                connection,
                 concurrency: 5,
                 limiter: {
                     max: 10,

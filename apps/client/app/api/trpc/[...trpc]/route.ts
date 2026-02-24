@@ -8,17 +8,20 @@
  * where the cookies ARE available.
  */
 
-const API_TRPC_URL =
+const API_TRPC_URL = (
     process.env.INTERNAL_TRPC_URL ||
     process.env.NEXT_PUBLIC_TRPC_URL ||
-    "http://localhost:4000/trpc";
+    "http://localhost:4000/trpc"
+).replace(/\/+$/, ""); // Strip trailing slash
 
 async function handler(req: Request) {
     const url = new URL(req.url);
 
     // Extract the tRPC path after /api/trpc/
     const trpcPath = url.pathname.replace(/^\/api\/trpc\/?/, "");
-    const targetUrl = `${API_TRPC_URL}/${trpcPath}${url.search}`;
+    const targetUrl = trpcPath
+        ? `${API_TRPC_URL}/${trpcPath}${url.search}`
+        : `${API_TRPC_URL}${url.search}`;
 
     const headers: Record<string, string> = {
         "content-type": req.headers.get("content-type") || "application/json",
