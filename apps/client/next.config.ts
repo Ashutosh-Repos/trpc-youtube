@@ -2,6 +2,15 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
     output: "standalone",
+    async rewrites() {
+        return [
+            {
+                source: "/api/ws",
+                destination:
+                    process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:4000",
+            },
+        ];
+    },
     /* config options here */
     images: {
         unoptimized: true,

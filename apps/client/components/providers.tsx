@@ -41,8 +41,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                             ? wsLink({
                                   client: createWSClient({
                                       url:
-                                          process.env.NEXT_PUBLIC_WS_URL ||
-                                          "ws://localhost:4000",
+                                          typeof window !== "undefined"
+                                              ? `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${window.location.host}/api/ws`
+                                              : process.env
+                                                    .NEXT_PUBLIC_WS_URL ||
+                                                "ws://localhost:4000",
                                   }),
                                   transformer: superjson,
                               })
