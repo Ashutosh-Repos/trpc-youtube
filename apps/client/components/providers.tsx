@@ -11,6 +11,11 @@ import { Toaster } from "sonner";
 const TRPC_URL =
     process.env.NEXT_PUBLIC_TRPC_URL || "http://localhost:4000/trpc";
 
+// Browser HTTP requests go through the same-origin proxy to forward cookies.
+// The session cookie is on the client domain, so cross-origin requests to the
+// API server won't include it. The proxy at /api/trpc forwards cookies.
+const BROWSER_TRPC_URL = typeof window !== "undefined" ? "/api/trpc" : TRPC_URL;
+
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
@@ -46,14 +51,8 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                                   transformer: superjson,
                               }),
                     false: httpBatchLink({
-                        url: TRPC_URL,
+                        url: BROWSER_TRPC_URL,
                         transformer: superjson,
-                        fetch(url, options) {
-                            return fetch(url, {
-                                ...options,
-                                credentials: "include",
-                            });
-                        },
                     }),
                 }),
             ],
