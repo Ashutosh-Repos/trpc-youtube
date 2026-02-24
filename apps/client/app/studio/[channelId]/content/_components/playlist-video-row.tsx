@@ -2,7 +2,8 @@
 
 import { Trash2, GripVertical, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn, getMediaUrl } from "@/lib/utils";
+import { getMediaUrl } from "@/lib/utils";
+import Image from "next/image";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
@@ -10,6 +11,7 @@ import { DraggableProvided } from "@hello-pangea/dnd";
 
 interface PlaylistVideoRowProps {
     playlistId: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     video: any;
     onRemove: () => void;
     provided: DraggableProvided;
@@ -36,14 +38,16 @@ export const PlaylistVideoRow = ({
         removeVideoMutation.mutate({ playlistId, videoId: video.id });
     };
 
+    const { innerRef, draggableProps, dragHandleProps } = provided;
+
     return (
         <div
-            ref={provided.innerRef}
-            {...provided.draggableProps}
+            ref={innerRef}
+            {...draggableProps}
             className="grid grid-cols-12 gap-4 px-8 py-4 hover:bg-surface-1 transition-all group items-center border-b border-border/10"
         >
             <div className="col-span-1 flex items-center gap-4">
-                <div {...provided.dragHandleProps}>
+                <div {...dragHandleProps}>
                     <GripVertical className="w-4 h-4 text-muted-foreground/60 opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing hover:text-primary transition-colors" />
                 </div>
                 <span className="text-muted-foreground/40 text-[11px] font-black uppercase tracking-widest tabular-nums">
@@ -53,10 +57,12 @@ export const PlaylistVideoRow = ({
 
             <div className="col-span-8 flex gap-4 min-w-0">
                 <div className="relative w-28 aspect-video rounded-xl bg-surface-2 overflow-hidden shrink-0 border border-border/10 shadow-lg group/video-thumb">
-                    <img
+                    <Image
                         src={getMediaUrl(video.thumbnailUrl)}
                         alt={video.title}
-                        className="w-full h-full object-cover"
+                        fill
+                        unoptimized
+                        className="object-cover"
                     />
                     <div className="absolute inset-0 bg-surface-3/40 backdrop-blur-[2px] opacity-0 group-hover/video-thumb:opacity-100 transition-all flex items-center justify-center">
                         <Play className="w-8 h-8 text-primary fill-primary drop-shadow-[0_0_10px_oklch(var(--primary)/0.4)]" />

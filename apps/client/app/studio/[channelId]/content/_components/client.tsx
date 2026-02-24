@@ -62,11 +62,7 @@ interface ContentClientProps {
     >;
 }
 
-const ContentClient = ({
-    channelId,
-    channelName,
-    initialVideos,
-}: ContentClientProps) => {
+const ContentClient = ({ channelId, initialVideos }: ContentClientProps) => {
     const utils = trpc.useUtils();
 
     // UI-only state
@@ -186,7 +182,7 @@ const ContentClient = ({
 
     const toggleSelectAll = (checked: boolean) => {
         if (checked) {
-            setSelectedIds(allItems.map((i: any) => i.id));
+            setSelectedIds(allItems.map((i: { id: string }) => i.id));
         } else {
             setSelectedIds([]);
         }
@@ -260,7 +256,7 @@ const ContentClient = ({
                             Channel content
                         </h1>
                         <p className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/40 mt-1">
-                            Manage your channel's videos and reels.
+                            Manage your channel&apos;s videos and reels.
                         </p>
                     </div>
                     <Button
@@ -463,7 +459,12 @@ const ContentClient = ({
                                         <Select
                                             value={sortOrder}
                                             onValueChange={(v) =>
-                                                setSortOrder(v as any)
+                                                setSortOrder(
+                                                    v as
+                                                        | "newest"
+                                                        | "oldest"
+                                                        | "views",
+                                                )
                                             }
                                         >
                                             <SelectTrigger className="bg-surface-1 border-border/10 h-10 text-[11px] font-black uppercase tracking-widest rounded-xl focus:ring-primary/20 transition-all">
@@ -606,7 +607,7 @@ const ContentClient = ({
                 {/* Loading skeleton */}
                 {contentQuery.isLoading && activeTab !== "playlists" ? (
                     <div className="divide-y divide-white/5">
-                        {Array.from({ length: 5 }).map((_: any, i: number) => (
+                        {Array.from({ length: 5 }).map((_, i: number) => (
                             <div
                                 key={i}
                                 className="grid grid-cols-12 gap-4 px-6 py-4 animate-pulse"
@@ -636,7 +637,7 @@ const ContentClient = ({
                     </div>
                 ) : playlistsQuery.isLoading && activeTab === "playlists" ? (
                     <div className="divide-y divide-white/5">
-                        {Array.from({ length: 3 }).map((_: any, i: number) => (
+                        {Array.from({ length: 3 }).map((_, i: number) => (
                             <div
                                 key={i}
                                 className="grid grid-cols-12 gap-4 px-6 py-4 animate-pulse"
@@ -670,8 +671,8 @@ const ContentClient = ({
                                 No {activeTab} available
                             </h3>
                             <p className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/40 max-w-sm mx-auto">
-                                You haven't uploaded any {activeTab} yet. Start
-                                sharing your creativity with the world.
+                                You haven&apos;t uploaded any {activeTab} yet.
+                                Start sharing your creativity with the world.
                             </p>
                         </div>
                         <Button
@@ -762,6 +763,7 @@ const ContentClient = ({
 
                                 {/* Table Rows */}
                                 <div className="divide-y divide-border/10">
+                                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                                     {allItems.map((video: any) => (
                                         <VideoRow
                                             key={video.id}

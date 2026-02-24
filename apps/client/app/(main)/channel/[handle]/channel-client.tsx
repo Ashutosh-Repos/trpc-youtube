@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { trpc } from "@/lib/trpc";
 import { authClient } from "@/lib/auth/auth-client";
@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { VideoCard } from "@/components/custom/video-card";
 import {
     Loader2,
-    MapPin,
     Link2,
     CheckCircle,
     VideoIcon,
@@ -20,7 +19,6 @@ import {
     Pencil,
 } from "lucide-react";
 import { useSubscribe } from "@/hooks/use-subscribe";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ChannelData {
     id: string;
@@ -35,7 +33,7 @@ interface ChannelData {
     totalViews: number;
     createdAt: Date | string;
     location: string | null;
-    links: any[] | null;
+    links: { url: string; title: string }[] | null;
 }
 
 interface ChannelClientProps {
@@ -57,7 +55,7 @@ export function ChannelClient({
     const videosQuery = trpc.feed.getChannelVideos.useInfiniteQuery(
         { channelId: channel.id },
         {
-            getNextPageParam: (lastPage: any) => lastPage.nextCursor,
+            getNextPageParam: (lastPage) => lastPage.nextCursor,
             enabled: activeTab === "videos" || activeTab === "home",
         },
     );
@@ -66,7 +64,7 @@ export function ChannelClient({
     const shortsQuery = trpc.feed.getChannelShorts.useInfiniteQuery(
         { channelId: channel.id },
         {
-            getNextPageParam: (lastPage: any) => lastPage.nextCursor,
+            getNextPageParam: (lastPage) => lastPage.nextCursor,
             enabled: activeTab === "shorts",
         },
     );
@@ -76,7 +74,7 @@ export function ChannelClient({
         trpc.playlist.getPublicChannelPlaylists.useInfiniteQuery(
             { channelId: channel.id },
             {
-                getNextPageParam: (lastPage: any) => lastPage.nextCursor,
+                getNextPageParam: (lastPage) => lastPage.nextCursor,
                 enabled: activeTab === "playlists",
             },
         );
@@ -94,10 +92,27 @@ export function ChannelClient({
         },
     });
 
-    const videos = videosQuery.data?.pages.flatMap((p: any) => p.videos) ?? [];
-    const shorts = shortsQuery.data?.pages.flatMap((p: any) => p.videos) ?? [];
+    const videos =
+        videosQuery.data?.pages.flatMap(
+            (p: {
+                videos: React.ComponentProps<typeof VideoCard>["video"][];
+            }) => p.videos,
+        ) ?? [];
+    const shorts =
+        shortsQuery.data?.pages.flatMap((p) =>
+            p.videos.map((v) => ({ ...v, thumbnailUrl: v.thumbnailUrl ?? "" })),
+        ) ?? [];
     const playlists =
-        playlistsQuery.data?.pages.flatMap((p: any) => p.playlists) ?? [];
+        playlistsQuery.data?.pages.flatMap(
+            (p: {
+                playlists: {
+                    id: string;
+                    title: string;
+                    firstVideoThumbnail: string | null;
+                    _count: { playlist_videos: number };
+                }[];
+            }) => p.playlists,
+        ) ?? [];
 
     const isOwnChannel = session?.user?.id === channel.id;
 
@@ -190,9 +205,14 @@ export function ChannelClient({
 
                                 {channel.links && channel.links.length > 0 && (
                                     <div className="flex flex-wrap gap-4 mt-4">
-                                        {channel.links
-                                            .slice(0, 1)
-                                            .map((link: any, i: number) => (
+                                        {channel.links.slice(0, 1).map(
+                                            (
+                                                link: {
+                                                    url: string;
+                                                    title: string;
+                                                },
+                                                i: number,
+                                            ) => (
                                                 <a
                                                     key={i}
                                                     href={link.url}
@@ -203,7 +223,8 @@ export function ChannelClient({
                                                     <Link2 className="w-3.5 h-3.5" />
                                                     {link.title || "Main Link"}
                                                 </a>
-                                            ))}
+                                            ),
+                                        )}
                                         {channel.links.length > 1 && (
                                             <span className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/20">
                                                 and {channel.links.length - 1}{" "}
@@ -261,33 +282,39 @@ export function ChannelClient({
                             label: "Playlists",
                             icon: ListVideo,
                         },
-                    ].map((tab: any) => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={cn(
-                                "flex items-center gap-3 px-8 py-5 border-b-2 transition-all relative group shrink-0",
-                                activeTab === tab.id
-                                    ? "border-primary text-foreground"
-                                    : "border-transparent text-muted-foreground/60 hover:text-foreground",
-                            )}
-                        >
-                            <tab.icon
+                    ].map(
+                        (tab: {
+                            id: string;
+                            label: string;
+                            icon: React.ElementType;
+                        }) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
                                 className={cn(
-                                    "w-4 h-4 transition-all",
+                                    "flex items-center gap-3 px-8 py-5 border-b-2 transition-all relative group shrink-0",
                                     activeTab === tab.id
-                                        ? "text-primary scale-110"
-                                        : "group-hover:text-foreground/80",
+                                        ? "border-primary text-foreground"
+                                        : "border-transparent text-muted-foreground/60 hover:text-foreground",
                                 )}
-                            />
-                            <span className="text-[11px] font-black uppercase tracking-[0.2em]">
-                                {tab.label}
-                            </span>
-                            {activeTab === tab.id && (
-                                <div className="absolute inset-x-0 bottom-[-2px] h-0.5 bg-primary shadow-[0_0_15px_oklch(var(--primary)/0.5)]" />
-                            )}
-                        </button>
-                    ))}
+                            >
+                                <tab.icon
+                                    className={cn(
+                                        "w-4 h-4 transition-all",
+                                        activeTab === tab.id
+                                            ? "text-primary scale-110"
+                                            : "group-hover:text-foreground/80",
+                                    )}
+                                />
+                                <span className="text-[11px] font-black uppercase tracking-[0.2em]">
+                                    {tab.label}
+                                </span>
+                                {activeTab === tab.id && (
+                                    <div className="absolute inset-x-0 bottom-[-2px] h-0.5 bg-primary shadow-[0_0_15px_oklch(var(--primary)/0.5)]" />
+                                )}
+                            </button>
+                        ),
+                    )}
                     <div className="flex-1" />
                     <Button
                         variant="ghost"
@@ -305,7 +332,7 @@ export function ChannelClient({
                             {videosQuery.isLoading ? (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-10">
                                     {Array.from({ length: 8 }).map(
-                                        (_: any, i: number) => (
+                                        (_: unknown, i: number) => (
                                             <div
                                                 key={i}
                                                 className="space-y-4 animate-pulse"
@@ -330,23 +357,32 @@ export function ChannelClient({
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-10">
-                                    {videos.map((video: any, index: number) => {
-                                        const isLast =
-                                            index === videos.length - 1;
-                                        return (
-                                            <div
-                                                key={video.id}
-                                                ref={
-                                                    isLast ? lastItemRef : null
-                                                }
-                                            >
-                                                <VideoCard
-                                                    video={video}
-                                                    hideChannelInfo
-                                                />
-                                            </div>
-                                        );
-                                    })}
+                                    {videos.map(
+                                        (
+                                            video: React.ComponentProps<
+                                                typeof VideoCard
+                                            >["video"] & { id: string },
+                                            index: number,
+                                        ) => {
+                                            const isLast =
+                                                index === videos.length - 1;
+                                            return (
+                                                <div
+                                                    key={video.id}
+                                                    ref={
+                                                        isLast
+                                                            ? lastItemRef
+                                                            : null
+                                                    }
+                                                >
+                                                    <VideoCard
+                                                        video={video}
+                                                        hideChannelInfo
+                                                    />
+                                                </div>
+                                            );
+                                        },
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -357,12 +393,12 @@ export function ChannelClient({
                             {shortsQuery.isLoading ? (
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-4 gap-y-10">
                                     {Array.from({ length: 12 }).map(
-                                        (_: any, i: number) => (
+                                        (_: unknown, i: number) => (
                                             <div
                                                 key={i}
                                                 className="space-y-4 animate-pulse"
                                             >
-                                                <div className="aspect-[9/16] bg-surface-2 rounded-2xl border border-border/10" />
+                                                <div className="aspect-9/16 bg-surface-2 rounded-2xl border border-border/10" />
                                                 <div className="h-4 bg-surface-2 rounded-lg w-3/4" />
                                             </div>
                                         ),
@@ -379,42 +415,54 @@ export function ChannelClient({
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-4 gap-y-10">
-                                    {shorts.map((video: any, index: number) => {
-                                        const isLast =
-                                            index === shorts.length - 1;
-                                        return (
-                                            <div
-                                                key={video.id}
-                                                ref={
-                                                    isLast ? lastItemRef : null
-                                                }
-                                                className="space-y-3 group cursor-pointer"
-                                            >
-                                                <div className="relative aspect-[9/16] bg-surface-2 rounded-2xl overflow-hidden shadow-xl border border-border/10 group-hover:border-primary/40 transition-all">
-                                                    <Image
-                                                        src={getMediaUrl(
-                                                            video.thumbnailUrl,
-                                                        )}
-                                                        alt={video.title}
-                                                        fill
-                                                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                                                    />
-                                                    <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                        <Play className="w-10 h-10 text-primary fill-primary shadow-[0_0_20px_oklch(var(--primary)/0.5)]" />
+                                    {shorts.map(
+                                        (
+                                            video: {
+                                                id: string;
+                                                title: string;
+                                                thumbnailUrl: string;
+                                                viewCount: number;
+                                            },
+                                            index: number,
+                                        ) => {
+                                            const isLast =
+                                                index === shorts.length - 1;
+                                            return (
+                                                <div
+                                                    key={video.id}
+                                                    ref={
+                                                        isLast
+                                                            ? lastItemRef
+                                                            : null
+                                                    }
+                                                    className="space-y-3 group cursor-pointer"
+                                                >
+                                                    <div className="relative aspect-9/16 bg-surface-2 rounded-2xl overflow-hidden shadow-xl border border-border/10 group-hover:border-primary/40 transition-all">
+                                                        <Image
+                                                            src={getMediaUrl(
+                                                                video.thumbnailUrl,
+                                                            )}
+                                                            alt={video.title}
+                                                            fill
+                                                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                                        />
+                                                        <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                            <Play className="w-10 h-10 text-primary fill-primary shadow-[0_0_20px_oklch(var(--primary)/0.5)]" />
+                                                        </div>
+                                                        <div className="absolute bottom-3 left-3 flex items-center gap-1.5 text-[10px] font-black text-white px-2 py-1 bg-surface-1/40 backdrop-blur-md rounded-lg">
+                                                            <VideoIcon className="w-3 h-3" />
+                                                            {formatViewCount(
+                                                                video.viewCount,
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                    <div className="absolute bottom-3 left-3 flex items-center gap-1.5 text-[10px] font-black text-white px-2 py-1 bg-surface-1/40 backdrop-blur-md rounded-lg">
-                                                        <VideoIcon className="w-3 h-3" />
-                                                        {formatViewCount(
-                                                            video.viewCount,
-                                                        )}
-                                                    </div>
+                                                    <h3 className="text-sm font-bold line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+                                                        {video.title}
+                                                    </h3>
                                                 </div>
-                                                <h3 className="text-sm font-bold line-clamp-2 leading-snug group-hover:text-primary transition-colors">
-                                                    {video.title}
-                                                </h3>
-                                            </div>
-                                        );
-                                    })}
+                                            );
+                                        },
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -425,7 +473,7 @@ export function ChannelClient({
                             {playlistsQuery.isLoading ? (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
                                     {Array.from({ length: 6 }).map(
-                                        (_: any, i: number) => (
+                                        (_: unknown, i: number) => (
                                             <div
                                                 key={i}
                                                 className="space-y-4 animate-pulse"
@@ -451,7 +499,19 @@ export function ChannelClient({
                             ) : (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
                                     {playlists.map(
-                                        (playlist: any, index: number) => {
+                                        (
+                                            playlist: {
+                                                id: string;
+                                                title: string;
+                                                firstVideoThumbnail:
+                                                    | string
+                                                    | null;
+                                                _count: {
+                                                    playlist_videos: number;
+                                                };
+                                            },
+                                            index: number,
+                                        ) => {
                                             const isLast =
                                                 index === playlists.length - 1;
                                             return (

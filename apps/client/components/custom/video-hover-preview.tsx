@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+import { getMediaUrl } from "@/lib/utils";
 
 interface VideoHoverPreviewProps {
     thumbnailUrl?: string | null;
@@ -27,6 +29,7 @@ export function VideoHoverPreview({
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true);
     }, []);
 
@@ -48,7 +51,8 @@ export function VideoHoverPreview({
             }, frameRate);
         } else {
             if (intervalRef.current) clearInterval(intervalRef.current);
-            setCurrentTime(0);
+            // Removed setCurrentTime(0) from here to avoid cascading render warning.
+            // It's reset in calculation logic below.
         }
 
         return () => {
@@ -80,7 +84,7 @@ export function VideoHoverPreview({
         return { x, y };
     };
 
-    const { x, y } = calculatePosition();
+    const { x, y } = isHovered ? calculatePosition() : { x: 0, y: 0 };
 
     if (!mounted) {
         return <div className={`bg-surface-1 rounded-2xl ${className}`} />;
@@ -94,11 +98,12 @@ export function VideoHoverPreview({
         >
             {/* Default Thumbnail */}
             {thumbnailUrl && (
-                <img
-                    src={thumbnailUrl}
+                <Image
+                    src={getMediaUrl(thumbnailUrl)}
                     alt="Video Preview"
-                    crossOrigin="anonymous"
+                    fill
                     className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${isHovered && spriteUrl ? "opacity-0" : "opacity-100"}`}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
             )}
 

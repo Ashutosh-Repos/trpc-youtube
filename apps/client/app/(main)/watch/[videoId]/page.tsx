@@ -11,14 +11,20 @@ export default async function WatchPage({
 }) {
     const { videoId } = await params;
 
+    let video;
     try {
-        const video = await trpcServer.video.getPublicVideo.query({ videoId });
-        return <WatchClient video={video} />;
-    } catch (e: any) {
-        const code = e?.shape?.data?.code ?? e?.data?.code;
+        video = await trpcServer.video.getPublicVideo.query({ videoId });
+    } catch (error: unknown) {
+        const err = error as {
+            shape?: { data?: { code?: string } };
+            data?: { code?: string };
+        };
+        const code = err?.shape?.data?.code ?? err?.data?.code;
         if (code === "UNAUTHORIZED" || code === "FORBIDDEN") {
             redirect("/login");
         }
         notFound();
     }
+
+    return <WatchClient video={video} />;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { PlaylistRow } from "./playlist-row";
-import { VideoIcon, ListVideo } from "lucide-react";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import { RouterOutputs } from "@/lib/trpc-shared";
 
@@ -58,6 +58,7 @@ export const PlaylistList = ({
 
             {/* List Body */}
             <div className="divide-y divide-border/10">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {playlists.map((playlist: any) => (
                     <PlaylistRow
                         key={playlist.id}

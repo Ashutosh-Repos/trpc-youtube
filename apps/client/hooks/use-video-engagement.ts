@@ -1,4 +1,4 @@
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { useSession } from "@/lib/auth/auth-client";
 
@@ -11,12 +11,10 @@ export function useVideoEngagement(videoId: string) {
     const lastProgressUpdate = useRef<number>(0);
 
     // Reset state when videoId changes
-    const previousVideoId = useRef(videoId);
-    if (previousVideoId.current !== videoId) {
+    useEffect(() => {
         hasRegisteredView.current = false;
         lastProgressUpdate.current = 0;
-        previousVideoId.current = videoId;
-    }
+    }, [videoId]);
 
     const onPlay = useCallback(() => {
         // Fast Lane: View counting runs for everyone (IP based)

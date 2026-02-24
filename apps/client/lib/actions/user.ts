@@ -14,7 +14,7 @@ export const getSession = cache(async () => {
         return await auth.api.getSession({
             headers: await headers(),
         });
-    } catch (error) {
+    } catch {
         return null;
     }
 });
@@ -73,7 +73,7 @@ export const getCachedSubscriptions = cache(async (userId: string) => {
 /**
  * Get current authenticated user session
  */
-export async function getUser(): Promise<ActionResponse<any>> {
+export async function getUser(): Promise<ActionResponse<unknown>> {
     try {
         const session = await auth.api.getSession({
             headers: await headers(),
@@ -100,7 +100,7 @@ export async function getUser(): Promise<ActionResponse<any>> {
 /**
  * List all connected accounts (e.g., Google, GitHub, Credentials)
  */
-export async function getUserAccounts(): Promise<ActionResponse<any[]>> {
+export async function getUserAccounts(): Promise<ActionResponse<unknown[]>> {
     try {
         const accounts = await auth.api.listUserAccounts({
             headers: await headers(),
@@ -115,7 +115,7 @@ export async function getUserAccounts(): Promise<ActionResponse<any[]>> {
 /**
  * List all active sessions across devices
  */
-export async function getUserSessions(): Promise<ActionResponse<any>> {
+export async function getUserSessions(): Promise<ActionResponse<unknown>> {
     try {
         const sessions = await auth.api.listSessions({
             headers: await headers(),
@@ -173,7 +173,7 @@ export async function revokeOtherSessions(): Promise<ActionResponse<void>> {
 /**
  * Get detailed user profile including owned channels
  */
-export async function getUserProfile(): Promise<ActionResponse<any>> {
+export async function getUserProfile(): Promise<ActionResponse<unknown>> {
     try {
         const sessionUser = await getSessionUser();
 
@@ -226,7 +226,7 @@ export type UpdateUserType = z.infer<typeof updateUserSchema>;
  */
 export async function updateUser(
     data: UpdateUserType,
-): Promise<ActionResponse<any>> {
+): Promise<ActionResponse<unknown>> {
     try {
         const sessionUser = await getSessionUser();
         if (!sessionUser)

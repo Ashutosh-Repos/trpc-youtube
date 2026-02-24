@@ -9,15 +9,23 @@ interface PageProps {
 export default async function StudioSettingsPage({ params }: PageProps) {
     const { channelId } = await params;
 
+    let channel;
     try {
-        const { channel } = await trpcServer.channel.getChannelById.query({
+        const result = await trpcServer.channel.getChannelById.query({
             channelId,
         });
-        return <StudioSettingsClient channel={channel} />;
-    } catch (error: any) {
+        channel = result.channel;
+    } catch (err) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const error = err as any;
         if (error?.data?.code === "NOT_FOUND") notFound();
         if (error?.data?.code === "UNAUTHORIZED") redirect("/login");
         if (error?.data?.code === "FORBIDDEN") redirect("/studio");
+    }
+
+    if (!channel) {
         return <div>Error loading settings</div>;
     }
+
+    return <StudioSettingsClient channel={channel} />;
 }

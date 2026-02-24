@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import Image from "next/image";
 import { trpc } from "@/lib/trpc";
 import { authClient } from "@/lib/auth/auth-client";
@@ -8,7 +8,6 @@ import { getMediaUrl, formatViewCount } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { VideoCard } from "@/components/custom/video-card";
 import { Loader2, MapPin, Link2, CheckCircle } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
 import { useSubscribe } from "@/hooks/use-subscribe";
 
 interface ChannelData {
@@ -24,7 +23,7 @@ interface ChannelData {
     totalViews: number;
     createdAt: Date | string;
     location: string | null;
-    links: any[] | null;
+    links: { url: string; title: string }[] | null;
 }
 
 interface ChannelClientProps {
@@ -42,7 +41,9 @@ export function ChannelClient({
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
         trpc.feed.getChannelVideos.useInfiniteQuery(
             { channelId: channel.id },
-            { getNextPageParam: (lastPage: any) => lastPage.nextCursor },
+            {
+                getNextPageParam: (lastPage) => lastPage.nextCursor,
+            },
         );
 
     const lastVideoRef = (node: HTMLDivElement | null) => {
@@ -56,7 +57,6 @@ export function ChannelClient({
 
     const {
         isSubscribed,
-        subscriberCount,
         toggleSubscribe,
         isLoading: subLoading,
     } = useSubscribe({
@@ -67,7 +67,12 @@ export function ChannelClient({
         },
     });
 
-    const videos = data?.pages.flatMap((p: any) => p.videos) ?? [];
+    const videos =
+        data?.pages.flatMap(
+            (p: {
+                videos: React.ComponentProps<typeof VideoCard>["video"][];
+            }) => p.videos,
+        ) ?? [];
     const isOwnChannel = session?.user?.id === channel.id;
 
     return (
@@ -158,18 +163,23 @@ export function ChannelClient({
                 {/* Links */}
                 {channel.links && channel.links.length > 0 && (
                     <div className="py-3 flex flex-wrap gap-3 border-b border-border/20">
-                        {channel.links.map((link: any, i: number) => (
-                            <a
-                                key={i}
-                                href={link.url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="flex items-center gap-1.5 text-xs text-primary hover:underline"
-                            >
-                                <Link2 className="w-3 h-3" />
-                                {link.title}
-                            </a>
-                        ))}
+                        {channel.links.map(
+                            (
+                                link: { url: string; title: string },
+                                i: number,
+                            ) => (
+                                <a
+                                    key={i}
+                                    href={link.url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="flex items-center gap-1.5 text-xs text-primary hover:underline"
+                                >
+                                    <Link2 className="w-3 h-3" />
+                                    {link.title}
+                                </a>
+                            ),
+                        )}
                     </div>
                 )}
 
@@ -187,17 +197,24 @@ export function ChannelClient({
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-                            {videos.map((video: any, index: number) => {
-                                const isLast = index === videos.length - 1;
-                                return (
-                                    <div
-                                        key={video.id}
-                                        ref={isLast ? lastVideoRef : null}
-                                    >
-                                        <VideoCard video={video} />
-                                    </div>
-                                );
-                            })}
+                            {videos.map(
+                                (
+                                    video: React.ComponentProps<
+                                        typeof VideoCard
+                                    >["video"] & { id: string },
+                                    index: number,
+                                ) => {
+                                    const isLast = index === videos.length - 1;
+                                    return (
+                                        <div
+                                            key={video.id}
+                                            ref={isLast ? lastVideoRef : null}
+                                        >
+                                            <VideoCard video={video} />
+                                        </div>
+                                    );
+                                },
+                            )}
                         </div>
                     )}
                     {isFetchingNextPage && (

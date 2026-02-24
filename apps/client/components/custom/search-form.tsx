@@ -13,7 +13,6 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 
-import { IconMicrophone, IconSearch, IconX } from "@tabler/icons-react";
 import { SearchIcon } from "@/components/ui/search";
 import { MicIcon } from "@/components/ui/mic";
 import { MicIconHandle } from "@/components/ui/mic";
@@ -40,13 +39,48 @@ export function SearchForm() {
     const recognitionRef = useRef<SpeechRecognition | null>(null);
 
     const micIconRef = useRef<MicIconHandle>(null);
+    const [isFormActive, setFormActive] = useState<boolean>(false);
+
+    const cancelListening = () => {
+        const recognition = recognitionRef.current;
+        if (recognition) recognition.abort();
+        form.reset();
+        setSpokenText("");
+        setListening(false);
+        micIconRef.current?.stopAnimation();
+    };
+
+    const startListening = () => {
+        const recognition = recognitionRef.current;
+        micIconRef.current?.startAnimation();
+        if (!recognition) {
+            alert("Speech recognition not supported in this browser.");
+            return;
+        }
+        form.setValue("query", "");
+        setSpokenText("");
+        recognition.start();
+        setListening(true);
+    };
+
+    function onSubmit(data: z.infer<typeof FormSchema>) {
+        const cleanQuery = data.query.trim();
+        if (!cleanQuery) {
+            toast.warning("Please enter a valid search query");
+            return;
+        }
+        router.push(`/search?q=${encodeURIComponent(cleanQuery)}`);
+        setFormActive(false);
+    }
 
     // ✅ Setup SpeechRecognition once
     useEffect(() => {
         if (typeof window === "undefined") return;
 
         const SpeechRecognition =
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (window as any).SpeechRecognition ||
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (window as any).webkitSpeechRecognition;
 
         if (SpeechRecognition && !recognitionRef.current) {
@@ -58,6 +92,7 @@ export function SearchForm() {
 
             recognition.onresult = (event: SpeechRecognitionEvent) => {
                 const text = Array.from(event.results)
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .map((result: any) => result[0]?.transcript || "")
                     .join("");
                 setSpokenText(text); // live preview
@@ -86,41 +121,8 @@ export function SearchForm() {
 
             recognitionRef.current = recognition;
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [form]);
-
-    const startListening = () => {
-        const recognition = recognitionRef.current;
-        micIconRef.current?.startAnimation();
-        if (!recognition) {
-            alert("Speech recognition not supported in this browser.");
-            return;
-        }
-        form.setValue("query", "");
-        setSpokenText("");
-        recognition.start();
-        setListening(true);
-    };
-
-    const cancelListening = () => {
-        const recognition = recognitionRef.current;
-        if (recognition) recognition.abort();
-        form.reset();
-        setSpokenText("");
-        setListening(false);
-        micIconRef.current?.stopAnimation();
-    };
-
-    function onSubmit(data: z.infer<typeof FormSchema>) {
-        const cleanQuery = data.query.trim();
-        if (!cleanQuery) {
-            toast.warning("Please enter a valid search query");
-            return;
-        }
-        router.push(`/search?q=${encodeURIComponent(cleanQuery)}`);
-        setFormActive(false);
-    }
-
-    const [isFormActive, setFormActive] = useState<boolean>(false);
 
     const ref = useRef<HTMLFormElement>(null);
     useClkOut(ref, () => setFormActive(false), isFormActive);
@@ -140,7 +142,11 @@ export function SearchForm() {
                     ref={micIconRef}
                     className="border p-2 rounded-full cursor-pointer"
                     onClick={() => {
-                        listening ? cancelListening() : startListening();
+                        if (listening) {
+                            cancelListening();
+                        } else {
+                            startListening();
+                        }
                     }}
                 />
                 <FormField

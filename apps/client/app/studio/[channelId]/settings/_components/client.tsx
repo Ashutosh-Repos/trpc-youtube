@@ -5,7 +5,6 @@ import Image from "next/image";
 import {
     Mail,
     MapPin,
-    Globe,
     Link as LinkIcon,
     Twitter,
     Github,
@@ -37,7 +36,6 @@ import {
     FormField,
     FormItem,
     FormMessage,
-    FormDescription,
 } from "@/components/ui/form";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -102,8 +100,10 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
             location: channelData.location || "",
             image: channelData.image || "",
             bannerUrl: channelData.bannerUrl || "",
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             links: (channelData.links as any) || [],
             tags: channelData.tags?.map((t: { name: string }) => t.name) || [],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             featureFlags: (channelData.featureFlags as any) || {
                 canUpload: true,
                 canLiveStream: false,
@@ -120,6 +120,7 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
         name: "links",
     });
 
+    // eslint-disable-next-line react-hooks/incompatible-library
     const tags = form.watch("tags") || [];
 
     // Handle Availability Check via tRPC
@@ -162,19 +163,23 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
         handleAvailabilityQuery.data,
     ]);
 
-    const onSubmit = (values: z.infer<typeof updateChannelSchema>) => {
-        // Filter out empty links before saving
-        const filteredLinks = values.links?.filter(
-            (l: { title?: string; url?: string }) =>
-                l.title?.trim() || l.url?.trim(),
-        );
+    const onSubmit = useCallback(
+        (values: z.infer<typeof updateChannelSchema>) => {
+            // Filter out empty links before saving
+            const filteredLinks = values.links?.filter(
+                (l: { title?: string; url?: string }) =>
+                    l.title?.trim() || l.url?.trim(),
+            );
 
-        updateChannelMutation.mutate({
-            channelId: channel.id,
-            ...values,
-            links: filteredLinks as any,
-        });
-    };
+            updateChannelMutation.mutate({
+                channelId: channel.id,
+                ...values,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                links: filteredLinks as any,
+            });
+        },
+        [channel.id, updateChannelMutation],
+    );
 
     // Keyboard shortcut (Cmd+S)
     const handleKeyDown = useCallback(
@@ -184,7 +189,7 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                 form.handleSubmit(onSubmit)();
             }
         },
-        [isEditing, form.handleSubmit, onSubmit],
+        [isEditing, form, onSubmit],
     );
 
     useEffect(() => {
@@ -207,8 +212,10 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
             location: channelData.location || "",
             image: channelData.image || "",
             bannerUrl: channelData.bannerUrl || "",
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             links: (channelData.links as any) || [],
             tags: channelData.tags?.map((t: { name: string }) => t.name) || [],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             featureFlags: (channelData.featureFlags as any) || {
                 canUpload: true,
                 canLiveStream: false,
@@ -258,6 +265,7 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
     const removeTag = (tagToRemove: string) => {
         form.setValue(
             "tags",
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             tags.filter((t: any) => t !== tagToRemove),
             { shouldDirty: true },
         );
@@ -552,6 +560,7 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <AnimatePresence>
                                         {linkFields.map(
+                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                             (field: any, index: number) => (
                                                 <motion.div
                                                     key={field.id}

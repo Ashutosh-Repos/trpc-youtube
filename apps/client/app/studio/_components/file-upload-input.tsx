@@ -5,6 +5,7 @@ import { Upload, X, Image as ImageIcon, Loader2 } from "lucide-react";
 import { getPresignedUrl } from "@/lib/storage";
 import { UploadType, getMediaUrl } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import NextImage from "next/image";
 
 import { Button } from "@/components/ui/button";
 
@@ -214,10 +215,12 @@ export function FileUploadInput({
                     </div>
                 ) : value ? (
                     <div className="relative w-full h-full group/preview">
-                        <img
+                        <NextImage
                             src={getMediaUrl(value)}
                             alt="Preview"
-                            className="w-full h-full object-cover"
+                            fill
+                            unoptimized
+                            className="object-cover"
                         />
                         <div className="absolute inset-0 bg-background/60 backdrop-blur-md opacity-0 group-hover/preview:opacity-100 transition-all flex items-center justify-center">
                             <Button

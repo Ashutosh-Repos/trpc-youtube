@@ -15,7 +15,7 @@ const CompleteProfileSchema = z.object({
 });
 
 const CompleteProfile = () => {
-    const [isSuccess, setIsSuccess] = useState(false);
+    // Removed unused isSuccess state
     const [date, setDate] = useState<Date>(new Date(2000, 0, 1));
     const [isPending, startTransition] = useTransition();
 
@@ -30,7 +30,7 @@ const CompleteProfile = () => {
                     );
                 } else {
                     toast.success("Profile updated successfully!");
-                    setIsSuccess(true);
+                    // navigate or show success message
                 }
             } catch (err) {
                 if (err instanceof z.ZodError) {

@@ -1,19 +1,13 @@
-import { useState, useEffect } from "react";
+import { useSyncExternalStore } from "react";
 
 export function useMediaQuery(query: string) {
-    const [value, setValue] = useState(false);
-
-    useEffect(() => {
-        function onChange(event: MediaQueryListEvent) {
-            setValue(event.matches);
-        }
-
-        const result = matchMedia(query);
-        result.addEventListener("change", onChange);
-        setValue(result.matches);
-
-        return () => result.removeEventListener("change", onChange);
-    }, [query]);
-
-    return value;
+    return useSyncExternalStore(
+        (callback) => {
+            const mql = window.matchMedia(query);
+            mql.addEventListener("change", callback);
+            return () => mql.removeEventListener("change", callback);
+        },
+        () => window.matchMedia(query).matches,
+        () => false, // Server snapshot
+    );
 }

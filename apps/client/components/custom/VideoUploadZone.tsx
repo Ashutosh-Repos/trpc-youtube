@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, DragEvent, ChangeEvent } from "react";
-import { Upload, Loader2, AlertCircle, WifiOff, X } from "lucide-react";
+import { Upload, AlertCircle, WifiOff, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useUploadStore } from "@/stores/upload-store";
@@ -34,9 +34,6 @@ export function VideoUploadZone({
         file: currentFile,
         uploadId,
         recoverUpload,
-        uploadRate,
-        timeRemaining,
-        abort,
     } = useUploadStore();
     const [isDragging, setIsDragging] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);

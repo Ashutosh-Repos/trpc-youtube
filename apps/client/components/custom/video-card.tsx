@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatViewCount, getMediaUrl, cn } from "@/lib/utils";
+import { formatViewCount, getMediaUrl } from "@/lib/utils";
 import { VideoHoverPreview } from "./video-hover-preview";
 import { formatDistanceToNowStrict } from "date-fns";
 import type { HydratedVideo } from "@youtube/server/src/services/FeedService";

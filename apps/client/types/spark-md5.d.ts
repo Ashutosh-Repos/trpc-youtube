@@ -1,4 +1,5 @@
 declare module "spark-md5" {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     class SparkArrayBuffer {
         append(buffer: ArrayBuffer): void;
         end(raw?: boolean): string;

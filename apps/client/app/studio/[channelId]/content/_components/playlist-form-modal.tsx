@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
     Dialog,
     DialogContent,
@@ -70,7 +70,12 @@ export const PlaylistFormModal = ({
     const isPending =
         createPlaylistMutation.isPending || updatePlaylistMutation.isPending;
 
-    useEffect(() => {
+    const [prevPlaylist, setPrevPlaylist] = useState(playlist);
+    const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+
+    if (playlist !== prevPlaylist || isOpen !== prevIsOpen) {
+        setPrevPlaylist(playlist);
+        setPrevIsOpen(isOpen);
         if (playlist) {
             setTitle(playlist.title || "");
             setDescription(playlist.description || "");
@@ -80,7 +85,7 @@ export const PlaylistFormModal = ({
             setDescription("");
             setVisibility("PUBLIC");
         }
-    }, [playlist, isOpen]);
+    }
 
     const handleSubmit = () => {
         if (!title.trim()) {

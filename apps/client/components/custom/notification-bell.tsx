@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -28,14 +30,13 @@ export function NotificationBell() {
     const utils = trpc.useUtils();
 
     // 1. Fetch Notifications (Infinite Query)
-    const { data, fetchNextPage, hasNextPage } =
-        trpc.notification.list.useInfiniteQuery(
-            { limit: 10 },
-            {
-                getNextPageParam: (lastPage) => lastPage.nextCursor,
-                enabled: !!session?.user,
-            },
-        );
+    const { data, hasNextPage } = trpc.notification.list.useInfiniteQuery(
+        { limit: 10 },
+        {
+            getNextPageParam: (lastPage) => lastPage.nextCursor,
+            enabled: !!session?.user,
+        },
+    );
 
     // 2. Persisted Unread Count (fetched from server once, real-time handles updates)
     const { data: serverUnreadCount } =

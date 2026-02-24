@@ -12,19 +12,29 @@ export default async function ChannelPage({
     // Strip the leading "@" from the handle if present
     const cleanHandle = handle.startsWith("@") ? handle.slice(1) : handle;
 
+    let res;
     try {
-        const { channel, isSubscribed } =
-            await trpcServer.channel.getChannelByHandle.query({
-                handle: cleanHandle,
-            });
-
-        return (
-            <ChannelClient
-                channel={channel as any}
-                isSubscribed={isSubscribed}
-            />
-        );
-    } catch (e) {
+        res = await trpcServer.channel.getChannelByHandle.query({
+            handle: cleanHandle,
+        });
+    } catch {
         notFound();
     }
+
+    if (!res?.channel) {
+        notFound();
+    }
+
+    const { channel, isSubscribed } = res;
+
+    return (
+        <ChannelClient
+            channel={
+                channel as unknown as React.ComponentProps<
+                    typeof ChannelClient
+                >["channel"]
+            }
+            isSubscribed={isSubscribed}
+        />
+    );
 }

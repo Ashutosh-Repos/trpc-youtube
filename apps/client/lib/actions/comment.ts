@@ -2,7 +2,12 @@
 
 import prisma from "@/lib/prisma";
 import { getSessionUser } from "./user";
-import { ActionResponse, createErrorResponse } from "./schema-types";
+import {
+    ActionResponse,
+    createErrorResponse,
+    CommentWithUser,
+    GetCommentsResponse,
+} from "./schema-types";
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import redis from "@/lib/redis";
@@ -121,7 +126,7 @@ export async function getComments(
     videoId: string,
     cursor?: string,
     limit: number = 20,
-) {
+): Promise<ActionResponse<GetCommentsResponse>> {
     try {
         const comments = await prisma.comments.findMany({
             where: {
@@ -168,7 +173,9 @@ export async function getComments(
 /**
  * Get replies for a specific comment
  */
-export async function getReplies(parentId: string) {
+export async function getReplies(
+    parentId: string,
+): Promise<ActionResponse<CommentWithUser[]>> {
     try {
         const replies = await prisma.comments.findMany({
             where: {

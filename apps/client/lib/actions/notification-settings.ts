@@ -20,7 +20,9 @@ export type NotificationSettingsType = z.infer<
     typeof notificationSettingsSchema
 >;
 
-export async function getNotificationSettings(): Promise<ActionResponse<any>> {
+export async function getNotificationSettings(): Promise<
+    ActionResponse<unknown>
+> {
     try {
         const user = await getSessionUser();
         if (!user) {
@@ -53,7 +55,7 @@ export async function getNotificationSettings(): Promise<ActionResponse<any>> {
 
 export async function updateNotificationSettings(
     data: Partial<NotificationSettingsType>,
-): Promise<ActionResponse<any>> {
+): Promise<ActionResponse<unknown>> {
     try {
         const user = await getSessionUser();
         if (!user) {

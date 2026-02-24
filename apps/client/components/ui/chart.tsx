@@ -1,9 +1,9 @@
 "use client";
 
-import * as React from "react";
 import * as RechartsPrimitive from "recharts";
 
 import { cn } from "@/lib/utils";
+import React from "react";
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const;
@@ -86,7 +86,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
                         ([theme, prefix]) => `
 ${prefix} [data-chart=${id}] {
 ${colorConfig
-    .map(([key, itemConfig]: [string, any]) => {
+    .map(([key, itemConfig]: [string, ChartConfig[string]]) => {
         const color =
             itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
             itemConfig.color;
@@ -173,15 +173,15 @@ function ChartTooltipContent({
     return (
         <div
             className={cn(
-                "border-border/50 bg-background grid min-w-[8rem] items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl",
+                "border-border/50 bg-background grid min-w-32 items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl",
                 className,
             )}
         >
             {!nestLabel ? tooltipLabel : null}
             <div className="grid gap-1.5">
                 {payload
-                    .filter((item: any) => item.type !== "none")
-                    .map((item: any, index: number) => {
+                    .filter((item) => item.type !== "none")
+                    .map((item, index: number) => {
                         const key = `${nameKey || item.name || item.dataKey || "value"}`;
                         const itemConfig = getPayloadConfigFromPayload(
                             config,
@@ -306,8 +306,8 @@ function ChartLegendContent({
             )}
         >
             {payload
-                .filter((item: any) => item.type !== "none")
-                .map((item: any) => {
+                .filter((item) => item.type !== "none")
+                .map((item) => {
                     const key = `${nameKey || item.dataKey || "value"}`;
                     const itemConfig = getPayloadConfigFromPayload(
                         config,

@@ -1,5 +1,5 @@
 import { trpc } from "@/lib/trpc";
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 interface UseVideoReactionProps {

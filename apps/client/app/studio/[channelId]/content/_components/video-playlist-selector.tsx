@@ -29,7 +29,6 @@ export const VideoPlaylistSelector = ({
     videoIds,
     isOpen,
     onClose,
-    onSuccess,
 }: VideoPlaylistSelectorProps) => {
     const utils = trpc.useUtils();
     const [search, setSearch] = useState("");
@@ -95,7 +94,7 @@ export const VideoPlaylistSelector = ({
         );
 
         const results = await Promise.allSettled(promises);
-        const failed = results.filter((r: any) => r.status === "rejected");
+        const failed = results.filter((r) => r.status === "rejected");
 
         if (failed.length > 0) {
             // Error toast is handled by mutation onError, but for bulk we might want summary
@@ -103,7 +102,7 @@ export const VideoPlaylistSelector = ({
         }
     };
 
-    const filteredPlaylists = playlists.filter((p: any) =>
+    const filteredPlaylists = playlists.filter((p) =>
         p.title.toLowerCase().includes(search.toLowerCase()),
     );
 
@@ -143,11 +142,12 @@ export const VideoPlaylistSelector = ({
                             </div>
                         ) : (
                             <div className="space-y-1">
+                                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                                 {filteredPlaylists.map((playlist: any) => (
                                     <div
                                         key={playlist.id}
                                         className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-white/5 transition-colors cursor-pointer group"
-                                        onClick={(e) => {
+                                        onClick={() => {
                                             // Prevent toggling if clicking directly on checkbox (handled by its own handler)
                                             // But standard pattern is row click toggles too
                                             // For now, let's keep it simple and just let checkbox handle it

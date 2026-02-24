@@ -3,7 +3,6 @@
 import React from "react";
 import HlsVideo from "hls-video-element/react";
 import MediaThemeSutro from "player.style/sutro/react";
-import { v4 as uuidv4 } from "uuid";
 
 interface VideoPlayerProps {
     videoId: string;
@@ -23,7 +22,6 @@ interface VideoPlayerProps {
  * Integrates Heartbeat pulses for view counting and watch history.
  */
 export const VideoPlayer: React.FC<VideoPlayerProps> = ({
-    videoId,
     src,
     poster,
     spriteVtt,
@@ -34,8 +32,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     initialTime = 0,
 }) => {
     const [mounted, setMounted] = React.useState(false);
-    const mediaRef = React.useRef<any>(null);
-    const sessionIdRef = React.useRef(uuidv4());
+    const mediaRef = React.useRef<HTMLVideoElement>(null);
 
     React.useEffect(() => {
         setMounted(true);
@@ -102,11 +99,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                     {
                         width: "100%",
                         height: "100%",
-                        ["--media-primary-color" as any]:
-                            "oklch(var(--primary))",
-                        ["--media-accent-color" as any]:
-                            "oklch(var(--primary))",
-                        ["--media-secondary-color" as any]:
+                        "--media-primary-color": "oklch(var(--primary))",
+                        "--media-accent-color": "oklch(var(--primary))",
+                        "--media-secondary-color":
                             "oklch(var(--surface-3)/0.8)",
                     } as React.CSSProperties
                 }
@@ -122,6 +117,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                         crossorigin: "anonymous",
                         autoplay: autoPlay,
                         muted: autoPlay,
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     } as any)}
                 >
                     {spriteVtt && (

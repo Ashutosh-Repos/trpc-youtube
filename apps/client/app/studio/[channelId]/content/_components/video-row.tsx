@@ -6,13 +6,11 @@ import {
     MessageSquare,
     Play,
     ChevronDown,
-    Video as VideoIcon,
     MoreVertical,
     Clock,
     Lock,
     Globe,
     EyeOff,
-    Link as LinkIcon,
     Trash,
     Download,
     Share2,
@@ -176,9 +174,6 @@ export const VideoRow = ({
             toast.error(error.message || "Failed to delete video");
         },
     });
-
-    const isPending =
-        updateVisibilityMutation.isPending || deleteVideoMutation.isPending;
 
     const handleVisibilityChange = (
         newVisibility: "PUBLIC" | "PRIVATE" | "UNLISTED",

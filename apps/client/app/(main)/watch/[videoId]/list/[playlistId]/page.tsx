@@ -10,21 +10,24 @@ export default async function PlaylistWatchPage({
 }) {
     const { videoId, playlistId } = await params;
 
+    let result;
     try {
         // Fetch both in parallel on the server — eliminates two waterfalls
-        const [video, playlistData] = await Promise.all([
+        result = await Promise.all([
             trpcServer.video.getPublicVideo.query({ videoId }),
             trpcServer.playlist.getPlaylistFlow.query({ playlistId }),
         ]);
-
-        return (
-            <WatchClient
-                video={video}
-                playlistId={playlistId}
-                initialPlaylistData={playlistData as PlaylistData}
-            />
-        );
-    } catch (e) {
+    } catch {
         notFound();
     }
+
+    const [video, playlistData] = result;
+
+    return (
+        <WatchClient
+            video={video}
+            playlistId={playlistId}
+            initialPlaylistData={playlistData as PlaylistData}
+        />
+    );
 }

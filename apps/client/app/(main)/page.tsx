@@ -1,4 +1,3 @@
-import { trpcServer } from "../../lib/trpc-server";
 import { HomeFeedClient } from "./_components/home-feed-client";
 
 export const dynamic = "force-dynamic";

@@ -20,7 +20,7 @@ export default async function ChannelStudioLayout({
         const result = await trpcServer.channel.getUserChannels.query();
         if (result.success && result.channels) {
             isValidChannel = result.channels.some(
-                (c: any) => c.id === channelId,
+                (c: { id: string }) => c.id === channelId,
             );
         }
     } catch (error) {

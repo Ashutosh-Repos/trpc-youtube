@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { ImageUpload } from "@/components/custom/image-upload";
-import { cn, getMediaUrl } from "@/lib/utils";
+import { getMediaUrl } from "@/lib/utils";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { trpc } from "@/lib/trpc";
@@ -33,20 +33,16 @@ import { z } from "zod";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
     EditableInput,
     EditableTextarea,
 } from "@/components/custom/editable-field";
-import { ActionResponse } from "@/lib/actions/schema-types";
-import { getUserProfile } from "@/lib/actions/user"; // Keep generic type usage if needed
 
-type User = NonNullable<
-    Extract<
-        Awaited<ReturnType<typeof getUserProfile>>,
-        { success: true }
-    >["data"]
->;
+import { inferRouterOutputs } from "@trpc/server";
+import { AppRouter } from "@youtube/server";
+
+type User = inferRouterOutputs<AppRouter>["user"]["getProfile"];
 
 interface MePageContentProps {
     user: User;
@@ -113,13 +109,16 @@ const Client = ({ user }: MePageContentProps) => {
         onSuccess: (data) => {
             toast.success("Changes saved");
             setIsEditing(false);
-            utils.user.getProfile.setData(undefined, (oldData: any) => {
-                if (!oldData) return undefined;
-                return {
-                    ...oldData,
-                    ...data,
-                };
-            });
+            utils.user.getProfile.setData(
+                undefined,
+                (oldData: User | undefined) => {
+                    if (!oldData) return undefined;
+                    return {
+                        ...oldData,
+                        ...data,
+                    };
+                },
+            );
             router.refresh();
         },
         onError: (error) => {
@@ -138,11 +137,18 @@ const Client = ({ user }: MePageContentProps) => {
             location: userData.location || "",
             image: userData.image || "",
             bannerUrl: userData.bannerUrl || "",
-            socialLinks: (userData.socialLinks as any) || [],
-            businessInfo: (userData.businessInfo as any) || {
+            socialLinks:
+                (userData.socialLinks as unknown as z.infer<
+                    typeof profileSchema
+                >["socialLinks"]) || [],
+            businessInfo: (userData.businessInfo as unknown as z.infer<
+                typeof profileSchema
+            >["businessInfo"]) || {
                 inquiryEmail: "",
             },
-            contactInfo: (userData.contactInfo as any) || {
+            contactInfo: (userData.contactInfo as unknown as z.infer<
+                typeof profileSchema
+            >["contactInfo"]) || {
                 phone: "",
                 address: "",
             },
@@ -167,25 +173,35 @@ const Client = ({ user }: MePageContentProps) => {
             location: userData.location || "",
             image: userData.image || "",
             bannerUrl: userData.bannerUrl || "",
-            socialLinks: (userData.socialLinks as any) || [],
-            businessInfo: (userData.businessInfo as any) || {
+            socialLinks:
+                (userData.socialLinks as unknown as z.infer<
+                    typeof profileSchema
+                >["socialLinks"]) || [],
+            businessInfo: (userData.businessInfo as unknown as z.infer<
+                typeof profileSchema
+            >["businessInfo"]) || {
                 inquiryEmail: "",
             },
-            contactInfo: (userData.contactInfo as any) || {
+            contactInfo: (userData.contactInfo as unknown as z.infer<
+                typeof profileSchema
+            >["contactInfo"]) || {
                 phone: "",
                 address: "",
             },
         });
     }, [userData, form]);
 
-    const onSubmit = (values: z.infer<typeof profileSchema>) => {
-        updateProfileMutation.mutate(values);
-    };
+    const onSubmit = useCallback(
+        (values: z.infer<typeof profileSchema>) => {
+            updateProfileMutation.mutate(values);
+        },
+        [updateProfileMutation],
+    );
 
-    const handleCancel = () => {
+    const handleCancel = useCallback(() => {
         form.reset();
         setIsEditing(false);
-    };
+    }, [form]);
 
     // Keyboard Shortcuts
     useEffect(() => {
@@ -205,7 +221,7 @@ const Client = ({ user }: MePageContentProps) => {
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [isEditing, form]);
+    }, [isEditing, form, onSubmit, handleCancel]);
 
     // Handle Image Updates (Separate from main form submit)
     const handleImageUpdate = async (
@@ -235,15 +251,27 @@ const Client = ({ user }: MePageContentProps) => {
     const resolvedBannerUrl = getMediaUrl(bannerUrl);
 
     const channels =
-        userData.channels?.map((channel: any, idx: number) => ({
-            id: idx + 1,
-            originalId: channel.id,
-            name: channel.name,
-            designation: `${channel.subscriberCount} Subs • ${channel.videoCount} Videos`,
-            image:
-                getMediaUrl(channel.image) || "https://github.com/shadcn.png",
-            href: `/studio/${channel.id}`,
-        })) || [];
+        userData.channels?.map(
+            (
+                channel: {
+                    id: string;
+                    name: string;
+                    subscriberCount: number;
+                    videoCount: number;
+                    image: string | null;
+                },
+                idx: number,
+            ) => ({
+                id: idx + 1,
+                originalId: channel.id,
+                name: channel.name,
+                designation: `${channel.subscriberCount} Subs • ${channel.videoCount} Videos`,
+                image:
+                    getMediaUrl(channel.image) ||
+                    "https://github.com/shadcn.png",
+                href: `/studio/${channel.id}`,
+            }),
+        ) || [];
 
     return (
         <Form {...form}>

@@ -1,6 +1,6 @@
 import { trpcServer } from "@/lib/trpc-server";
 import { VideoEditor } from "./_components/video-editor";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { XCircle } from "lucide-react";
 
 export default async function VideoDetailsPage(props: {
@@ -54,7 +54,7 @@ export default async function VideoDetailsPage(props: {
 
     return (
         <div className="min-h-screen bg-surface-1 pb-20">
-            <VideoEditor video={video} channelId={channelId} />
+            <VideoEditor video={video} />
         </div>
     );
 }

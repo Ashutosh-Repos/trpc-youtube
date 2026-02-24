@@ -11,8 +11,9 @@ interface ContentPageProps {
 export default async function ContentPage({ params }: ContentPageProps) {
     const { channelId } = await params;
 
+    let result;
     try {
-        const [channelResponse, videos] = await Promise.all([
+        result = await Promise.all([
             trpcServer.channel.getChannelById.query({ channelId }),
             trpcServer.video.getChannelContent.query({
                 channelId,
@@ -20,26 +21,32 @@ export default async function ContentPage({ params }: ContentPageProps) {
                 isShort: false,
             }),
         ]);
-
-        const { channel } = channelResponse;
-
-        return (
-            <div className="flex-1 h-full flex flex-col overflow-hidden bg-background">
-                <ContentClient
-                    channelId={channelId}
-                    channelName={channel.name}
-                    initialVideos={{
-                        pages: [videos],
-                        pageParams: [undefined],
-                    }}
-                />
-            </div>
-        );
-    } catch (error: any) {
-        if (error?.data?.code === "UNAUTHORIZED") {
+    } catch (error: unknown) {
+        if (
+            typeof error === "object" &&
+            error !== null &&
+            "data" in error &&
+            (error as { data: { code: string } }).data.code === "UNAUTHORIZED"
+        ) {
             redirect("/login");
         }
         // console.error("Error loading content page:", error);
         notFound();
     }
+
+    const [channelResponse, videos] = result;
+    const { channel } = channelResponse;
+
+    return (
+        <div className="flex-1 h-full flex flex-col overflow-hidden bg-background">
+            <ContentClient
+                channelId={channelId}
+                channelName={channel.name}
+                initialVideos={{
+                    pages: [videos],
+                    pageParams: [undefined],
+                }}
+            />
+        </div>
+    );
 }

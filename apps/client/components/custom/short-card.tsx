@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { formatViewCount, getMediaUrl } from "@/lib/utils";
 import type { HydratedVideo } from "@youtube/server/src/services/FeedService";
 
@@ -19,10 +20,12 @@ export function ShortCard({ video }: ShortCardProps) {
             <div className="relative aspect-9/16 w-full overflow-hidden rounded-2xl transition-all duration-300 group-hover:rounded-none bg-surface-2 border border-border/10">
                 {/* Fallback to original thumbnail if no vertical specific one exists, object-cover will handle it */}
                 {video.thumbnailUrl ? (
-                    <img
+                    <Image
                         src={getMediaUrl(video.thumbnailUrl)}
                         alt={video.title}
-                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        fill
+                        unoptimized
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                 ) : null}
 

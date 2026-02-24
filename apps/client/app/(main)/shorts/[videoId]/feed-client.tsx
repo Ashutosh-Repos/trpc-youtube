@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { ShortsClient } from "./client";
 import type { inferRouterOutputs } from "@trpc/server";
@@ -21,19 +21,20 @@ export function ShortsFeedClient({ initialVideo }: ShortsFeedClientProps) {
         trpc.feed.getHomeShorts.useInfiniteQuery(
             {},
             {
-                getNextPageParam: (lastPage: any) => lastPage.nextCursor,
+                getNextPageParam: (lastPage) => lastPage.nextCursor,
             },
         );
 
-    // Merge initial video with feed shorts, ensuring no duplicates
-    const feedVideos =
-        data?.pages.flatMap((page: any) => page.videos || []) || [];
-
     // Create the final list by putting the initial video first, then appending others.
-    const videos = [
-        initialVideo,
-        ...feedVideos.filter((v: any) => v.id !== initialVideo.id),
-    ];
+    const videos = useMemo(() => {
+        const feedVideos =
+            (data?.pages.flatMap((page) => page.videos || []) as VideoData[]) ||
+            [];
+        return [
+            initialVideo,
+            ...feedVideos.filter((v: VideoData) => v.id !== initialVideo.id),
+        ];
+    }, [initialVideo, data?.pages]);
 
     // Handle scroll snapping detection to sync active video
     useEffect(() => {
@@ -101,13 +102,13 @@ export function ShortsFeedClient({ initialVideo }: ShortsFeedClientProps) {
             ref={containerRef}
             className="flex flex-col h-[calc(100vh-64px)] w-full overflow-y-auto snap-y snap-mandatory hide-scrollbar bg-[#0f0f0f] sm:bg-transparent"
         >
-            {videos.map((video: any) => (
+            {videos.map((video: VideoData) => (
                 <div
                     key={video.id}
                     className="h-full w-full shrink-0 snap-always snap-center flex items-center justify-center"
                 >
                     <ShortsClient
-                        video={video as any}
+                        video={video}
                         isActive={video.id === activeVideoId}
                     />
                 </div>

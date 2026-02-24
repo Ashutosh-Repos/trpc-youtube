@@ -12,19 +12,20 @@ export default async function ChannelPage({
     // Strip the leading "@" from the handle if present
     const cleanHandle = handle.startsWith("@") ? handle.slice(1) : handle;
 
+    let result;
     try {
-        const { channel, isSubscribed } =
-            await trpcServer.channel.getChannelByHandle.query({
-                handle: cleanHandle,
-            });
-
-        return (
-            <ChannelClient
-                channel={channel as any}
-                isSubscribed={isSubscribed}
-            />
-        );
-    } catch (e) {
+        result = await trpcServer.channel.getChannelByHandle.query({
+            handle: cleanHandle,
+        });
+    } catch {
         notFound();
     }
+
+    return (
+        <ChannelClient
+            // @ts-expect-error DTO conversion
+            channel={result.channel}
+            isSubscribed={result.isSubscribed}
+        />
+    );
 }

@@ -118,7 +118,9 @@ export const PlaylistCreateModal = ({
                         </Label>
                         <Select
                             value={visibility}
-                            onValueChange={(v: any) => setVisibility(v)}
+                            onValueChange={(
+                                v: "PUBLIC" | "PRIVATE" | "UNLISTED",
+                            ) => setVisibility(v)}
                         >
                             <SelectTrigger className="bg-surface-2 border-border/10 focus:ring-primary/20 focus:border-primary/30 h-14 rounded-2xl transition-all px-6 font-bold">
                                 <SelectValue placeholder="Select visibility" />

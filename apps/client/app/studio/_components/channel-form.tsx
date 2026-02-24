@@ -164,7 +164,15 @@ const CreateChannelForm = () => {
     }, [handleStatus, setError, clearErrors]);
 
     async function next() {
-        const fieldsToCheck = steps[step].fields as any;
+        const fieldsToCheck = steps[step].fields as unknown as (
+            | "name"
+            | "handle"
+            | "description"
+            | "image"
+            | "bannerUrl"
+            | "contactEmail"
+            | "links"
+        )[];
         const valid = await trigger(fieldsToCheck);
 
         // Prevent moving forward if handle is taken in step 0
@@ -415,7 +423,7 @@ const CreateChannelForm = () => {
                                 </Button>
                             </div>
 
-                            {fields.map((field: any, i: number) => (
+                            {fields.map((field: { id: string }, i: number) => (
                                 <div
                                     key={field.id}
                                     className="flex gap-2 items-start"

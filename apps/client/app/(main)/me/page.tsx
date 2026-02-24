@@ -6,7 +6,7 @@ export default async function MePage() {
     let user;
     try {
         user = await trpcServer.user.getProfile.query();
-    } catch (error) {
+    } catch {
         redirect("/login");
     }
 

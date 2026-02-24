@@ -18,7 +18,6 @@ import {
     SheetContent,
     SheetHeader,
     SheetTitle,
-    SheetTrigger,
 } from "@/components/ui/sheet";
 import { CommentSection } from "@/components/comments";
 import HlsVideo from "hls-video-element/react";
@@ -45,16 +44,18 @@ export function ShortsClient({ video, isActive = true }: ShortsClientProps) {
     // UI State
     const [isCommentsOpen, setIsCommentsOpen] = useState(false);
     const isDesktop = useMediaQuery("(min-width: 1024px)");
-    const videoRef = useRef<HTMLVideoElement>(null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const videoRef = useRef<any>(null);
 
     // Hard layout refs for TanStack Virtual virtualization
     const desktopScrollRef = React.useRef<HTMLDivElement>(null);
     const mobileScrollRef = React.useRef<HTMLDivElement>(null);
 
-    // Auto-close comments when navigating to a different Short
-    useEffect(() => {
+    const [prevVideoId, setPrevVideoId] = useState(video.id);
+    if (video.id !== prevVideoId) {
+        setPrevVideoId(video.id);
         setIsCommentsOpen(false);
-    }, [video.id]);
+    }
 
     // Play/Pause sync based on viewport visibility
     useEffect(() => {
@@ -79,14 +80,13 @@ export function ShortsClient({ video, isActive = true }: ShortsClientProps) {
         });
 
     // Subscription Hook (Optimistic)
-    const { isSubscribed, subscriberCount, toggleSubscribe, isLoading } =
-        useSubscribe({
-            channelId: video.channelId,
-            initialData: {
-                isSubscribed: video.engagement?.subscribed || false,
-                subscriberCount: video.channels?.subscriberCount || 0,
-            },
-        });
+    const { isSubscribed, toggleSubscribe, isLoading } = useSubscribe({
+        channelId: video.channelId,
+        initialData: {
+            isSubscribed: video.engagement?.subscribed || false,
+            subscriberCount: video.channels?.subscriberCount || 0,
+        },
+    });
 
     const { onPlay, onProgress } = useVideoEngagement(video.id);
 
@@ -110,11 +110,10 @@ export function ShortsClient({ video, isActive = true }: ShortsClientProps) {
                     onTimeUpdate={(
                         e: React.SyntheticEvent<HTMLVideoElement, Event>,
                     ) => onProgress((e.target as HTMLVideoElement).currentTime)}
-                    {...({
-                        crossorigin: "anonymous",
-                        autoplay: isActive,
-                        muted: true, // Crucial for autoplay policies on Shorts
-                    } as any)}
+                    crossOrigin="anonymous"
+                    // @ts-expect-error - React uses autoPlay but type complains
+                    autoPlay={isActive}
+                    muted={true}
                 />
 
                 {/* Overlays (Gradient to darken text background) */}

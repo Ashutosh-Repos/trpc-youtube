@@ -57,7 +57,7 @@ const ResetPasswordForm = () => {
                     );
                     router.replace("/login");
                 }
-            } catch (err) {
+            } catch {
                 toast.error("Internal server error");
             }
         });

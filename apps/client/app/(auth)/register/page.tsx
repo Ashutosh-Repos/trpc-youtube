@@ -62,7 +62,7 @@ const RegisterPage = () => {
                     );
                     setIsSuccess(true);
                 }
-            } catch (err) {
+            } catch {
                 toast.error("Internal server error");
             }
         });

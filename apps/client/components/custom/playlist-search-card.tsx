@@ -1,7 +1,7 @@
-import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { formatDistanceToNowStrict } from "date-fns";
-import { formatViewCount, getMediaUrl } from "@/lib/utils";
+import { getMediaUrl } from "@/lib/utils";
 import { ListVideo } from "lucide-react";
 
 interface PlaylistSearchCardProps {
@@ -32,14 +32,15 @@ export function PlaylistSearchCard({ playlist }: PlaylistSearchCardProps) {
                 href={playlistUrl}
                 className="relative shrink-0 w-full sm:w-[360px] aspect-video rounded-2xl overflow-hidden bg-surface-2 border border-border/10 transition-all duration-500 group-hover:shadow-[0_20px_50px_-15px_oklch(var(--primary)/0.2)]"
             >
-                {/* Thumbnail */}
-                <img
+                <Image
                     src={
                         getMediaUrl(playlist.thumbnailUrl) ||
                         "/placeholder-playlist.jpg"
                     }
                     alt={playlist.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    fill
+                    unoptimized
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
                 />
 
                 {/* Playlist Overlay */}

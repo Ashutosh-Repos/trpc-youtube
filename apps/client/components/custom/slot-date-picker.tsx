@@ -13,6 +13,8 @@ import {
     animate,
     useMotionValueEvent,
     useTransform,
+    PanInfo,
+    MotionValue,
 } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -69,22 +71,21 @@ export const SlotDatePicker: React.FC<SlotDatePickerProps> = ({
 
     const years = useMemo(
         () =>
-            Array.from({ length: toYear - fromYear + 1 }, (_: any, i: number) =>
+            Array.from({ length: toYear - fromYear + 1 }, (_, i: number) =>
                 (fromYear + i).toString(),
             ).reverse(),
         [fromYear, toYear],
     );
 
+    const currentYear = selectedDate.getFullYear();
+    const currentMonth = selectedDate.getMonth();
+
     const days = useMemo(() => {
-        const count = new Date(
-            selectedDate.getFullYear(),
-            selectedDate.getMonth() + 1,
-            0,
-        ).getDate();
-        return Array.from({ length: count }, (_: any, i: number) =>
+        const count = new Date(currentYear, currentMonth + 1, 0).getDate();
+        return Array.from({ length: count }, (_, i: number) =>
             (i + 1).toString(),
         );
-    }, [selectedDate.getFullYear(), selectedDate.getMonth()]);
+    }, [currentMonth, currentYear]);
 
     const handleUpdate = useCallback(
         (type: "month" | "day" | "year", value: number | string) => {
@@ -183,7 +184,10 @@ const SlotReel = React.memo(
             }
         });
 
-        const handleDragEnd = (_: any, info: any) => {
+        const handleDragEnd = (
+            _: MouseEvent | TouchEvent | PointerEvent,
+            info: PanInfo,
+        ) => {
             const power = 0.12;
             const target = y.get() + info.velocity.y * power;
             const snappedY =
@@ -263,7 +267,7 @@ const SlotItem = ({
 }: {
     item: string;
     index: number;
-    y: any;
+    y: MotionValue<number>;
     isActive: boolean;
 }) => {
     const centerPos = REEL_OFFSET - index * ITEM_HEIGHT;
@@ -279,7 +283,7 @@ const SlotItem = ({
 
     return (
         <motion.div
-            style={{ rotateX, scale, height: ITEM_HEIGHT }}
+            style={{ rotateX, scale, opacity, height: ITEM_HEIGHT }}
             className={cn(
                 "flex w-full items-center justify-center text-sm transition-colors duration-200",
                 isActive

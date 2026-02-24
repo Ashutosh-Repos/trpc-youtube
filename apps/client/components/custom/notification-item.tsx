@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { getMediaUrl, cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
+import Image from "next/image";
 
 /**
  * YouTube-style notification type icons.
@@ -150,9 +151,12 @@ export function NotificationItem({
                     <span className="h-2 w-2 rounded-full bg-primary shrink-0" />
                 )}
                 {notification.thumbnailUrl && (
-                    <img
+                    <Image
                         src={getMediaUrl(notification.thumbnailUrl)}
                         alt=""
+                        width={64}
+                        height={40}
+                        unoptimized
                         className="h-10 w-16 object-cover rounded"
                     />
                 )}

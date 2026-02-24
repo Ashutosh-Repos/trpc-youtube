@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { z } from "zod";
+import { Prisma } from "@/generated/prisma/client";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import {
     ActionResponse,
@@ -11,6 +12,8 @@ import {
     updateChannelSchema,
     UpdateChannelType,
     createErrorResponse,
+    linkSchema,
+    featureFlagsSchema,
 } from "./schema-types";
 import { getSessionUser } from "./user";
 
@@ -46,10 +49,10 @@ export type PublicChannel = {
     videoCount: number;
     totalViews: number;
     createdAt: Date;
-    links: any; // Json type from Prisma
+    links: z.infer<typeof linkSchema>[] | Prisma.JsonValue;
     location: string | null;
     contactEmail: string | null;
-    featureFlags: any;
+    featureFlags: z.infer<typeof featureFlagsSchema> | Prisma.JsonValue;
 };
 
 const getChannelInternal = async (
@@ -113,7 +116,7 @@ export async function checkHandleAvailability(
         });
 
         return { success: true, data: { available: !existing } };
-    } catch (error) {
+    } catch {
         return createErrorResponse(
             "INTERNAL_ERROR",
             "Availability check failed",
@@ -286,7 +289,7 @@ export async function updateChannel(
             where: { id: existing.id },
             data: {
                 ...scalarData,
-                featureFlags: featureFlags ? (featureFlags as any) : undefined,
+                featureFlags: featureFlags || undefined,
                 tags: tags
                     ? {
                           set: [], // Clear existing
@@ -428,7 +431,7 @@ export async function toggleSubscription(
 
         revalidatePath(`/channel/${channelId}`);
         return { success: true, data: result };
-    } catch (error) {
+    } catch {
         return createErrorResponse(
             "SERVER_ERROR",
             "Failed to toggle subscription",

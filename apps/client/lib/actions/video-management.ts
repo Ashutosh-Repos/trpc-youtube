@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { Prisma } from "@/generated/prisma/client";
 import {
     ActionResponse,
     videoContentFilterSchema,
@@ -19,7 +20,7 @@ export async function getChannelContent(
     filters: VideoContentFilterInput,
 ): Promise<
     ActionResponse<{
-        items: any[];
+        items: unknown[]; // Keeping unknown[] for now as the select is custom, but could define if needed
         nextCursor: string | null;
         totalCount: number;
     }>
@@ -59,7 +60,7 @@ export async function getChannelContent(
         }
 
         // 2. Build Query
-        const where: any = {
+        const where: Prisma.videosWhereInput = {
             channelId,
             deletedAt: null,
             ...(visibility && { visibility }),
@@ -123,7 +124,7 @@ export async function getChannelContent(
             JSON.stringify({ items, nextCursor, totalCount }),
         );
         return { success: true, data: safeData };
-    } catch (error) {
+    } catch (error: unknown) {
         console.error(`[Video Management] getChannelContent failed:`, error);
         return createErrorResponse(
             "INTERNAL_ERROR",
@@ -203,7 +204,7 @@ export async function updateVideoVisibility(
  */
 export async function getVideoById(
     videoId: string,
-): Promise<ActionResponse<any>> {
+): Promise<ActionResponse<unknown>> {
     try {
         const user = await getSessionUser();
         if (!user) {
@@ -294,7 +295,7 @@ const updateVideoSchema = z.object({
 export async function updateVideoMetadata(
     videoId: string,
     data: z.infer<typeof updateVideoSchema>,
-): Promise<ActionResponse<any>> {
+): Promise<ActionResponse<unknown>> {
     try {
         const user = await getSessionUser();
         if (!user) {
@@ -355,10 +356,12 @@ export async function updateVideoMetadata(
                 ...(chapters && {
                     chapters: {
                         deleteMany: {},
-                        create: chapters.map((c: any) => ({
-                            title: c.title,
-                            startTime: c.startTime,
-                        })),
+                        create: chapters.map(
+                            (c: { title: string; startTime: number }) => ({
+                                title: c.title,
+                                startTime: c.startTime,
+                            }),
+                        ),
                     },
                 }),
             },
@@ -444,7 +447,7 @@ export async function getCategories() {
             orderBy: { name: "asc" },
         });
         return { success: true, data: categories };
-    } catch (error) {
+    } catch {
         return createErrorResponse(
             "SERVER_ERROR",
             "Failed to fetch categories",
@@ -476,9 +479,7 @@ export async function deleteVideos(
             },
         });
 
-        const unauthorized = videos.some(
-            (v: any) => v.channels.userId !== user.id,
-        );
+        const unauthorized = videos.some((v) => v.channels.userId !== user.id);
         if (unauthorized || videos.length !== videoIds.length) {
             return {
                 success: false,
@@ -500,7 +501,7 @@ export async function deleteVideos(
         revalidatePath(`/studio`);
 
         return { success: true, data: { count: videoIds.length } };
-    } catch (error) {
+    } catch {
         return createErrorResponse("INTERNAL_ERROR", "Bulk delete failed");
     }
 }
@@ -527,9 +528,7 @@ export async function updateVideosVisibility(
             select: { id: true, channels: { select: { userId: true } } },
         });
 
-        const unauthorized = videos.some(
-            (v: any) => v.channels.userId !== user.id,
-        );
+        const unauthorized = videos.some((v) => v.channels.userId !== user.id);
         if (unauthorized || videos.length !== videoIds.length) {
             return {
                 success: false,
@@ -560,7 +559,7 @@ export async function updateVideosVisibility(
         revalidatePath(`/studio`);
 
         return { success: true, data: { count: videoIds.length } };
-    } catch (error) {
+    } catch {
         return createErrorResponse("INTERNAL_ERROR", "Bulk update failed");
     }
 }

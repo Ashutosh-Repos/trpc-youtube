@@ -56,17 +56,29 @@ export function ResultsFeedClient() {
         <div className="flex flex-col w-full max-w-[1000px] mx-auto pb-20 pt-6">
             {channels.length > 0 && (
                 <div className="flex flex-col w-full mb-6">
-                    {channels.map((c: any) => (
-                        <ChannelSearchCard key={c.id} channel={c} />
-                    ))}
+                    {channels.map(
+                        (
+                            c: React.ComponentProps<
+                                typeof ChannelSearchCard
+                            >["channel"],
+                        ) => (
+                            <ChannelSearchCard key={c.id} channel={c} />
+                        ),
+                    )}
                 </div>
             )}
 
             {playlists.length > 0 && (
                 <div className="flex flex-col w-full mb-8">
-                    {playlists.map((p: any) => (
-                        <PlaylistSearchCard key={p.id} playlist={p} />
-                    ))}
+                    {playlists.map(
+                        (
+                            p: React.ComponentProps<
+                                typeof PlaylistSearchCard
+                            >["playlist"],
+                        ) => (
+                            <PlaylistSearchCard key={p.id} playlist={p} />
+                        ),
+                    )}
                     <hr className="border-border/10 mt-6" />
                 </div>
             )}

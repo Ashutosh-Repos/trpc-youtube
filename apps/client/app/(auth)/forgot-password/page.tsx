@@ -47,7 +47,7 @@ const ForgotPasswordPage = () => {
                     toast.success("Reset link sent! Please check your email.");
                     setIsSuccess(true);
                 }
-            } catch (err) {
+            } catch {
                 toast.error("Internal server error");
             }
         });

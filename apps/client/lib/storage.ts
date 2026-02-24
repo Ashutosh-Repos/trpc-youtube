@@ -4,7 +4,7 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { getUser } from "@/lib/actions/user";
 import { v4 as uuidv4 } from "uuid";
-import { z } from "zod";
+
 import {
     AllowedMimeTypes,
     ContentTypeSchema,
@@ -82,7 +82,7 @@ export async function getPresignedUrl(
     if (!response.success) {
         return { success: false, error: "Unauthorized" };
     }
-    const user = response.data;
+    const user = response.data as { id: string };
 
     // Validate Input
     const typeResult = UploadTypeSchema.safeParse(type);

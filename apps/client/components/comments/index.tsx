@@ -9,7 +9,6 @@ import {
     ThumbsDown,
     MoreVertical,
     Trash2,
-    Heart,
 } from "lucide-react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { inferRouterOutputs } from "@trpc/server";
@@ -59,7 +58,7 @@ CommentSkeleton.displayName = "CommentSkeleton";
 
 export const CommentListSkeleton = memo(() => (
     <div className="flex flex-col gap-6">
-        {Array.from({ length: 5 }).map((_: any, i: number) => (
+        {Array.from({ length: 5 }).map((_, i: number) => (
             <CommentSkeleton key={i} />
         ))}
     </div>
@@ -73,6 +72,7 @@ function useCommentInteractions(comment: Comment, videoId: string) {
     // Optimistic Update helper for infinite data
     const updateInfiniteData = (type: "LIKE" | "DISLIKE" | "REMOVE") => {
         // Optimistically update the single comment query (e.g. Highlighted Comment)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         utils.comment.getById.setData({ id: comment.id }, (oldComment: any) => {
             if (!oldComment) return oldComment;
             let newLikeCount = oldComment.likeCount;
@@ -302,6 +302,7 @@ const CommentReplies = memo(({ parentId, videoId }: CommentRepliesProps) => {
 
     return (
         <div className="flex flex-col gap-4 mt-2">
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             {replies.map((reply: any) => (
                 <CommentItem key={reply.id} comment={reply} videoId={videoId} />
             ))}
@@ -522,6 +523,7 @@ export function CommentSectionInner({
         const items = data?.pages.flatMap((page) => page.items) || [];
         // Prevent duplication if the highlighted comment is also in the fetched pages
         if (lc) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return items.filter((item: any) => item.id !== lc);
         }
         return items;
@@ -553,6 +555,7 @@ export function CommentSectionInner({
             window.removeEventListener("resize", measure);
             clearTimeout(timer);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allComments.length, isLoading, resolvedScrollRef.current]);
 
     const rowVirtualizer = useVirtualizer({
@@ -621,6 +624,7 @@ export function CommentSectionInner({
                         position: "relative",
                     }}
                 >
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                     {virtualItems.map((virtualRow: any) => {
                         const comment = allComments[virtualRow.index];
                         if (!comment) return null;

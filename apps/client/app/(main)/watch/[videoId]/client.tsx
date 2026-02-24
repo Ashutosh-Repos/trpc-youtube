@@ -8,7 +8,6 @@ import type { AppRouter } from "@youtube/server/src/trpc/router";
 import { inferRouterOutputs } from "@trpc/server";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
 import { ThumbsUp, ThumbsDown, Share2, MoreHorizontal } from "lucide-react";
 import { useVideoReaction } from "@/hooks/use-video-reaction";
 import { useSubscribe } from "@/hooks/use-subscribe";

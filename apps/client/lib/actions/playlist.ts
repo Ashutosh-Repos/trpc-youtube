@@ -17,7 +17,8 @@ import { getSessionUser } from "./user";
  */
 export async function getChannelPlaylists(
     channelId: string,
-): Promise<ActionResponse<any[]>> {
+): Promise<ActionResponse<unknown[]>> {
+    // Keeping any[] as the return is complex but could define
     try {
         const playlists = await prisma.playlists.findMany({
             where: {
@@ -47,7 +48,7 @@ export async function getChannelPlaylists(
  */
 export async function createPlaylist(
     input: CreatePlaylistInput,
-): Promise<ActionResponse<any>> {
+): Promise<ActionResponse<unknown>> {
     try {
         const user = await getSessionUser();
         if (!user) {
@@ -97,7 +98,7 @@ export async function createPlaylist(
 export async function updatePlaylist(
     playlistId: string,
     input: UpdatePlaylistInput,
-): Promise<ActionResponse<any>> {
+): Promise<ActionResponse<unknown>> {
     try {
         const user = await getSessionUser();
         if (!user) {
@@ -180,7 +181,14 @@ export async function deletePlaylist(
 export async function addVideoToPlaylist(
     playlistId: string,
     videoId: string,
-): Promise<ActionResponse<any>> {
+): Promise<
+    ActionResponse<{
+        id: string;
+        playlistId: string;
+        videoId: string;
+        position: number;
+    }>
+> {
     try {
         const user = await getSessionUser();
         if (!user) {
@@ -291,7 +299,7 @@ export async function removeVideoFromPlaylist(
  */
 export async function getPlaylistVideos(
     playlistId: string,
-): Promise<ActionResponse<any[]>> {
+): Promise<ActionResponse<unknown[]>> {
     try {
         const videos = await prisma.playlist_videos.findMany({
             where: { playlistId },
@@ -310,8 +318,9 @@ export async function getPlaylistVideos(
         });
 
         // Flatten the structure for the UI
-        const data = videos.map((v: any) => ({
-            ...v.video,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const data = videos.map((v: { videos: any; position: number }) => ({
+            ...v.videos,
             position: v.position,
         }));
 
@@ -375,7 +384,7 @@ export async function reorderPlaylistVideos(
  */
 export async function getPlaylistById(
     playlistId: string,
-): Promise<ActionResponse<any>> {
+): Promise<ActionResponse<unknown>> {
     try {
         const playlist = await prisma.playlists.findUnique({
             where: { id: playlistId },

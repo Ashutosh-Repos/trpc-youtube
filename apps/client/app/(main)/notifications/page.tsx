@@ -51,16 +51,19 @@ export default function NotificationsPage() {
         onMutate: async ({ id }) => {
             utils.notification.list.setInfiniteData(
                 { limit: 20, typeFilter: activeTab },
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (old: any) => {
                     if (!old) return old;
                     return {
                         ...old,
-                        pages: old.pages.map((page: any) => ({
-                            ...page,
-                            items: page.items.filter(
-                                (item: any) => item.id !== id,
-                            ),
-                        })),
+                        pages: old.pages.map(
+                            (page: { items: { id: string }[] }) => ({
+                                ...page,
+                                items: page.items.filter(
+                                    (item: { id: string }) => item.id !== id,
+                                ),
+                            }),
+                        ),
                     };
                 },
             );
@@ -78,18 +81,24 @@ export default function NotificationsPage() {
             // Optimistic
             utils.notification.list.setInfiniteData(
                 { limit: 20, typeFilter: activeTab },
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (old: any) => {
                     if (!old) return old;
                     return {
                         ...old,
-                        pages: old.pages.map((page: any) => ({
-                            ...page,
-                            items: page.items.map((item: any) =>
-                                item.id === notification.id
-                                    ? { ...item, isRead: true }
-                                    : item,
-                            ),
-                        })),
+                        pages: old.pages.map(
+                            (page: {
+                                items: { id: string; isRead: boolean }[];
+                            }) => ({
+                                ...page,
+                                items: page.items.map(
+                                    (item: { id: string; isRead: boolean }) =>
+                                        item.id === notification.id
+                                            ? { ...item, isRead: true }
+                                            : item,
+                                ),
+                            }),
+                        ),
                     };
                 },
             );
@@ -127,7 +136,7 @@ export default function NotificationsPage() {
 
             {/* Filter Tabs */}
             <div className="flex gap-2 mb-4 border-b pb-2">
-                {FILTER_TABS.map((tab: any) => (
+                {FILTER_TABS.map((tab: { key: FilterTab; label: string }) => (
                     <Button
                         key={tab.key}
                         variant={activeTab === tab.key ? "default" : "ghost"}
@@ -147,7 +156,7 @@ export default function NotificationsPage() {
             {/* Notification List */}
             {isLoading ? (
                 <div className="space-y-4">
-                    {Array.from({ length: 5 }).map((_: any, i: number) => (
+                    {Array.from({ length: 5 }).map((_: unknown, i: number) => (
                         <div
                             key={i}
                             className="h-16 bg-muted/30 rounded animate-pulse"
@@ -167,11 +176,11 @@ export default function NotificationsPage() {
             ) : (
                 <>
                     <div className="rounded-lg border overflow-hidden">
-                        {notifications.map((notification: any) => (
+                        {notifications.map((notification) => (
                             <NotificationItem
                                 key={notification.id}
                                 notification={
-                                    notification as NotificationItemData
+                                    notification as unknown as NotificationItemData
                                 }
                                 onClick={handleNotificationClick}
                                 onDelete={handleDelete}

@@ -71,7 +71,7 @@ export const EditableInput = ({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className={cn(
-                        "py-1 break-words empty:hidden min-h-[1.5em]",
+                        "py-1 wrap-break-word empty:hidden min-h-[1.5em]",
                         className,
                     )}
                 >
@@ -135,7 +135,6 @@ export const EditableTextarea = ({
                                         {...field}
                                         ref={(e) => {
                                             field.ref(e);
-                                            // @ts-ignore
                                             textareaRef.current = e;
                                         }}
                                         placeholder={placeholder}
@@ -159,7 +158,7 @@ export const EditableTextarea = ({
                         animate={{ opacity: 1 }}
                         ref={contentRef}
                         className={cn(
-                            "whitespace-pre-wrap break-words py-1",
+                            "whitespace-pre-wrap wrap-break-word py-1",
                             !isExpanded &&
                                 "line-clamp-5 max-h-[7.5em] overflow-hidden", // 1.5em * 5 lines = 7.5em approx
                             className,

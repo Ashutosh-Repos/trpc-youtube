@@ -11,9 +11,9 @@ import {
     ListVideo,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
+import Image from "next/image";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -23,13 +23,14 @@ import {
 import { cn, getMediaUrl } from "@/lib/utils";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
-import { useRouter } from "next/navigation";
+
 import { RouterOutputs } from "@/lib/trpc-shared";
 
 interface PlaylistRowProps {
     playlist: RouterOutputs["playlist"]["getChannelPlaylists"]["playlists"][number];
     isSelected: boolean;
     onSelect: (checked: boolean) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onEdit?: (playlist: any) => void;
 }
 
@@ -39,7 +40,6 @@ export const PlaylistRow = ({
     onSelect,
     onEdit,
 }: PlaylistRowProps) => {
-    const router = useRouter();
     const utils = trpc.useUtils();
 
     const updatePlaylistMutation = trpc.playlist.updatePlaylist.useMutation({
@@ -61,9 +61,6 @@ export const PlaylistRow = ({
             toast.error(error.message || "Failed to delete playlist");
         },
     });
-
-    const isPending =
-        updatePlaylistMutation.isPending || deletePlaylistMutation.isPending;
 
     const handleVisibilityChange = (
         newVisibility: "PUBLIC" | "PRIVATE" | "UNLISTED",
@@ -108,13 +105,15 @@ export const PlaylistRow = ({
             <div className="col-span-6 flex gap-4 min-w-0">
                 <div className="relative w-36 aspect-video rounded-xl overflow-hidden bg-surface-1 shrink-0 border border-border/10 shadow-lg group/playlist-thumb">
                     {playlist.thumbnailUrl || playlist.firstVideoThumbnail ? (
-                        <img
+                        <Image
                             src={getMediaUrl(
                                 playlist.thumbnailUrl ||
                                     playlist.firstVideoThumbnail,
                             )}
                             alt={playlist.title}
-                            className="w-full h-full object-cover"
+                            fill
+                            unoptimized
+                            className="object-cover"
                         />
                     ) : (
                         <div className="flex flex-col items-center gap-1 opacity-20">

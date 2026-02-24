@@ -69,7 +69,7 @@ export function SubscriptionBell({
             toast.error("Failed to update notification level");
         },
         onSuccess: (_data, { level }) => {
-            const option = BELL_OPTIONS.find((o: any) => o.level === level);
+            const option = BELL_OPTIONS.find((o) => o.level === level);
             toast.success(`Notifications: ${option?.label || level}`);
         },
     });
@@ -78,7 +78,7 @@ export function SubscriptionBell({
 
     const level = currentLevel ?? "PERSONALIZED";
     const current =
-        BELL_OPTIONS.find((o: any) => o.level === level) || BELL_OPTIONS[1];
+        BELL_OPTIONS.find((o) => o.level === level) || BELL_OPTIONS[1];
     const CurrentIcon = current.icon;
 
     return (
@@ -103,7 +103,7 @@ export function SubscriptionBell({
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56">
-                {BELL_OPTIONS.map((option: any) => {
+                {BELL_OPTIONS.map((option) => {
                     const isActive = level === option.level;
                     return (
                         <DropdownMenuItem

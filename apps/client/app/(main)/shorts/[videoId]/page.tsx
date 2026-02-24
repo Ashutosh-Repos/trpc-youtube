@@ -9,10 +9,12 @@ export default async function ShortsPage({
 }) {
     const { videoId } = await params;
 
+    let video;
     try {
-        const video = await trpcServer.video.getPublicVideo.query({ videoId });
-        return <ShortsFeedClient initialVideo={video} />;
-    } catch (e) {
+        video = await trpcServer.video.getPublicVideo.query({ videoId });
+    } catch {
         notFound();
     }
+
+    return <ShortsFeedClient initialVideo={video} />;
 }

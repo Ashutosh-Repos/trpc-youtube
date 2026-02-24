@@ -31,6 +31,7 @@ export function PlaylistSidebar({
         ) {
             store.initializePlaylist(initialData, currentVideoId);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [initialData, currentVideoId, playlistId]);
 
     // Keep current index in sync with the URL's currentVideoId whenever navigation occurs
@@ -45,6 +46,7 @@ export function PlaylistSidebar({
                 store.setCurrentIndex(index);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentVideoId]);
 
     if (!store.isInitialized || !store.playlistData) {

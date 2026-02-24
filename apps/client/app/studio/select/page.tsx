@@ -17,7 +17,7 @@ const SelectChannelPage = async () => {
         if (result.success && result.channels) {
             channels = result.channels;
         }
-    } catch (error) {
+    } catch {
         return (
             <div className="flex h-full w-full flex-col items-center justify-center gap-6 text-center p-8">
                 <div className="p-4 rounded-full bg-destructive/10 text-destructive mb-2">
@@ -34,7 +34,7 @@ const SelectChannelPage = async () => {
         );
     }
 
-    const items = channels.map((channel: any, idx: number) => ({
+    const items = channels.map((channel: ChannelList[number], idx: number) => ({
         id: idx,
         originalId: channel.id,
         name: channel.name,

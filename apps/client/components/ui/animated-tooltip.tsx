@@ -87,13 +87,14 @@ const TooltipContent = ({
         springConfig,
     );
 
-    const handleMouseMove = (event: any) => {
+    const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
         if (animationFrameRef.current) {
             cancelAnimationFrame(animationFrameRef.current);
         }
 
         animationFrameRef.current = requestAnimationFrame(() => {
-            const halfWidth = event.target.offsetWidth / 2;
+            const target = event.target as HTMLElement;
+            const halfWidth = target.offsetWidth / 2;
             x.set(event.nativeEvent.offsetX - halfWidth);
         });
     };
@@ -112,7 +113,7 @@ const TooltipContent = ({
 
     return (
         <div className="flex flex-row items-center">
-            {allItems.map((item: any, idx: number) => {
+            {allItems.map((item, idx: number) => {
                 const isAddIcon = addIcon && idx === allItems.length - 1;
 
                 const Content = (

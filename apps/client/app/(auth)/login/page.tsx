@@ -55,7 +55,11 @@ const LoginPage = () => {
                 }
             } catch (err) {
                 // If it's a redirect, the browser will handle it
-                if (!(err as any).digest?.startsWith("NEXT_REDIRECT")) {
+                if (
+                    !(err as { digest?: string }).digest?.startsWith(
+                        "NEXT_REDIRECT",
+                    )
+                ) {
                     toast.error("Internal server error");
                 }
             }
@@ -182,7 +186,7 @@ const LoginPage = () => {
                     className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/40 w-full"
                 >
                     <div className="flex justify-center items-center mt-6">
-                        Don't have an account?{" "}
+                        Don&apos;t have an account?{" "}
                         <Link
                             href="/register"
                             className="font-black text-foreground hover:text-primary ml-2 transition-colors"
@@ -213,7 +217,11 @@ function GoogleSignIn({ className }: { className?: string }) {
                 iconRef.current?.stopAnimation();
             }
         } catch (err) {
-            if (!(err as any)?.digest?.startsWith("NEXT_REDIRECT")) {
+            if (
+                !(err as { digest?: string })?.digest?.startsWith(
+                    "NEXT_REDIRECT",
+                )
+            ) {
                 toast.error("Internal server error");
                 iconRef.current?.stopAnimation();
             }
@@ -250,7 +258,11 @@ const GithubSignIn = ({ className }: { className?: string }) => {
                 iconRef.current?.stopAnimation();
             }
         } catch (err) {
-            if (!(err as any)?.digest?.startsWith("NEXT_REDIRECT")) {
+            if (
+                !(err as { digest?: string })?.digest?.startsWith(
+                    "NEXT_REDIRECT",
+                )
+            ) {
                 toast.error("Internal server error");
                 iconRef.current?.stopAnimation();
             }

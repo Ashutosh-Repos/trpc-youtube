@@ -25,7 +25,7 @@ export function ShortsShelf({ source }: ShortsShelfProps) {
         return (
             <div className="col-span-full border-y border-border/40 py-6 my-4 w-full">
                 <div className="flex animate-pulse gap-4 overflow-x-hidden px-2">
-                    {Array.from({ length: 6 }).map((_: any, i: number) => (
+                    {Array.from({ length: 6 }).map((_, i: number) => (
                         <div
                             key={i}
                             className="w-[210px] aspect-9/16 bg-surface-2 rounded-2xl shrink-0 animate-pulse border border-border/10"
@@ -64,6 +64,7 @@ export function ShortsShelf({ source }: ShortsShelfProps) {
 
             {/* Horizontal Scroller */}
             <div className="flex w-full overflow-x-auto snap-x snap-mandatory gap-4 px-2 pb-4 pt-2 -mx-2 hide-scrollbar">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {data.videos.map((video: any) => (
                     <div key={video.id} className="snap-start shrink-0">
                         <ShortCard video={video} />

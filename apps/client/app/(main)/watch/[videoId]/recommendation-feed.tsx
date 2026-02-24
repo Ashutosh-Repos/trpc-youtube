@@ -14,7 +14,7 @@ export function RecommendationFeed({ videoId }: { videoId: string }) {
         trpc.feed.getRecommendations.useInfiniteQuery(
             { videoId },
             {
-                getNextPageParam: (lastPage: any) => lastPage.nextCursor,
+                getNextPageParam: (lastPage) => lastPage.nextCursor,
             },
         );
 
@@ -24,7 +24,7 @@ export function RecommendationFeed({ videoId }: { videoId: string }) {
         }
     }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-    const videos = data?.pages.flatMap((page: any) => page.videos) || [];
+    const videos = data?.pages.flatMap((page) => page.videos || []) || [];
 
     if (isLoading) {
         return (
@@ -53,11 +53,8 @@ export function RecommendationFeed({ videoId }: { videoId: string }) {
 
     return (
         <div className="flex flex-col gap-2">
-            {videos.map((video: HydratedVideo) => (
-                <CompactVideoCard
-                    key={video.id + Math.random()}
-                    video={video}
-                />
+            {videos.map((video: HydratedVideo, index: number) => (
+                <CompactVideoCard key={`${video.id}-${index}`} video={video} />
             ))}
 
             <div

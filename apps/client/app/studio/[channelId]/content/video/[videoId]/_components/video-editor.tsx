@@ -10,17 +10,15 @@ import {
     Loader2,
     Save,
     Undo,
-    Eye,
     Calendar,
     Image as ImageIcon,
-    AlertCircle,
     X,
-    CheckCircle2,
     AlertTriangle,
 } from "lucide-react";
 
 import { cn, getMediaUrl, AllowedMimeTypes, MaxSizes } from "@/lib/utils";
 import { getPresignedUrl } from "@/lib/storage";
+import Image from "next/image";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import {
@@ -87,10 +85,9 @@ const updateVideoSchema = z
 
 interface VideoEditorProps {
     video: VideoData;
-    channelId: string;
 }
 
-export function VideoEditor({ video, channelId }: VideoEditorProps) {
+export function VideoEditor({ video }: VideoEditorProps) {
     const router = useRouter();
     const [isSaving, setIsSaving] = useState(false);
     const [tagInput, setTagInput] = useState("");
@@ -113,12 +110,12 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
         status: processingStatus,
         progress,
         hlsUrl: liveHlsUrl,
-        thumbnails: liveThumbnails,
+
         previewSpriteVtt: livePreviewSpriteVtt,
         error: processingError,
         isLive,
-        isTerminal,
     } = useVideoStatus(video.id, {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initialStatus: (video.processingStatus as any) ?? undefined,
         initialHlsUrl: video.hlsPlaylistUrl ?? null,
         initialThumbnails: video.thumbnailOptions ?? [],
@@ -146,7 +143,7 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                 : null,
             categoryId: videoData.categoryId,
             tags: (videoData.tags
-                ? videoData.tags.map((t: any) => t.name)
+                ? videoData.tags.map((t: { name: string }) => t.name)
                 : []) as string[],
             thumbnailUrl: videoData.thumbnailUrl || "",
             isAgeRestricted: videoData.isAgeRestricted,
@@ -175,12 +172,17 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
             form.reset({
                 title: data.title,
                 description: data.description || "",
-                visibility: data.visibility as any,
+                visibility: data.visibility as
+                    | "PUBLIC"
+                    | "PRIVATE"
+                    | "UNLISTED",
                 scheduledAt: data.scheduledAt
                     ? new Date(data.scheduledAt)
                     : null,
                 categoryId: data.categoryId,
-                tags: data.tags ? data.tags.map((t: any) => t.name) : [],
+                tags: data.tags
+                    ? data.tags.map((t: { name: string }) => t.name)
+                    : [],
                 thumbnailUrl: data.thumbnailUrl || "",
                 isAgeRestricted: data.isAgeRestricted,
                 allowComments: data.allowComments,
@@ -297,7 +299,7 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
         const currentTags = form.getValues("tags") || [];
         form.setValue(
             "tags",
-            currentTags.filter((tag: any) => tag !== tagToRemove),
+            currentTags.filter((tag: string) => tag !== tagToRemove),
             { shouldDirty: true },
         );
     };
@@ -427,13 +429,14 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                                                         )
                                                                     }
                                                                 >
-                                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                                    <img
+                                                                    <Image
                                                                         src={getMediaUrl(
                                                                             url,
                                                                         )}
                                                                         alt={`Thumbnail option ${idx + 1}`}
-                                                                        className="h-full w-full object-cover"
+                                                                        fill
+                                                                        unoptimized
+                                                                        className="object-cover"
                                                                     />
                                                                 </div>
                                                             ),
@@ -465,12 +468,14 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                                               field.value,
                                                           ) ? (
                                                             <div className="relative h-full w-full overflow-hidden rounded-lg group/custom-thumb">
-                                                                <img
+                                                                <Image
                                                                     src={getMediaUrl(
                                                                         field.value,
                                                                     )}
                                                                     alt="Custom thumbnail"
-                                                                    className="h-full w-full object-cover"
+                                                                    fill
+                                                                    unoptimized
+                                                                    className="object-cover"
                                                                 />
                                                                 <div className="absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-sm opacity-0 group-hover/custom-thumb:opacity-100 transition-all">
                                                                     <ImageIcon className="h-6 w-6 text-foreground" />
@@ -738,63 +743,67 @@ export function VideoEditor({ video, channelId }: VideoEditorProps) {
                                                                 label: "Scheduled",
                                                                 desc: "Select a date to make your video public",
                                                             },
-                                                        ].map((option: any) => (
-                                                            <div
-                                                                key={
-                                                                    option.value
-                                                                }
-                                                                className="flex items-start space-x-3 space-y-0 text-sm p-3 rounded-xl hover:bg-surface-2 transition-all cursor-pointer group"
-                                                                onClick={(
-                                                                    e,
-                                                                ) => {
-                                                                    // Only trigger if we didn't click the checkbox itself (already handled by checkbox)
-                                                                    // but actually Checkbox component usually handles this via label peer logic
-                                                                }}
-                                                            >
-                                                                <Checkbox
-                                                                    checked={
-                                                                        field.value ===
+                                                        ].map(
+                                                            (option: {
+                                                                value: string;
+                                                                label: string;
+                                                                desc: string;
+                                                            }) => (
+                                                                <div
+                                                                    key={
                                                                         option.value
                                                                     }
-                                                                    onCheckedChange={(
-                                                                        checked,
-                                                                    ) => {
-                                                                        if (
-                                                                            checked
-                                                                        ) {
-                                                                            field.onChange(
-                                                                                option.value,
-                                                                            );
-                                                                        }
-                                                                        if (
-                                                                            option.value !==
-                                                                            "SCHEDULED"
-                                                                        ) {
-                                                                            form.setValue(
-                                                                                "scheduledAt",
-                                                                                null,
-                                                                                {
-                                                                                    shouldDirty: true,
-                                                                                },
-                                                                            );
-                                                                        }
+                                                                    className="flex items-start space-x-3 space-y-0 text-sm p-3 rounded-xl hover:bg-surface-2 transition-all cursor-pointer group"
+                                                                    onClick={() => {
+                                                                        // Only trigger if we didn't click the checkbox itself (already handled by checkbox)
+                                                                        // but actually Checkbox component usually handles this via label peer logic
                                                                     }}
-                                                                    className="mt-0.5 border-border/20 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                                                                />
-                                                                <div className="grid gap-1 leading-none">
-                                                                    <label className="text-[13px] font-black uppercase tracking-widest text-foreground/80 group-hover:text-primary transition-colors cursor-pointer">
-                                                                        {
-                                                                            option.label
+                                                                >
+                                                                    <Checkbox
+                                                                        checked={
+                                                                            field.value ===
+                                                                            option.value
                                                                         }
-                                                                    </label>
-                                                                    <p className="text-[11px] text-muted-foreground/40 font-medium">
-                                                                        {
-                                                                            option.desc
-                                                                        }
-                                                                    </p>
+                                                                        onCheckedChange={(
+                                                                            checked,
+                                                                        ) => {
+                                                                            if (
+                                                                                checked
+                                                                            ) {
+                                                                                field.onChange(
+                                                                                    option.value,
+                                                                                );
+                                                                            }
+                                                                            if (
+                                                                                option.value !==
+                                                                                "SCHEDULED"
+                                                                            ) {
+                                                                                form.setValue(
+                                                                                    "scheduledAt",
+                                                                                    null,
+                                                                                    {
+                                                                                        shouldDirty: true,
+                                                                                    },
+                                                                                );
+                                                                            }
+                                                                        }}
+                                                                        className="mt-0.5 border-border/20 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                                                                    />
+                                                                    <div className="grid gap-1 leading-none">
+                                                                        <label className="text-[13px] font-black uppercase tracking-widest text-foreground/80 group-hover:text-primary transition-colors cursor-pointer">
+                                                                            {
+                                                                                option.label
+                                                                            }
+                                                                        </label>
+                                                                        <p className="text-[11px] text-muted-foreground/40 font-medium">
+                                                                            {
+                                                                                option.desc
+                                                                            }
+                                                                        </p>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        ))}
+                                                            ),
+                                                        )}
                                                     </div>
                                                 </FormControl>
                                                 <FormMessage />

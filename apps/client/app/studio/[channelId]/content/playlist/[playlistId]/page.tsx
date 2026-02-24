@@ -3,7 +3,6 @@
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, ListVideo } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PlaylistVideoRow } from "../../_components/playlist-video-row";
 import { toast } from "sonner";
@@ -44,10 +43,12 @@ export default function PlaylistDetailsPage() {
         const newPosition = result.destination.index;
 
         // Optimistic local reorder
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const items = Array.from(videos) as any[];
         const [reorderedItem] = items.splice(result.source.index, 1);
         items.splice(result.destination.index, 0, reorderedItem);
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const updatedItems = items.map((item: any, index: number) => ({
             ...item,
             position: index,
@@ -56,6 +57,7 @@ export default function PlaylistDetailsPage() {
         // Update React Query cache optimistically
         utils.playlist.getPlaylistVideos.setData(
             { playlistId, channelId },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (old: any) => (old ? { ...old, items: updatedItems } : old),
         );
 
@@ -149,6 +151,7 @@ export default function PlaylistDetailsPage() {
                                             className="divide-y divide-white/5"
                                         >
                                             {videos.map(
+                                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                                 (video: any, index: number) => (
                                                     <Draggable
                                                         key={video.id}

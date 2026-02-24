@@ -19,7 +19,9 @@ export const StudioProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         const savedId = getCookie("activeChannelId");
         if (savedId) {
-            setActiveChannelId(savedId as string);
+            setTimeout(() => {
+                setActiveChannelId(savedId as string);
+            }, 0);
         }
     }, []);
 
