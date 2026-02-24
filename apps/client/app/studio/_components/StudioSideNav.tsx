@@ -17,11 +17,6 @@ export const StudioSideNav = ({ channelId }: { channelId: string }) => {
             href: `/studio/${channelId}/content`,
         },
         {
-            icon: GalleryVerticalEndIcon,
-            title: "Playlists",
-            href: `/studio/${channelId}/playlists`,
-        },
-        {
             icon: CogIcon,
             title: "Settings",
             href: `/studio/${channelId}/settings`,
