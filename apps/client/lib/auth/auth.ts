@@ -9,12 +9,15 @@ import { ac, admin, user } from "@/lib/auth/admin";
 import { admin as adminPlugin } from "better-auth/plugins/admin";
 
 // Redis adapter for Better Auth secondary storage (rate limiting, sessions)
+// Guards against null redis client (build-time when REDIS_URL is not set)
 const redisSecondaryStorage = {
     async get(key: string) {
+        if (!redis) return null;
         const value = await redis.get(key);
         return value ? value : null;
     },
     async set(key: string, value: string, ttl?: number) {
+        if (!redis) return;
         if (ttl) {
             await redis.set(key, value, "EX", ttl);
         } else {
@@ -22,6 +25,7 @@ const redisSecondaryStorage = {
         }
     },
     async delete(key: string) {
+        if (!redis) return;
         await redis.del(key);
     },
 };
@@ -98,12 +102,12 @@ export const auth = betterAuth({
     },
     socialProviders: {
         google: {
-            clientId: process.env.GOOGLE_CLIENT_ID! as string,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET! as string,
+            clientId: process.env.GOOGLE_CLIENT_ID || "",
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
         },
         github: {
-            clientId: process.env.GITHUB_CLIENT_ID! as string,
-            clientSecret: process.env.GITHUB_CLIENT_SECRET! as string,
+            clientId: process.env.GITHUB_CLIENT_ID || "",
+            clientSecret: process.env.GITHUB_CLIENT_SECRET || "",
         },
     },
     session: {
@@ -161,7 +165,7 @@ export const auth = betterAuth({
         defaultCookieAttributes: {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
+            sameSite: "none",
         },
     },
     databaseHooks: {
@@ -213,9 +217,14 @@ export const auth = betterAuth({
                             // We look for the session cookie in the headers
                             const cookieHeader =
                                 ctx?.headers?.get("cookie") || "";
-                            const hasSessionCookie = cookieHeader.includes(
-                                "better-auth.session_token",
-                            ); // Adjust cookie name if changed in config
+                            // In production with useSecureCookies, cookie is prefixed with __Secure-
+                            const hasSessionCookie =
+                                cookieHeader.includes(
+                                    "better-auth.session_token",
+                                ) ||
+                                cookieHeader.includes(
+                                    "__Secure-better-auth.session_token",
+                                );
 
                             if (!hasSessionCookie) {
                                 console.warn(
