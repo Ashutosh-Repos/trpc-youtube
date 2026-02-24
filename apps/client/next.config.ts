@@ -3,11 +3,13 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
     output: "standalone",
     async rewrites() {
+        const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:4000";
+        // Next.js rewrites require http/https. It automatically handles the WS upgrade.
+        const httpUrl = wsUrl.replace(/^ws/, "http");
         return [
             {
                 source: "/api/ws",
-                destination:
-                    process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:4000",
+                destination: httpUrl,
             },
         ];
     },
