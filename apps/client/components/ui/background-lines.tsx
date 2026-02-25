@@ -66,20 +66,27 @@ const SVG = ({
         duration?: number;
     };
 }) => {
-    const randomDelays = React.useMemo(() => {
-        return paths.map(() => ({
-            delay: Math.floor(Math.random() * 10),
-            repeatDelay: Math.floor(Math.random() * 10 + 2),
-        }));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    const [randomDelays, setRandomDelays] = React.useState(
+        paths.map(() => ({ delay: 0, repeatDelay: 10 })),
+    );
 
-    const randomDelaysSecond = React.useMemo(() => {
-        return paths.map(() => ({
-            delay: Math.floor(Math.random() * 10),
-            repeatDelay: Math.floor(Math.random() * 10 + 2),
-        }));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+    const [randomDelaysSecond, setRandomDelaysSecond] = React.useState(
+        paths.map(() => ({ delay: 0, repeatDelay: 10 })),
+    );
+
+    React.useEffect(() => {
+        setRandomDelays(
+            paths.map(() => ({
+                delay: Math.floor(Math.random() * 10),
+                repeatDelay: Math.floor(Math.random() * 10 + 2),
+            })),
+        );
+        setRandomDelaysSecond(
+            paths.map(() => ({
+                delay: Math.floor(Math.random() * 10),
+                repeatDelay: Math.floor(Math.random() * 10 + 2),
+            })),
+        );
     }, []);
 
     return (

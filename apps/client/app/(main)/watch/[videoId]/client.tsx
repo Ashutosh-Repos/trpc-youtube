@@ -67,7 +67,7 @@ export function WatchClient({
     const initialTime = video.history?.watchedSeconds || 0;
 
     return (
-        <div className="relative flex flex-col gap-6 p-4 max-w-[1750px] mx-auto w-full lg:flex-row z-10">
+        <div className="relative flex flex-col gap-6 p-4 w-full lg:flex-row z-10">
             {/* Cinematic Aura Depth */}
             <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
                 {/* Primary Luminous Layer */}

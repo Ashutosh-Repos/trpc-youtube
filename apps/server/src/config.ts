@@ -12,16 +12,14 @@ export const config = {
         ), // 1 hour for part URLs
         dbRecordExpiry: parseInt(process.env.UPLOAD_DB_EXPIRY || "86400"), // 24 hours for the video record
     },
-    minio: {
-        endpoint: process.env.MINIO_ENDPOINT || "localhost",
-        port: parseInt(process.env.MINIO_PORT || "9000"),
-        useSsl: process.env.MINIO_USE_SSL === "true",
-        accessKey: process.env.MINIO_ACCESS_KEY || "minioadmin",
-        secretKey: process.env.MINIO_SECRET_KEY || "minioadmin",
-        bucket: process.env.MINIO_BUCKET || "youtube-videos",
+    s3: {
+        endpoint: process.env.AWS_S3_ENDPOINT || "http://localhost:9000",
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID || "minioadmin",
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "minioadmin",
+        bucket: process.env.AWS_S3_BUCKET_NAME || "youtube-videos",
+        region: process.env.AWS_REGION || "us-east-1",
         // Public URL for browser-facing presigned URLs (Railway deployment)
-        // Falls back to constructed internal URL for local dev
-        publicUrl: process.env.PUBLIC_MINIO_URL || null,
+        publicUrl: process.env.PUBLIC_S3_URL || null,
     },
     redis: {
         url: process.env.REDIS_URL || "redis://localhost:6379",

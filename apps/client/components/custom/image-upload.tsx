@@ -61,7 +61,7 @@ export const ImageUpload = ({
 
             const { url, key } = result.data;
 
-            // 2. Upload to S3/MinIO
+            // 2. Upload to S3
             const uploadResponse = await fetch(url, {
                 method: "PUT",
                 body: file,

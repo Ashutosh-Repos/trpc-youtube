@@ -113,14 +113,14 @@ export const SlotDatePicker: React.FC<SlotDatePickerProps> = ({
     );
 
     return (
-        <div className="relative flex h-20 w-full items-center justify-center gap-2 overflow-hidden perspective-distant">
+        <div className="relative flex h-20 w-max items-center justify-center gap-2 overflow-hidden perspective-distant">
             {/* Component Reels */}
             <SlotReel
                 items={months}
                 selectedValue={months[selectedDate.getMonth()]}
                 onSelect={(idx) => handleUpdate("month", idx)}
                 // width="w-32"
-                width="w-24"
+                width="sm:w-24 w-20"
             />
 
             <div className="h-20 w-[0.5px] bg-linear-to-b from-transparent via-foreground/40 to-transparent z-20" />
@@ -130,7 +130,7 @@ export const SlotDatePicker: React.FC<SlotDatePickerProps> = ({
                 selectedValue={selectedDate.getDate().toString()}
                 onSelect={(idx) => handleUpdate("day", idx + 1)}
                 // width="w-16"
-                width="w-24"
+                width="sm:w-24 w-20"
             />
 
             <div className="h-20 w-[0.5px] bg-linear-to-b from-transparent via-foreground/40 to-transparent z-20" />
@@ -139,7 +139,7 @@ export const SlotDatePicker: React.FC<SlotDatePickerProps> = ({
                 items={years}
                 selectedValue={selectedDate.getFullYear().toString()}
                 onSelect={(idx) => handleUpdate("year", years[idx])}
-                width="w-24"
+                width="sm:w-24 w-20"
             />
         </div>
     );

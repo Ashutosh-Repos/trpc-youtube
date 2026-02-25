@@ -89,78 +89,97 @@ export function NotificationItem({
             : "";
 
     return (
-        <div
+        <article
             className={cn(
-                "flex items-start gap-4 p-4 hover:bg-surface-2/60 text-left transition-all duration-300 border-b border-border/10 last:border-0 cursor-pointer group relative font-sans",
+                "flex items-start gap-4 p-4 lg:p-5 rounded-xl transition-all duration-300 transform-gpu bg-surface-1/40 hover:bg-surface-2/60 border border-border/20 cursor-pointer group relative font-sans shadow-sm hover:shadow-md",
                 !notification.isRead &&
-                    "bg-primary/5 border-l-[3px] border-l-primary",
+                    "bg-primary/5 hover:bg-primary/10 border-primary/20",
             )}
             onClick={() => onClick?.(notification)}
         >
-            {/* Avatar: actor photo OR type icon */}
-            {hasActor ? (
-                <Avatar className="h-8 w-8 mt-1 shrink-0">
-                    <AvatarImage src={getMediaUrl(actor?.image)} />
-                    <AvatarFallback>{actor?.name?.[0] || "?"}</AvatarFallback>
-                </Avatar>
-            ) : (
-                <div
-                    className={cn(
-                        "h-10 w-10 mt-1 rounded-2xl flex items-center justify-center bg-surface-2 border border-border/40 shrink-0 transition-transform group-hover:scale-105 shadow-sm",
-                        typeConfig?.color,
-                    )}
-                >
-                    {typeConfig ? (
-                        <typeConfig.icon className="h-5 w-5" />
-                    ) : (
-                        <Bell className="h-5 w-5" />
-                    )}
-                </div>
+            {/* Unread Indicator Bar */}
+            {!notification.isRead && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 h-1/2 w-1 bg-primary rounded-r-max shadow-[0_0_8px_oklch(var(--primary)/0.6)]" />
             )}
 
-            {/* Content */}
-            <div className="flex-1 flex flex-col gap-1 min-w-0">
-                <span
+            {/* Avatar: actor photo OR type icon */}
+            <div className="relative shrink-0">
+                {hasActor ? (
+                    <Avatar className="h-12 w-12 border-2 border-background/50 shadow-sm transition-transform group-hover:scale-105">
+                        <AvatarImage src={getMediaUrl(actor?.image)} />
+                        <AvatarFallback className="bg-surface-3 font-semibold text-lg">
+                            {actor?.name?.[0] || "?"}
+                        </AvatarFallback>
+                    </Avatar>
+                ) : (
+                    <div
+                        className={cn(
+                            "h-12 w-12 rounded-2xl flex items-center justify-center bg-surface-2 border border-border/40 transition-transform group-hover:scale-105 shadow-sm",
+                            typeConfig?.color,
+                        )}
+                    >
+                        {typeConfig ? (
+                            <typeConfig.icon className="h-6 w-6" />
+                        ) : (
+                            <Bell className="h-6 w-6" />
+                        )}
+                    </div>
+                )}
+                {/* Secondary Type Icon overlay layout (optional aesthetic touch) */}
+                {hasActor && typeConfig && (
+                    <div
+                        className={cn(
+                            "absolute -bottom-1 -right-1 h-5 w-5 rounded-full border-2 border-background flex items-center justify-center bg-surface-1 shadow-sm",
+                            typeConfig.color,
+                        )}
+                    >
+                        <typeConfig.icon className="h-3 w-3" />
+                    </div>
+                )}
+            </div>
+
+            {/* Content Area */}
+            <div className="flex-1 flex flex-col gap-1.5 min-w-0 justify-center h-full pt-0.5">
+                <p
                     className={cn(
-                        "text-sm font-medium",
+                        "text-[15px] font-medium leading-snug text-foreground/90",
                         compact ? "line-clamp-2" : "line-clamp-3",
                     )}
                 >
                     {displayName && (
                         <>
-                            <span className="font-bold">{displayName}</span>
+                            <span className="font-extrabold text-foreground">
+                                {displayName}
+                            </span>
                             {groupSuffix && (
-                                <span className="text-muted-foreground">
+                                <span className="text-muted-foreground font-semibold">
                                     {groupSuffix}
                                 </span>
                             )}{" "}
                         </>
                     )}
                     {notification.message}
-                </span>
-                <span className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/30 group-hover:text-muted-foreground/60 transition-colors">
+                </p>
+                <time className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/50 group-hover:text-muted-foreground/80 transition-colors flex items-center gap-1.5">
                     {formatDistanceToNow(new Date(notification.createdAt), {
                         addSuffix: true,
                     })}
-                </span>
+                </time>
             </div>
 
-            {/* Right side: unread dot + thumbnail */}
-            <div className="flex items-center gap-1.5 shrink-0">
-                {!notification.isRead && (
-                    <span className="h-2 w-2 rounded-full bg-primary shrink-0" />
-                )}
-                {notification.thumbnailUrl && (
+            {/* Right side: Thumbnail */}
+            {notification.thumbnailUrl && (
+                <div className="shrink-0 relative overflow-hidden rounded-lg ml-2 border border-border/20 shadow-sm transition-transform group-hover:scale-105">
                     <Image
                         src={getMediaUrl(notification.thumbnailUrl)}
                         alt=""
-                        width={64}
-                        height={40}
+                        width={120}
+                        height={68}
                         unoptimized
-                        className="h-10 w-16 object-cover rounded"
+                        className="h-16 w-[114px] object-cover"
                     />
-                )}
-            </div>
+                </div>
+            )}
 
             {/* ⋮ Menu (appears on hover) */}
             {(onDelete || onTurnOff) && (
@@ -201,6 +220,6 @@ export function NotificationItem({
                     </DropdownMenuContent>
                 </DropdownMenu>
             )}
-        </div>
+        </article>
     );
 }

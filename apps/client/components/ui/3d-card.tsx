@@ -11,62 +11,83 @@ import React, {
 } from "react";
 
 const MouseEnterContext = createContext<
-    [boolean, React.Dispatch<React.SetStateAction<boolean>>] | undefined
+    | [boolean, React.Dispatch<React.SetStateAction<boolean>>, boolean]
+    | undefined
 >(undefined);
 
 export const CardContainer = ({
     children,
     className,
     containerClassName,
+    animation = false,
 }: {
     children?: React.ReactNode;
     className?: string;
     containerClassName?: string;
+    animation?: boolean;
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [isMouseEntered, setIsMouseEntered] = useState(false);
 
+    const frameRef = useRef<number | null>(null);
+
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!containerRef.current) return;
-        const { left, top, width, height } =
-            containerRef.current.getBoundingClientRect();
-        const x = (e.clientX - left - width / 2) / 25;
-        const y = (e.clientY - top - height / 2) / 25;
-        containerRef.current.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+        if (!containerRef.current || !animation) return;
+
+        if (frameRef.current) {
+            cancelAnimationFrame(frameRef.current);
+        }
+
+        const { clientX, clientY } = e;
+
+        frameRef.current = requestAnimationFrame(() => {
+            if (!containerRef.current) return;
+            const { left, top, width, height } =
+                containerRef.current.getBoundingClientRect();
+            const x = (clientX - left - width / 2) / 25;
+            const y = (clientY - top - height / 2) / 25;
+            containerRef.current.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+        });
     };
 
     const handleMouseEnter = () => {
+        if (!animation) return;
         setIsMouseEntered(true);
         if (!containerRef.current) return;
     };
 
     const handleMouseLeave = () => {
-        if (!containerRef.current) return;
+        if (!containerRef.current || !animation) return;
+        if (frameRef.current) {
+            cancelAnimationFrame(frameRef.current);
+        }
         setIsMouseEntered(false);
         containerRef.current.style.transform = `rotateY(0deg) rotateX(0deg)`;
     };
     return (
-        <MouseEnterContext.Provider value={[isMouseEntered, setIsMouseEntered]}>
+        <MouseEnterContext.Provider
+            value={[isMouseEntered, setIsMouseEntered, animation]}
+        >
             <div
                 className={cn(
                     "py-20 flex items-center justify-center",
                     containerClassName,
                 )}
                 style={{
-                    perspective: "1000px",
+                    perspective: animation ? "1000px" : "none",
                 }}
             >
                 <div
                     ref={containerRef}
-                    onMouseEnter={handleMouseEnter}
-                    onMouseMove={handleMouseMove}
-                    onMouseLeave={handleMouseLeave}
+                    onMouseEnter={animation ? handleMouseEnter : undefined}
+                    onMouseMove={animation ? handleMouseMove : undefined}
+                    onMouseLeave={animation ? handleMouseLeave : undefined}
                     className={cn(
                         "flex items-center justify-center relative transition-all duration-200 ease-linear",
                         className,
                     )}
                     style={{
-                        transformStyle: "preserve-3d",
+                        transformStyle: animation ? "preserve-3d" : "flat",
                     }}
                 >
                     {children}
@@ -83,9 +104,14 @@ export const CardBody = ({
     children: React.ReactNode;
     className?: string;
 }) => {
+    const [, , animation] = useMouseEnter();
     return (
         <div
-            className={cn("h-96 w-96 transform-3d  *:transform-3d", className)}
+            className={cn(
+                "h-96 w-96",
+                animation ? "transform-3d *:transform-3d" : "",
+                className,
+            )}
         >
             {children}
         </div>
@@ -116,10 +142,10 @@ export const CardItem = ({
     [key: string]: unknown;
 }) => {
     const ref = useRef<HTMLDivElement>(null);
-    const [isMouseEntered] = useMouseEnter();
+    const [isMouseEntered, , animation] = useMouseEnter();
 
     const handleAnimations = React.useCallback(() => {
-        if (!ref.current) return;
+        if (!ref.current || !animation) return;
         if (isMouseEntered) {
             ref.current.style.transform = `translateX(${translateX}px) translateY(${translateY}px) translateZ(${translateZ}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg)`;
         } else {
@@ -127,6 +153,7 @@ export const CardItem = ({
         }
     }, [
         isMouseEntered,
+        animation,
         translateX,
         translateY,
         translateZ,

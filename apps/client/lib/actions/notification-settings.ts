@@ -11,9 +11,6 @@ const notificationSettingsSchema = z.object({
     replies: z.boolean(),
     likes: z.boolean(),
     subscribers: z.boolean(),
-    mentions: z.boolean(),
-    emailEnabled: z.boolean(),
-    pushEnabled: z.boolean(),
 });
 
 export type NotificationSettingsType = z.infer<

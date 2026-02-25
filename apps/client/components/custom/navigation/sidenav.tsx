@@ -21,9 +21,9 @@ export const SideNav = ({ navLinks }: { navLinks: NavItem[] }) => {
     const pathname = usePathname();
 
     return (
-        <aside className="sm:w-20 sm:h-full w-full h-16 bg-surface-1/60 backdrop-blur-2xl flex flex-col items-center justify-center sm:p-2 gap-4 sm:py-8 border-r border-border/40">
+        <aside className="sm:w-20 sm:h-full w-full h-16 bg-surface-1/60 backdrop-blur-2xl flex flex-col items-center justify-center sm:p-2 gap-4 sm:py-8">
             {/* main nav */}
-            <nav className="w-full h-max flex items-center justify-evenly sm:flex-col gap-3 p-1">
+            <nav className="w-full h-max flex items-center justify-evenly sm:flex-col gap-3">
                 {navLinks.map((item: NavItem, idx: number) => {
                     const Icon = item.icon;
                     const isActive = pathname === item.href;
@@ -34,22 +34,12 @@ export const SideNav = ({ navLinks }: { navLinks: NavItem[] }) => {
                                 <Link
                                     href={item.href}
                                     className={cn(
-                                        "group flex items-center justify-center w-12 h-12 rounded-2xl transition-all duration-300 relative",
-                                        isActive
-                                            ? "bg-primary/20 text-primary shadow-[0_0_20px_-5px_oklch(var(--primary)/0.4)]"
-                                            : "hover:bg-surface-2 text-muted-foreground/60 hover:text-foreground hover:scale-105 active:scale-95",
+                                        "group flex items-center justify-center w-12 h-12 rounded-2xl transition-all duration-300 relative border",
                                     )}
                                 >
-                                    <Icon
-                                        className={cn(
-                                            "w-5 h-5 shrink-0 transition-all duration-300",
-                                            isActive
-                                                ? "scale-110 drop-shadow-[0_0_8px_oklch(var(--primary)/0.6)]"
-                                                : "",
-                                        )}
-                                    />
+                                    <Icon />
                                     {isActive && (
-                                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full sm:block hidden shadow-[0_0_15px_oklch(var(--primary)/0.8)]" />
+                                        <div className="absolute right-0 top-1/5 -translate-y-1/2 w-2 h-2 bg-primary rounded-full sm:block hidden shadow-[0_0_15px_oklch(var(--primary)/0.8)]" />
                                     )}
                                 </Link>
                             </TooltipTrigger>
@@ -63,9 +53,6 @@ export const SideNav = ({ navLinks }: { navLinks: NavItem[] }) => {
                     );
                 })}
 
-                <div className="h-px w-10 bg-border/40 sm:my-3 hidden sm:block" />
-
-                {/* Back button */}
                 <BackButton
                     className="flex items-center justify-center w-12 h-12 rounded-2xl transition-all hover:bg-surface-2 text-muted-foreground/60 hover:text-foreground hover:scale-105 active:scale-95"
                     iconClassName="w-5 h-5 flex-shrink-0"

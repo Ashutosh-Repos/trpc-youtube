@@ -6,7 +6,6 @@ import { SideNav } from "@/components/custom/navigation/sidenav";
 import { HomeIcon } from "@/components/ui/home";
 import { FlameIcon } from "@/components/ui/flame";
 import { ClapIcon } from "@/components/ui/clap";
-import { CircleDollarSignIcon } from "@/components/ui/circle-dollar-sign";
 import { UserIcon } from "@/components/ui/user";
 const HomeLayout = ({
     children,
@@ -15,11 +14,6 @@ const HomeLayout = ({
 }>) => {
     const navItems = [
         { icon: HomeIcon, title: "Home", href: "/" },
-        {
-            icon: CircleDollarSignIcon,
-            title: "Subscription",
-            href: "/", // TODO: create /subscription page
-        },
         { icon: FlameIcon, title: "Trending", href: "/trending" },
         { icon: ClapIcon, title: "Studio", href: "/studio" },
         { icon: UserIcon, title: "Me", href: "/me" },
@@ -35,7 +29,6 @@ const HomeLayout = ({
                     <NotificationBell />
                     <ModeToggle />
                 </div>
-                {/* <UserNav/> */}
             </TopBar>
             <div className="w-full h-full flex flex-col-reverse sm:flex-row items-center justify-center overflow-hidden">
                 <SideNav navLinks={navItems} />

@@ -18,10 +18,6 @@ export const registerSchema = z.object({
         .min(8, "Password must be at least 8 characters")
         .regex(passwordRegex, passwordComplexityMessage),
     name: z.string().min(2, "Name must be at least 2 characters"),
-    dob: z
-        .date({ message: "A date of birth is required." })
-        .min(new Date(1900, 0, 1), "Invalid date")
-        .max(new Date(), "Invalid date"),
 });
 
 export const requestResetSchema = z.object({ email: z.string().email() });

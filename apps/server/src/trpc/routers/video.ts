@@ -597,7 +597,7 @@ export const videoRouter = router({
                 );
             } catch (error) {
                 console.warn(
-                    `[Pipeline] ⚠️ Failed to trigger job explicitly (relying on MinIO event):`,
+                    `[Pipeline] ⚠️ Failed to trigger transcode job explicitly:`,
                     error,
                 );
             }

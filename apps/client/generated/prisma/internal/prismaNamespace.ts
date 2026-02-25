@@ -2381,9 +2381,6 @@ export const Notification_settingsScalarFieldEnum = {
   replies: 'replies',
   likes: 'likes',
   subscribers: 'subscribers',
-  mentions: 'mentions',
-  emailEnabled: 'emailEnabled',
-  pushEnabled: 'pushEnabled',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

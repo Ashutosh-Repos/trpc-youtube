@@ -19,7 +19,6 @@ import { transcodeQueue, JOBS } from "./queue/definitions";
 import { startEngagementWorker } from "./queue/engagement-worker";
 import prisma from "./lib/prisma";
 import config from "./config";
-import { MinioEventPayload, S3EventRecord } from "./types/minio";
 import { WebSocketServer } from "ws";
 
 const isClusterPrimary =
@@ -156,7 +155,6 @@ if (!isClusterPrimary) {
     const { shutdown: shutdownWs } = setupWs(wss);
 
     // Track monitor client for shutdown
-    let monitorRedis: Redis | null = null;
     let cleanupTimer: NodeJS.Timeout | null = null;
 
     // --- STARTUP CLEANUP ---
@@ -271,137 +269,6 @@ if (!isClusterPrimary) {
         }, cleanupIntervalMs);
     };
 
-    // --- MINIO EVENT MONITOR ---
-    const startEventMonitor = async () => {
-        const localRedisUrl =
-            process.env.LOCAL_REDIS_URL ||
-            process.env.REDIS_URL ||
-            "redis://localhost:6379";
-        console.log(
-            `[Monitor] Connecting to Redis for MinIO events: ${localRedisUrl.replace(/:[^:@]+@/, ":***@")}`,
-        );
-
-        const parseRedisUrl = (url: string) => {
-            try {
-                const parsed = new URL(url);
-                return {
-                    host: parsed.hostname || "localhost",
-                    port: parseInt(parsed.port || "6379"),
-                    password: parsed.password || undefined,
-                    username: parsed.username || undefined,
-                    tls: url.startsWith("rediss://")
-                        ? { rejectUnauthorized: false }
-                        : undefined,
-                };
-            } catch {
-                const [host, port] = url.split(":");
-                return {
-                    host: host || "localhost",
-                    port: parseInt(port || "6379"),
-                };
-            }
-        };
-
-        const redisOptions = parseRedisUrl(localRedisUrl);
-        monitorRedis = new Redis({
-            ...redisOptions,
-            maxRetriesPerRequest: null,
-        });
-
-        monitorRedis.on("connect", () => {
-            console.log("[Monitor] ✅ Connected to Redis for MinIO events");
-        });
-
-        monitorRedis.on("error", (err) => {
-            console.error("[Monitor] ❌ Redis Connection Error:", err);
-        });
-
-        const LIST_KEY = "minio_events";
-        console.log(`[Monitor] 📡 Listening for MinIO events on: ${LIST_KEY}`);
-
-        while (true) {
-            try {
-                const result = await monitorRedis.blpop(LIST_KEY, 0);
-                if (!result) continue;
-
-                const [, payload] = result;
-                console.log(`[Monitor] 📦 Received MinIO event`);
-
-                let event: MinioEventPayload;
-                try {
-                    event = JSON.parse(payload);
-                } catch {
-                    console.error("[Monitor] ❌ Failed to parse event JSON");
-                    continue;
-                }
-
-                let records: S3EventRecord[] = [];
-
-                if (Array.isArray(event)) {
-                    for (const item of event) {
-                        if ("Event" in item && Array.isArray(item.Event)) {
-                            records.push(...item.Event);
-                        }
-                    }
-                } else if ("Records" in event && Array.isArray(event.Records)) {
-                    records = event.Records;
-                }
-
-                for (const record of records) {
-                    const eventName = record.eventName || "";
-                    if (!eventName.startsWith("s3:ObjectCreated:")) continue;
-
-                    const s3Key = decodeURIComponent(
-                        record.s3.object.key.replace(/\+/g, " "),
-                    );
-                    const match = s3Key.match(/^raw-videos\/([^/]+)\/([^/]+)$/);
-
-                    if (match) {
-                        console.log(
-                            `[Monitor] 📥 Video upload event: ${s3Key}`,
-                        );
-                        const videoId = match[1];
-
-                        const video = await prisma.videos.findUnique({
-                            where: { id: videoId },
-                            select: { id: true, processingStatus: true },
-                        });
-
-                        if (!video) {
-                            console.warn(
-                                `[Monitor] ⚠️ Video ${videoId} not found`,
-                            );
-                            continue;
-                        }
-
-                        if (video.processingStatus === "READY") {
-                            console.warn(
-                                `[Monitor] ⚠️ Video ${videoId} already READY`,
-                            );
-                            continue;
-                        }
-
-                        console.log(
-                            `[Monitor] 🚀 Triggering transcode for ${videoId}`,
-                        );
-
-                        await transcodeQueue.add(
-                            JOBS.PROBE_AND_SPLIT,
-                            { videoId, fileName: s3Key },
-                            { jobId: videoId },
-                        );
-                    }
-                }
-            } catch (error) {
-                console.error(
-                    "[Monitor] ❌ Error processing MinIO event:",
-                    error,
-                );
-                await new Promise((resolve) => setTimeout(resolve, 5000));
-            }
-        }
-    };
-
     // --- GRACEFUL SHUTDOWN ---
     const shutdown = async (signal: string) => {
         console.log(`\n🛑 Received ${signal}, shutting down...`);
@@ -421,12 +288,6 @@ if (!isClusterPrimary) {
             // Ignore EPIPE if primary disconnected
         }
 
-        if (monitorRedis) {
-            try {
-                await monitorRedis.quit();
-            } catch (e) {}
-            console.log("📡 Monitor Redis closed");
-        }
 
         try {
             const { prisma } = await import("./lib/prisma");
@@ -471,18 +332,8 @@ if (!isClusterPrimary) {
             `[Cluster] Worker ${process.pid} is designated as Singleton Orchestrator.`,
         );
 
-        // Initialize storage (bucket, policy, lifecycle) — replaces docker createbuckets
-        import("./lib/initStorage")
-            .then(({ initStorage }) => initStorage())
-            .catch((err) =>
-                console.error("[Startup] ❌ Storage init failed:", err),
-            );
-
         startupCleanup();
         startScheduledCleanup();
-        startEventMonitor().catch((err) =>
-            console.error("[Monitor] 💀 Monitor crashed:", err),
-        );
     }
 
     server.listen(config.port, () => {

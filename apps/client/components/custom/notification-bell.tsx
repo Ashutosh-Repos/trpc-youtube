@@ -56,9 +56,6 @@ export function NotificationBell() {
     // 3. Real-time Subscription (direct cache update + desktop toast)
     trpc.notification.onNotification.useSubscription(undefined, {
         onData(notification) {
-            let wasUnread = false;
-            let isUpdate = false;
-
             // Prepend/Update cache directly
             utils.notification.list.setInfiniteData(
                 { limit: 10 },
@@ -69,8 +66,6 @@ export function NotificationBell() {
                         ...page,
                         items: page.items.filter((item: any) => {
                             if (item.id === notification.id) {
-                                isUpdate = true;
-                                if (!item.isRead) wasUnread = true;
                                 return false;
                             }
                             return true;
@@ -93,10 +88,8 @@ export function NotificationBell() {
                 },
             );
 
-            // Only increment if it's a new notification, OR an update to a previously read notification
-            if (!isUpdate || (isUpdate && !wasUnread)) {
-                setUnreadCount((prev) => prev + 1);
-            }
+            // Invalidate the unread count from the server to avoid local desync issues
+            utils.notification.getUnreadCount.invalidate();
 
             // Desktop toast when bell is closed
             if (!isOpen) {

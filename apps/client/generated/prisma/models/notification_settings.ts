@@ -33,9 +33,6 @@ export type Notification_settingsMinAggregateOutputType = {
   replies: boolean | null
   likes: boolean | null
   subscribers: boolean | null
-  mentions: boolean | null
-  emailEnabled: boolean | null
-  pushEnabled: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -49,9 +46,6 @@ export type Notification_settingsMaxAggregateOutputType = {
   replies: boolean | null
   likes: boolean | null
   subscribers: boolean | null
-  mentions: boolean | null
-  emailEnabled: boolean | null
-  pushEnabled: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -65,9 +59,6 @@ export type Notification_settingsCountAggregateOutputType = {
   replies: number
   likes: number
   subscribers: number
-  mentions: number
-  emailEnabled: number
-  pushEnabled: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -83,9 +74,6 @@ export type Notification_settingsMinAggregateInputType = {
   replies?: true
   likes?: true
   subscribers?: true
-  mentions?: true
-  emailEnabled?: true
-  pushEnabled?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -99,9 +87,6 @@ export type Notification_settingsMaxAggregateInputType = {
   replies?: true
   likes?: true
   subscribers?: true
-  mentions?: true
-  emailEnabled?: true
-  pushEnabled?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -115,9 +100,6 @@ export type Notification_settingsCountAggregateInputType = {
   replies?: true
   likes?: true
   subscribers?: true
-  mentions?: true
-  emailEnabled?: true
-  pushEnabled?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -204,9 +186,6 @@ export type Notification_settingsGroupByOutputType = {
   replies: boolean
   likes: boolean
   subscribers: boolean
-  mentions: boolean
-  emailEnabled: boolean
-  pushEnabled: boolean
   createdAt: Date
   updatedAt: Date
   _count: Notification_settingsCountAggregateOutputType | null
@@ -241,9 +220,6 @@ export type notification_settingsWhereInput = {
   replies?: Prisma.BoolFilter<"notification_settings"> | boolean
   likes?: Prisma.BoolFilter<"notification_settings"> | boolean
   subscribers?: Prisma.BoolFilter<"notification_settings"> | boolean
-  mentions?: Prisma.BoolFilter<"notification_settings"> | boolean
-  emailEnabled?: Prisma.BoolFilter<"notification_settings"> | boolean
-  pushEnabled?: Prisma.BoolFilter<"notification_settings"> | boolean
   createdAt?: Prisma.DateTimeFilter<"notification_settings"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"notification_settings"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.userWhereInput>
@@ -258,9 +234,6 @@ export type notification_settingsOrderByWithRelationInput = {
   replies?: Prisma.SortOrder
   likes?: Prisma.SortOrder
   subscribers?: Prisma.SortOrder
-  mentions?: Prisma.SortOrder
-  emailEnabled?: Prisma.SortOrder
-  pushEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.userOrderByWithRelationInput
@@ -278,9 +251,6 @@ export type notification_settingsWhereUniqueInput = Prisma.AtLeast<{
   replies?: Prisma.BoolFilter<"notification_settings"> | boolean
   likes?: Prisma.BoolFilter<"notification_settings"> | boolean
   subscribers?: Prisma.BoolFilter<"notification_settings"> | boolean
-  mentions?: Prisma.BoolFilter<"notification_settings"> | boolean
-  emailEnabled?: Prisma.BoolFilter<"notification_settings"> | boolean
-  pushEnabled?: Prisma.BoolFilter<"notification_settings"> | boolean
   createdAt?: Prisma.DateTimeFilter<"notification_settings"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"notification_settings"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.userWhereInput>
@@ -295,9 +265,6 @@ export type notification_settingsOrderByWithAggregationInput = {
   replies?: Prisma.SortOrder
   likes?: Prisma.SortOrder
   subscribers?: Prisma.SortOrder
-  mentions?: Prisma.SortOrder
-  emailEnabled?: Prisma.SortOrder
-  pushEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.notification_settingsCountOrderByAggregateInput
@@ -317,9 +284,6 @@ export type notification_settingsScalarWhereWithAggregatesInput = {
   replies?: Prisma.BoolWithAggregatesFilter<"notification_settings"> | boolean
   likes?: Prisma.BoolWithAggregatesFilter<"notification_settings"> | boolean
   subscribers?: Prisma.BoolWithAggregatesFilter<"notification_settings"> | boolean
-  mentions?: Prisma.BoolWithAggregatesFilter<"notification_settings"> | boolean
-  emailEnabled?: Prisma.BoolWithAggregatesFilter<"notification_settings"> | boolean
-  pushEnabled?: Prisma.BoolWithAggregatesFilter<"notification_settings"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"notification_settings"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"notification_settings"> | Date | string
 }
@@ -332,9 +296,6 @@ export type notification_settingsCreateInput = {
   replies?: boolean
   likes?: boolean
   subscribers?: boolean
-  mentions?: boolean
-  emailEnabled?: boolean
-  pushEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.userCreateNestedOneWithoutNotification_settingsInput
@@ -349,9 +310,6 @@ export type notification_settingsUncheckedCreateInput = {
   replies?: boolean
   likes?: boolean
   subscribers?: boolean
-  mentions?: boolean
-  emailEnabled?: boolean
-  pushEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -364,9 +322,6 @@ export type notification_settingsUpdateInput = {
   replies?: Prisma.BoolFieldUpdateOperationsInput | boolean
   likes?: Prisma.BoolFieldUpdateOperationsInput | boolean
   subscribers?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  mentions?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  emailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  pushEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.userUpdateOneRequiredWithoutNotification_settingsNestedInput
@@ -381,9 +336,6 @@ export type notification_settingsUncheckedUpdateInput = {
   replies?: Prisma.BoolFieldUpdateOperationsInput | boolean
   likes?: Prisma.BoolFieldUpdateOperationsInput | boolean
   subscribers?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  mentions?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  emailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  pushEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -397,9 +349,6 @@ export type notification_settingsCreateManyInput = {
   replies?: boolean
   likes?: boolean
   subscribers?: boolean
-  mentions?: boolean
-  emailEnabled?: boolean
-  pushEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -412,9 +361,6 @@ export type notification_settingsUpdateManyMutationInput = {
   replies?: Prisma.BoolFieldUpdateOperationsInput | boolean
   likes?: Prisma.BoolFieldUpdateOperationsInput | boolean
   subscribers?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  mentions?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  emailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  pushEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -428,9 +374,6 @@ export type notification_settingsUncheckedUpdateManyInput = {
   replies?: Prisma.BoolFieldUpdateOperationsInput | boolean
   likes?: Prisma.BoolFieldUpdateOperationsInput | boolean
   subscribers?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  mentions?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  emailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  pushEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -444,9 +387,6 @@ export type notification_settingsCountOrderByAggregateInput = {
   replies?: Prisma.SortOrder
   likes?: Prisma.SortOrder
   subscribers?: Prisma.SortOrder
-  mentions?: Prisma.SortOrder
-  emailEnabled?: Prisma.SortOrder
-  pushEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -460,9 +400,6 @@ export type notification_settingsMaxOrderByAggregateInput = {
   replies?: Prisma.SortOrder
   likes?: Prisma.SortOrder
   subscribers?: Prisma.SortOrder
-  mentions?: Prisma.SortOrder
-  emailEnabled?: Prisma.SortOrder
-  pushEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -476,9 +413,6 @@ export type notification_settingsMinOrderByAggregateInput = {
   replies?: Prisma.SortOrder
   likes?: Prisma.SortOrder
   subscribers?: Prisma.SortOrder
-  mentions?: Prisma.SortOrder
-  emailEnabled?: Prisma.SortOrder
-  pushEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -528,9 +462,6 @@ export type notification_settingsCreateWithoutUserInput = {
   replies?: boolean
   likes?: boolean
   subscribers?: boolean
-  mentions?: boolean
-  emailEnabled?: boolean
-  pushEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -543,9 +474,6 @@ export type notification_settingsUncheckedCreateWithoutUserInput = {
   replies?: boolean
   likes?: boolean
   subscribers?: boolean
-  mentions?: boolean
-  emailEnabled?: boolean
-  pushEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -574,9 +502,6 @@ export type notification_settingsUpdateWithoutUserInput = {
   replies?: Prisma.BoolFieldUpdateOperationsInput | boolean
   likes?: Prisma.BoolFieldUpdateOperationsInput | boolean
   subscribers?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  mentions?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  emailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  pushEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -589,9 +514,6 @@ export type notification_settingsUncheckedUpdateWithoutUserInput = {
   replies?: Prisma.BoolFieldUpdateOperationsInput | boolean
   likes?: Prisma.BoolFieldUpdateOperationsInput | boolean
   subscribers?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  mentions?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  emailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  pushEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -607,9 +529,6 @@ export type notification_settingsSelect<ExtArgs extends runtime.Types.Extensions
   replies?: boolean
   likes?: boolean
   subscribers?: boolean
-  mentions?: boolean
-  emailEnabled?: boolean
-  pushEnabled?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.userDefaultArgs<ExtArgs>
@@ -624,9 +543,6 @@ export type notification_settingsSelectCreateManyAndReturn<ExtArgs extends runti
   replies?: boolean
   likes?: boolean
   subscribers?: boolean
-  mentions?: boolean
-  emailEnabled?: boolean
-  pushEnabled?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.userDefaultArgs<ExtArgs>
@@ -641,9 +557,6 @@ export type notification_settingsSelectUpdateManyAndReturn<ExtArgs extends runti
   replies?: boolean
   likes?: boolean
   subscribers?: boolean
-  mentions?: boolean
-  emailEnabled?: boolean
-  pushEnabled?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.userDefaultArgs<ExtArgs>
@@ -658,14 +571,11 @@ export type notification_settingsSelectScalar = {
   replies?: boolean
   likes?: boolean
   subscribers?: boolean
-  mentions?: boolean
-  emailEnabled?: boolean
-  pushEnabled?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type notification_settingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "newVideos" | "liveStreams" | "comments" | "replies" | "likes" | "subscribers" | "mentions" | "emailEnabled" | "pushEnabled" | "createdAt" | "updatedAt", ExtArgs["result"]["notification_settings"]>
+export type notification_settingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "newVideos" | "liveStreams" | "comments" | "replies" | "likes" | "subscribers" | "createdAt" | "updatedAt", ExtArgs["result"]["notification_settings"]>
 export type notification_settingsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.userDefaultArgs<ExtArgs>
 }
@@ -690,9 +600,6 @@ export type $notification_settingsPayload<ExtArgs extends runtime.Types.Extensio
     replies: boolean
     likes: boolean
     subscribers: boolean
-    mentions: boolean
-    emailEnabled: boolean
-    pushEnabled: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["notification_settings"]>
@@ -1127,9 +1034,6 @@ export interface notification_settingsFieldRefs {
   readonly replies: Prisma.FieldRef<"notification_settings", 'Boolean'>
   readonly likes: Prisma.FieldRef<"notification_settings", 'Boolean'>
   readonly subscribers: Prisma.FieldRef<"notification_settings", 'Boolean'>
-  readonly mentions: Prisma.FieldRef<"notification_settings", 'Boolean'>
-  readonly emailEnabled: Prisma.FieldRef<"notification_settings", 'Boolean'>
-  readonly pushEnabled: Prisma.FieldRef<"notification_settings", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"notification_settings", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"notification_settings", 'DateTime'>
 }

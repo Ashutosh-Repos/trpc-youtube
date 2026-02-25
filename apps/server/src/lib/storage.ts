@@ -20,34 +20,34 @@ import * as fs from "fs";
 import config from "../config";
 
 // Internal endpoint for server-to-server operations (download, upload, delete)
-const internalEndpoint = `${config.minio.useSsl ? "https" : "http"}://${config.minio.endpoint}:${config.minio.port}`;
+const internalEndpoint = config.s3.endpoint;
 
 const s3Client = new S3Client({
-    region: "us-east-1",
+    region: config.s3.region,
     endpoint: internalEndpoint,
     credentials: {
-        accessKeyId: config.minio.accessKey,
-        secretAccessKey: config.minio.secretKey,
+        accessKeyId: config.s3.accessKeyId,
+        secretAccessKey: config.s3.secretAccessKey,
     },
     forcePathStyle: true,
 });
 
 // Public endpoint for browser-facing presigned URLs
-// On Railway: PUBLIC_MINIO_URL = "https://bucket-xxx.up.railway.app"
+// On Railway: PUBLIC_S3_URL = "https://bucket-xxx.up.railway.app"
 // Locally: falls back to the same internal endpoint
-const publicEndpoint = config.minio.publicUrl || internalEndpoint;
+const publicEndpoint = config.s3.publicUrl || internalEndpoint;
 
 const signerClient = new S3Client({
-    region: "us-east-1",
+    region: config.s3.region,
     endpoint: publicEndpoint,
     credentials: {
-        accessKeyId: config.minio.accessKey,
-        secretAccessKey: config.minio.secretKey,
+        accessKeyId: config.s3.accessKeyId,
+        secretAccessKey: config.s3.secretAccessKey,
     },
     forcePathStyle: true,
 });
 
-const BUCKET_NAME = config.minio.bucket;
+const BUCKET_NAME = config.s3.bucket;
 
 // --- Helpers ---
 

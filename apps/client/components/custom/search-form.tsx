@@ -154,19 +154,21 @@ export function SearchForm() {
                     name="query"
                     render={({ field }) => (
                         <FormItem className="flex-1 relative w-max h-max">
-                            <FormControl>
-                                <span className="relative w-full h-full">
+                            <div className="relative w-full h-full">
+                                <FormControl>
                                     <Input
                                         placeholder="Type or speak your query..."
                                         {...field}
-                                        className="rounded-l-full rounded-r-full muted-foreground border-accent"
+                                        className="rounded-l-full rounded-r-full muted-foreground border-accent pr-10"
                                     />
-                                    <span className="absolute w-auto h-full right-0 top-1/2 -translate-y-1/2 px-3 rounded-r-full cursor-pointer grid place-items-center bg-accent">
-                                        <SearchIcon size={18} />
-                                    </span>
+                                </FormControl>
+                                <span
+                                    className="absolute w-auto h-full right-0 top-1/2 -translate-y-1/2 px-3 rounded-r-full cursor-pointer grid place-items-center bg-accent text-accent-foreground"
+                                    onClick={form.handleSubmit(onSubmit)}
+                                >
+                                    <SearchIcon size={18} />
                                 </span>
-                            </FormControl>
-
+                            </div>
                             <FormMessage />
                         </FormItem>
                     )}

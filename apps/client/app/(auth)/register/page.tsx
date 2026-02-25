@@ -17,18 +17,12 @@ import { z } from "zod";
 import { useEffect, useState, useTransition } from "react";
 
 import { toast } from "sonner";
-import { CalendarIcon, Loader2 } from "lucide-react";
-import { format } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
+import { Loader2 } from "lucide-react";
 import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 import Link from "next/link";
 import { authClient } from "@/lib/auth/auth-client";
 import { MailCheck } from "lucide-react";
+import { ResendVerificationEmail } from "@/components/auth/resend-verification";
 
 const RegisterPage = () => {
     const [isSuccess, setIsSuccess] = useState(false);
@@ -39,7 +33,6 @@ const RegisterPage = () => {
             name: "",
             email: "",
             password: "",
-            dob: undefined,
         },
         mode: "onChange",
     });
@@ -90,6 +83,16 @@ const RegisterPage = () => {
                     >
                         <MailCheck className="inline mr-2 h-4 w-4" />
                         We have sent a verification link to your email address.
+                        <div className="mt-4 flex flex-col items-center gap-2">
+                            <p className="text-xs text-muted-foreground/60">
+                                Didn&apos;t receive the email?
+                            </p>
+                            <ResendVerificationEmail
+                                email={form.getValues("email")}
+                                variant="outline"
+                                className="h-8 text-[10px] font-black uppercase tracking-widest"
+                            />
+                        </div>
                     </CardItem>
                     <CardItem
                         translateZ="80"
@@ -189,56 +192,6 @@ const RegisterPage = () => {
                                                 {...field}
                                             />
                                         </FormControl>
-                                        <FormMessage className="text-red-400 text-xs" />
-                                    </FormItem>
-                                )}
-                            />
-                        </CardItem>
-                        <CardItem translateZ="110" className="w-max mt-4">
-                            <FormField
-                                control={form.control}
-                                name="dob"
-                                render={({ field }) => (
-                                    <FormItem className="flex flex-col">
-                                        <FormLabel className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/60 mb-2">
-                                            Date of birth
-                                        </FormLabel>
-                                        <Popover>
-                                            <PopoverTrigger asChild>
-                                                <FormControl>
-                                                    <Button variant={"outline"}>
-                                                        {field.value ? (
-                                                            format(
-                                                                field.value,
-                                                                "PPP",
-                                                            )
-                                                        ) : (
-                                                            <span>
-                                                                Pick a date
-                                                            </span>
-                                                        )}
-                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                    </Button>
-                                                </FormControl>
-                                            </PopoverTrigger>
-                                            <PopoverContent
-                                                className="w-auto p-0 bg-surface-3 border-border/20 shadow-2xl"
-                                                align="start"
-                                            >
-                                                <Calendar
-                                                    mode="single"
-                                                    selected={field.value}
-                                                    onSelect={field.onChange}
-                                                    disabled={(date) =>
-                                                        date > new Date() ||
-                                                        date <
-                                                            new Date(
-                                                                "1900-01-01",
-                                                            )
-                                                    }
-                                                />
-                                            </PopoverContent>
-                                        </Popover>
                                         <FormMessage className="text-red-400 text-xs" />
                                     </FormItem>
                                 )}

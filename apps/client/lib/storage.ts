@@ -1,9 +1,10 @@
 "use server";
 
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { getUser } from "@/lib/actions/user";
 import { v4 as uuidv4 } from "uuid";
+import { s3Client, BUCKET_NAME } from "./s3";
 
 import {
     AllowedMimeTypes,
@@ -14,64 +15,6 @@ import {
 } from "./utils";
 
 export type { UploadType } from "./utils";
-
-// Initialize S3 Client for presigned URL generation
-// MINIO_SIGNING_URL: public URL for browser-reachable presigned URLs (Railway)
-// Falls back to internal endpoint for local development
-const defaultEndpoint = process.env.MINIO_ENDPOINT
-    ? `${process.env.MINIO_USE_SSL === "true" ? "https" : "http"}://${process.env.MINIO_ENDPOINT}:${process.env.MINIO_PORT || 9000}`
-    : "http://localhost:9000";
-
-const s3Client = new S3Client({
-    region: "us-east-1",
-    endpoint: process.env.MINIO_SIGNING_URL || defaultEndpoint,
-    credentials: {
-        accessKeyId: process.env.MINIO_ACCESS_KEY || "minioadmin",
-        secretAccessKey: process.env.MINIO_SECRET_KEY || "minioadmin",
-    },
-    forcePathStyle: true,
-});
-
-const BUCKET_NAME = process.env.MINIO_BUCKET || "youtube-videos";
-
-// Clock Skew Fix for Dev Environments (Commented out as per user request)
-// let clockOffset: number | null = null;
-// async function getClockOffset() {
-//     if (clockOffset !== null) return clockOffset;
-
-//     try {
-//         const endpoint = process.env.MINIO_ENDPOINT
-//             ? `${process.env.MINIO_USE_SSL === "true" ? "https" : "http"}://${process.env.MINIO_ENDPOINT}:${process.env.MINIO_PORT || 9000}`
-//             : "http://localhost:9000";
-
-//         const controller = new AbortController();
-//         const timeoutId = setTimeout(() => controller.abort(), 2000);
-
-//         const response = await fetch(endpoint, {
-//             method: "HEAD",
-//             signal: controller.signal,
-//             cache: "no-store",
-//         });
-//         clearTimeout(timeoutId);
-
-//         const serverDate = response.headers.get("date");
-//         if (serverDate) {
-//             const serverTime = new Date(serverDate).getTime();
-//             const localTime = Date.now();
-//             clockOffset = serverTime - localTime;
-//             if (Math.abs(clockOffset) > 60000) {
-//                 console.log(
-//                     `[STORAGE] Detected Clock Skew: ${clockOffset}ms. Adjusting signatures.`,
-//                 );
-//             }
-//         } else {
-//             clockOffset = 0;
-//         }
-//     } catch (error) {
-//         clockOffset = 0;
-//     }
-//     return clockOffset;
-// }
 
 export async function getPresignedUrl(
     type: UploadType,

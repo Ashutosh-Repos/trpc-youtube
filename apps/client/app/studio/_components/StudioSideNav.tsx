@@ -1,8 +1,7 @@
 import { SideNav, NavItem } from "@/components/custom/navigation/sidenav";
 import { LayoutPanelTopIcon } from "@/components/ui/layout-panel-top";
 import { YoutubeIcon } from "@/components/ui/youtube";
-import { GalleryVerticalEndIcon } from "@/components/ui/gallery-vertical-end";
-import { CogIcon } from "@/components/ui/cog";
+import { SparklesIcon } from "@/components/ui/sparkles";
 
 export const StudioSideNav = ({ channelId }: { channelId: string }) => {
     const navItems: NavItem[] = [
@@ -17,7 +16,7 @@ export const StudioSideNav = ({ channelId }: { channelId: string }) => {
             href: `/studio/${channelId}/content`,
         },
         {
-            icon: CogIcon,
+            icon: SparklesIcon,
             title: "Settings",
             href: `/studio/${channelId}/settings`,
         },

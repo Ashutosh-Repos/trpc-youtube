@@ -38,12 +38,52 @@ export class NotificationService {
         LIVE_SCHEDULED: "liveStreams",
     };
 
+    private static locks = new Map<string, Promise<void>>();
+
     /**
      * Create a notification and publish it via Redis Pub/Sub.
      * Respects user notification_settings — if the user has opted out
      * of this notification type, the notification is silently skipped.
      */
     static async notify(data: {
+        userId: string;
+        actorId?: string;
+        type: NotificationType;
+        title: string;
+        message: string;
+        videoId?: string;
+        commentId?: string;
+        channelId?: string;
+        thumbnailUrl?: string;
+        actionUrl?: string;
+        metadata?: Record<string, unknown>;
+        groupKey?: string;
+    }) {
+        const lockKey = data.groupKey
+            ? `${data.userId}:${data.groupKey}`
+            : null;
+        if (lockKey) {
+            while (this.locks.has(lockKey)) {
+                await this.locks.get(lockKey);
+            }
+            let release: () => void;
+            const p = new Promise<void>((resolve) => {
+                release = resolve;
+            });
+            this.locks.set(lockKey, p);
+
+            try {
+                await this._notifyInternal(data);
+            } finally {
+                this.locks.delete(lockKey);
+                release!();
+            }
+        } else {
+            await this._notifyInternal(data);
+        }
+    }
+
+    private static async _notifyInternal(data: {
         userId: string;
         actorId?: string;
         type: NotificationType;

@@ -13,12 +13,6 @@ services:
         environment:
             MINIO_ROOT_USER: minioadmin
             MINIO_ROOT_PASSWORD: minioadmin
-            # Configure MinIO to send bucket events to Redis
-            # 'primary' is the target ID we use in 'mc event add'
-            MINIO_NOTIFY_REDIS_ENABLE_primary: "on"
-            MINIO_NOTIFY_REDIS_ADDRESS_primary: "redis:6379"
-            MINIO_NOTIFY_REDIS_KEY_primary: "minio_events"
-            MINIO_NOTIFY_REDIS_FORMAT_primary: "access"
         command: server /data --console-address ":9001"
         volumes:
             - minio_data:/data
@@ -57,23 +51,12 @@ services:
 
             echo 'Creating bucket: youtube-videos';
             mc mb minio/youtube-videos --ignore-existing;
-            mc anonymous set public minio/youtube-videos;
-
-            echo 'Configuring Event Notification -> Redis';
-            echo '...Waiting 10s for MinIO/Redis connection...';
-            sleep 10;
-
-            # Add event notification for PUT events (uploads) to Redis
-            # arn:minio:sqs::{REGION}:{TARGET_ID} -> arn:minio:sqs::primary:redis
-            until mc event add minio/youtube-videos arn:minio:sqs::primary:redis --event put --prefix raw-videos/; do echo '...retrying event add...'; sleep 2; done;
-
-            echo 'Event Listeners:';
-            mc event list minio/youtube-videos;
+            # Intentionally leaving bucket private to emulate Railway storage behavior
 
             echo 'Adding Lifecycle Policy: Abort Incomplete Multipart Uploads (2 days)';
             mc ilm add --abort-incomplete --expiry-days 2 minio/youtube-videos;
 
-            echo '✅ MinIO Bucket, Events & Lifecycle Configured!';
+            echo '✅ MinIO Private Bucket & Lifecycle Configured!';
             exit 0;
             "
         networks:

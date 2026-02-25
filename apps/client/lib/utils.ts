@@ -24,24 +24,19 @@ export function formatViewCount(count: number): string {
 export function getMediaUrl(key: string | null | undefined) {
     if (!key) return "";
     if (key.startsWith("http")) return key;
+    if (key.startsWith("/")) return key;
 
-    const baseUrl =
-        process.env.NEXT_PUBLIC_PUBLIC_MINIO_URL ||
-        process.env.NEXT_PUBLIC_MINIO_URL ||
-        "http://localhost:9000";
-    const bucket = process.env.NEXT_PUBLIC_MINIO_BUCKET || "youtube-videos";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+    const bucket = process.env.NEXT_PUBLIC_S3_BUCKET_NAME || "youtube-videos";
 
-    // Clean leading/trailing slashes
-    const cleanBase = baseUrl.replace(/\/+$/, "");
-    const cleanKey = key.replace(/^\/+/, "");
+    let cleanKey = key.replace(/^\/+/, "");
 
-    // If the key already includes the bucket name, don't double count it
-    // (This helps with legacy data that might have stored partial URLs)
+    // If the key accidentally includes the bucket name from legacy DB data, strip it out
     if (cleanKey.startsWith(`${bucket}/`)) {
-        return `${cleanBase}/${cleanKey}`;
+        cleanKey = cleanKey.substring(bucket.length + 1);
     }
 
-    return `${cleanBase}/${bucket}/${cleanKey}`;
+    return `${baseUrl}/api/media?key=${encodeURIComponent(cleanKey)}`;
 }
 
 // upload file types || size limits

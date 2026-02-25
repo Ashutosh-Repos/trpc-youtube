@@ -15,6 +15,7 @@ const TYPE_FILTER_MAP: Record<string, string[]> = {
         "COMMENT_LIKE",
         "LIVE_STARTED",
         "LIVE_SCHEDULED",
+        "SYSTEM",
     ],
 };
 
@@ -44,7 +45,7 @@ export const notificationRouter = router({
                 take: limit + 1,
                 cursor: cursor ? { id: cursor } : undefined,
                 skip: cursor ? 1 : 0,
-                orderBy: { createdAt: "desc" },
+                orderBy: [{ createdAt: "desc" }, { id: "desc" }],
                 include: {
                     user_notifications_actorIdTouser: {
                         select: {

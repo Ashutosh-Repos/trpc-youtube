@@ -9,6 +9,7 @@ import { Loader2 } from "lucide-react";
 import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 import { authClient } from "@/lib/auth/auth-client";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 const CompleteProfileSchema = z.object({
     dob: z.date().max(new Date()),
@@ -18,6 +19,7 @@ const CompleteProfile = () => {
     // Removed unused isSuccess state
     const [date, setDate] = useState<Date>(new Date(2000, 0, 1));
     const [isPending, startTransition] = useTransition();
+    const router = useRouter();
 
     const onSubmit = async () => {
         startTransition(async () => {
@@ -30,7 +32,7 @@ const CompleteProfile = () => {
                     );
                 } else {
                     toast.success("Profile updated successfully!");
-                    // navigate or show success message
+                    router.replace("/");
                 }
             } catch (err) {
                 if (err instanceof z.ZodError) {
@@ -43,7 +45,7 @@ const CompleteProfile = () => {
     };
 
     return (
-        <CardContainer className="inter-var w-max h-max p-6">
+        <CardContainer className="inter-var w-max h-max">
             <CardBody className="bg-transparent relative group/card md:p-10 p-6 rounded-xl w-max h-max md:w-lg space-y-10">
                 <CardItem
                     translateZ="0"
@@ -56,7 +58,10 @@ const CompleteProfile = () => {
                         Select Your Birth Date
                     </h1>
                 </CardItem>
-                <CardItem translateZ="160" className="w-full">
+                <CardItem
+                    translateZ="40"
+                    className="w-full flex justify-center items-center"
+                >
                     <SlotDatePicker
                         date={date}
                         setDate={setDate}

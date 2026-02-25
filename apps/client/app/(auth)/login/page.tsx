@@ -24,6 +24,7 @@ import { authClient } from "@/lib/auth/auth-client";
 import { Separator } from "@/components/ui/separator";
 import { GithubIcon, GithubIconHandle } from "@/components/ui/github";
 import { cn } from "@/lib/utils";
+import { ResendVerificationEmail } from "@/components/auth/resend-verification";
 import {
     GoogleIcon,
     type GoogleIconHandle,
@@ -49,7 +50,22 @@ const LoginPage = () => {
                     rememberMe: true,
                 });
                 if (result.error) {
-                    toast.error(result.error.message);
+                    if (result.error.code === "EMAIL_NOT_VERIFIED") {
+                        toast.error(
+                            <div className="flex flex-col gap-2">
+                                <span>{result.error.message}</span>
+                                <ResendVerificationEmail
+                                    email={values.email}
+                                    variant="outline"
+                                    className="h-8 text-xs font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5"
+                                    onSuccess={() => toast.dismiss()}
+                                />
+                            </div>,
+                            { duration: 10000 },
+                        );
+                    } else {
+                        toast.error(result.error.message);
+                    }
                 } else {
                     toast.success("Logged in successfully!");
                 }

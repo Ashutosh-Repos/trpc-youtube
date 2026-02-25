@@ -11,10 +11,6 @@ export default async function ChannelStudioLayout({
 }) {
     const { channelId } = await params;
 
-    // Validate that the user owns this channel
-    // We can reuse getUserChannels for this, or create a specific 'getChannel' procedure
-    // For efficiency, let's use getUserChannels and check if the ID is in the list
-    // A more optimized approach would be a dedicated procedure, but this is fine for now
     let isValidChannel = false;
     try {
         const result = await trpcServer.channel.getUserChannels.query();
@@ -33,10 +29,8 @@ export default async function ChannelStudioLayout({
 
     return (
         <>
-            {/* // <div className="flex h-full w-full overflow-hidden">  */}
             <StudioSideNav channelId={channelId} />
             <div className="flex-1 overflow-auto h-full w-full">{children}</div>
-            {/* </div> */}
         </>
     );
 }

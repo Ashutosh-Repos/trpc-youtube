@@ -56,7 +56,7 @@ const nextConfig: NextConfig = {
                 port: "9000",
                 pathname: "/**",
             },
-            // Railway deployment — MinIO Bucket public domain
+            // Railway deployment — S3 Bucket public domain
             {
                 protocol: "https",
                 hostname: "**.up.railway.app",

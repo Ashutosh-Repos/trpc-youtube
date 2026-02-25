@@ -1,4 +1,3 @@
-import { Resend } from "resend";
 import { Queue, Worker, type Job } from "bullmq";
 import IORedis from "ioredis";
 
@@ -6,12 +5,41 @@ import IORedis from "ioredis";
 // Next.js sets NEXT_PHASE during build — skip heavy init during page collection
 const isBuildTime =
     process.env.NEXT_PHASE === "phase-production-build" ||
-    (!process.env.RESEND_API_KEY && !process.env.REDIS_URL);
+    (!process.env.BREVO_API_KEY && !process.env.REDIS_URL);
 
-// ─── Resend Client ───────────────────────────────────────────────────────────
-const resend = process.env.RESEND_API_KEY
-    ? new Resend(process.env.RESEND_API_KEY)
-    : null;
+// ─── Brevo Helper ────────────────────────────────────────────────────────────
+async function sendViaBrevo(job: EmailJob) {
+    const apiKey = process.env.BREVO_API_KEY;
+    if (!apiKey) throw new Error("Brevo API key missing");
+
+    const appName = process.env.APP_NAME || "Youtube";
+    const fromEmail = process.env.EMAIL_FROM || "clashutosh04@gmail.com";
+
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+        method: "POST",
+        headers: {
+            "api-key": apiKey,
+            "content-type": "application/json",
+            accept: "application/json",
+        },
+        body: JSON.stringify({
+            sender: { name: appName, email: fromEmail },
+            to: [{ email: job.to }],
+            subject: job.subject,
+            htmlContent: job.html,
+        }),
+    });
+
+    const result = await response.json();
+    if (!response.ok) {
+        throw new Error(
+            result.code
+                ? `${result.code}: ${result.message}`
+                : `Brevo error: ${response.statusText}`,
+        );
+    }
+    return result;
+}
 
 // ─── Email Job Types ─────────────────────────────────────────────────────────
 interface EmailJob {
@@ -61,7 +89,7 @@ const globalForWorker = global as unknown as { emailWorker: Worker | null };
 
 function ensureWorker(): void {
     if (globalForWorker.emailWorker || emailWorker) return;
-    if (isBuildTime || !process.env.REDIS_URL || !process.env.RESEND_API_KEY)
+    if (isBuildTime || !process.env.REDIS_URL || !process.env.BREVO_API_KEY)
         return;
 
     try {
@@ -72,24 +100,20 @@ function ensureWorker(): void {
         const worker = new Worker(
             QUEUE_NAME,
             async (job: Job<EmailJob>) => {
-                const { to, subject, html, from } = job.data;
-                if (!resend) throw new Error("Resend not initialized");
-                const { error } = await resend.emails.send({
-                    from,
-                    to,
-                    subject,
-                    html,
-                });
-                if (error) {
+                const { to, subject } = job.data;
+                try {
+                    await sendViaBrevo(job.data);
+                    console.log(
+                        `[Email Worker] Sent "${subject}" to ${to} (attempt ${job.attemptsMade + 1})`,
+                    );
+                } catch (error) {
+                    const err = error as Error;
                     console.error(
                         `[Email Worker] Failed to send "${subject}" to ${to}:`,
-                        error,
+                        err.message || error,
                     );
-                    throw new Error(error.message);
+                    throw error;
                 }
-                console.log(
-                    `[Email Worker] Sent "${subject}" to ${to} (attempt ${job.attemptsMade + 1})`,
-                );
             },
             {
                 connection,
@@ -122,7 +146,7 @@ function ensureWorker(): void {
 
 // ─── Email Service ───────────────────────────────────────────────────────────
 
-const DEFAULT_FROM = `"${process.env.APP_NAME || "Youtube"}" <${process.env.EMAIL_FROM || "onboarding@resend.dev"}>`;
+const DEFAULT_FROM = process.env.EMAIL_FROM || "clashutosh04@gmail.com";
 
 class EmailService {
     constructor() {
@@ -131,7 +155,7 @@ class EmailService {
     }
 
     /**
-     * Queue an email for async delivery via BullMQ → Resend.
+     * Queue an email for async delivery via BullMQ → Brevo.
      * Falls back to direct send if Redis is unavailable.
      * Never throws — errors are logged and swallowed.
      */
@@ -154,25 +178,14 @@ class EmailService {
             }
         }
 
-        // Fallback: fire-and-forget direct send (non-blocking via .catch)
-        if (!resend) {
-            console.warn(
-                `[Email] Resend not initialized, dropping "${subject}" to ${to}`,
-            );
-            return;
+        // Fallback: direct send
+        try {
+            await sendViaBrevo(job);
+            console.log(`[Email] Direct sent "${subject}" to ${to}`);
+        } catch (err) {
+            const error = err as Error;
+            console.error("[Email] Direct send error:", error.message || err);
         }
-        resend.emails
-            .send(job)
-            .then(({ error }) => {
-                if (error)
-                    console.error(
-                        `[Email] Direct send failed: ${error.message}`,
-                    );
-                else console.log(`[Email] Direct sent "${subject}" to ${to}`);
-            })
-            .catch((err: unknown) => {
-                console.error("[Email] Direct send error:", err);
-            });
     }
 
     /** Higher priority for auth-critical emails */
