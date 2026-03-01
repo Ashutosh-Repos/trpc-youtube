@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useUploadStore } from "@/stores/upload-store";
 import { useSession } from "@/lib/auth/auth-client";
+import { trpc } from "@/lib/trpc";
 import {
     Modal,
     ModalBody,
@@ -38,6 +39,7 @@ export function VideoUploadZone({
     const [isDragging, setIsDragging] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { data: session } = useSession();
+    const utils = trpc.useUtils();
 
     const isRecoveryNeeded = !currentFile && !!uploadId;
 
@@ -69,6 +71,7 @@ export function VideoUploadZone({
             // We ideally should check if filename matches or ask user to confirm
             // For now, we assume user picked the right file if they clicked "Resume"
             await recoverUpload(file);
+            utils.video.getChannelContent.invalidate();
             return;
         }
 
@@ -91,6 +94,9 @@ export function VideoUploadZone({
 
         // 5. Start Upload automatically
         await startUpload();
+
+        // 6. Invalidate Video List to show the uploading placeholder
+        utils.video.getChannelContent.invalidate();
 
         // Notify parent if needed
         const videoId = useUploadStore.getState().videoId;

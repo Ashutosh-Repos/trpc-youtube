@@ -1,4 +1,5 @@
 import { trpcServer } from "@/lib/trpc-server";
+export const dynamic = "force-dynamic";
 import { ChannelSelectionClient } from "../_components/ChannelSelectionClient";
 import { BackgroundLines } from "@/components/ui/background-lines";
 import { getMediaUrl } from "@/lib/utils";
