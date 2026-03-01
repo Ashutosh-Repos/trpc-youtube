@@ -175,8 +175,11 @@ export function NotificationItem({
                         alt=""
                         width={120}
                         height={68}
-                        unoptimized
                         className="h-16 w-[114px] object-cover"
+                        onError={(e) => {
+                            (e.target as HTMLImageElement).style.display =
+                                "none";
+                        }}
                     />
                 </div>
             )}

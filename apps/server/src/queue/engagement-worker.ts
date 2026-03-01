@@ -4,6 +4,7 @@ import os from "os";
 import cluster from "cluster";
 import { redisPub } from "../lib/ws/definitions";
 import { NotificationService } from "../services/NotificationService";
+import { HistoryService } from "../services/HistoryService";
 
 const KEYS = {
     HISTORY_STREAM: "queue:history",
@@ -197,6 +198,16 @@ async function handleHistoryBatch(messages: [string, string[]][]) {
                         updatedAt: new Date(),
                     },
                 }),
+            ),
+        );
+
+        // 2.5 Invalidate Next.js Server Caches for all involved Users
+        const uniqueUserIdsToInvalidate = [
+            ...new Set(upsertValues.map((v) => v.userId)),
+        ];
+        await Promise.all(
+            uniqueUserIdsToInvalidate.map((uId) =>
+                HistoryService.invalidateUserCache(uId),
             ),
         );
 

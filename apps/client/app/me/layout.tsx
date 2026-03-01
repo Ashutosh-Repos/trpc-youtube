@@ -6,6 +6,7 @@ import { UserIcon } from "@/components/ui/user";
 import { BellIcon } from "@/components/ui/bell";
 import { HistoryIcon } from "@/components/ui/history";
 import { CogIcon } from "@/components/ui/cog";
+import { ShieldCheckIcon } from "@/components/ui/shield-check";
 
 const MeLayout = ({
     children,
@@ -24,7 +25,7 @@ const MeLayout = ({
             title: "Notifications",
             href: "/me/notifications",
         },
-        { icon: CogIcon, title: "Settings", href: "/me/settings" },
+        { icon: ShieldCheckIcon, title: "Settings", href: "/me/settings" },
     ];
     return (
         <div className="w-full h-screen flex flex-col overflow-hidden">

@@ -29,6 +29,7 @@ export function PlaylistSearchCard({ playlist }: PlaylistSearchCardProps) {
     return (
         <div className="flex flex-col sm:flex-row gap-4 p-2 group bg-transparent w-full border-b border-border/10 pb-4">
             <Link
+                prefetch={false}
                 href={playlistUrl}
                 className="relative shrink-0 w-full sm:w-[360px] aspect-video rounded-2xl overflow-hidden bg-surface-2 border border-border/10 transition-all duration-500 group-hover:shadow-[0_20px_50px_-15px_oklch(var(--primary)/0.2)]"
             >
@@ -39,8 +40,10 @@ export function PlaylistSearchCard({ playlist }: PlaylistSearchCardProps) {
                     }
                     alt={playlist.title}
                     fill
-                    unoptimized
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = "none";
+                    }}
                 />
 
                 {/* Playlist Overlay */}
@@ -54,6 +57,7 @@ export function PlaylistSearchCard({ playlist }: PlaylistSearchCardProps) {
 
             <div className="flex flex-col overflow-hidden leading-tight flex-1 py-1 sm:pt-2 text-center sm:text-left">
                 <Link
+                    prefetch={false}
                     href={playlistUrl}
                     className="font-black text-xl tracking-tighter line-clamp-2 pb-[2px] group-hover:text-primary transition-colors"
                 >
@@ -63,6 +67,7 @@ export function PlaylistSearchCard({ playlist }: PlaylistSearchCardProps) {
                 <div className="flex items-center justify-center sm:justify-start gap-2 mt-1">
                     {playlist.channels && (
                         <Link
+                            prefetch={false}
                             href={channelUrl}
                             className="text-[13px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-primary transition-colors"
                         >
@@ -81,6 +86,7 @@ export function PlaylistSearchCard({ playlist }: PlaylistSearchCardProps) {
                 </div>
 
                 <Link
+                    prefetch={false}
                     href={playlistUrl}
                     className="text-xs font-semibold text-muted-foreground hover:text-white mt-4 uppercase hidden sm:block"
                 >

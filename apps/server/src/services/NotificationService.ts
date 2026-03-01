@@ -36,6 +36,7 @@ export class NotificationService {
         NEW_SUBSCRIBER: "subscribers",
         LIVE_STARTED: "liveStreams",
         LIVE_SCHEDULED: "liveStreams",
+        SYSTEM: undefined, // System notifications cannot be opted out of
     };
 
     private static locks = new Map<string, Promise<void>>();

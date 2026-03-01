@@ -134,11 +134,42 @@ function useCommentInteractions(comment: Comment, videoId: string) {
     const toggleLike = trpc.comment.toggleLike.useMutation({
         onMutate: () => {
             const newType = comment.userReaction === "LIKE" ? "REMOVE" : "LIKE";
+            // Grab previous data to allow rollback.
+            const previousDataTop = utils.comment.list.getInfiniteData({
+                videoId,
+                limit: 20,
+                sortBy: "TOP",
+            });
+            const previousDataNewest = utils.comment.list.getInfiniteData({
+                videoId,
+                limit: 20,
+                sortBy: "NEWEST",
+            });
+            const previousSingle = utils.comment.getById.getData({
+                id: comment.id,
+            });
+
             updateInfiniteData(newType);
+
+            return { previousDataTop, previousDataNewest, previousSingle };
         },
-        onError: () => {
-            utils.comment.list.invalidate({ videoId });
-            utils.comment.getById.invalidate({ id: comment.id });
+        onError: (_err, _vars, ctx) => {
+            // Rollback
+            if (ctx?.previousDataTop)
+                utils.comment.list.setInfiniteData(
+                    { videoId, limit: 20, sortBy: "TOP" },
+                    ctx.previousDataTop,
+                );
+            if (ctx?.previousDataNewest)
+                utils.comment.list.setInfiniteData(
+                    { videoId, limit: 20, sortBy: "NEWEST" },
+                    ctx.previousDataNewest,
+                );
+            if (ctx?.previousSingle)
+                utils.comment.getById.setData(
+                    { id: comment.id },
+                    ctx.previousSingle,
+                );
         },
     });
 
@@ -146,16 +177,46 @@ function useCommentInteractions(comment: Comment, videoId: string) {
         onMutate: () => {
             const newType =
                 comment.userReaction === "DISLIKE" ? "REMOVE" : "DISLIKE";
+
+            const previousDataTop = utils.comment.list.getInfiniteData({
+                videoId,
+                limit: 20,
+                sortBy: "TOP",
+            });
+            const previousDataNewest = utils.comment.list.getInfiniteData({
+                videoId,
+                limit: 20,
+                sortBy: "NEWEST",
+            });
+            const previousSingle = utils.comment.getById.getData({
+                id: comment.id,
+            });
+
             updateInfiniteData(newType);
+            return { previousDataTop, previousDataNewest, previousSingle };
         },
-        onError: () => {
-            utils.comment.list.invalidate({ videoId });
-            utils.comment.getById.invalidate({ id: comment.id });
+        onError: (_err, _vars, ctx) => {
+            // Rollback
+            if (ctx?.previousDataTop)
+                utils.comment.list.setInfiniteData(
+                    { videoId, limit: 20, sortBy: "TOP" },
+                    ctx.previousDataTop,
+                );
+            if (ctx?.previousDataNewest)
+                utils.comment.list.setInfiniteData(
+                    { videoId, limit: 20, sortBy: "NEWEST" },
+                    ctx.previousDataNewest,
+                );
+            if (ctx?.previousSingle)
+                utils.comment.getById.setData(
+                    { id: comment.id },
+                    ctx.previousSingle,
+                );
         },
     });
 
     const deleteCommentMutation = trpc.comment.delete.useMutation({
-        onSuccess: () => {
+        onSettled: () => {
             utils.comment.list.invalidate({ videoId });
             utils.comment.getById.invalidate({ id: comment.id });
         },

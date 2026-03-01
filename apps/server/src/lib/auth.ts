@@ -42,6 +42,12 @@ export const auth = betterAuth({
         expiresIn: 86400, // Must match client config
         storeSessionInDatabase: true,
     },
+    rateLimit: {
+        enabled: true,
+        window: 60,
+        max: 300,
+        storage: "secondary-storage",
+    },
     advanced: {
         useSecureCookies: process.env.NODE_ENV === "production",
     },

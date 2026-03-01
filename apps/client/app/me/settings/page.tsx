@@ -35,7 +35,10 @@ const SettingsPage = async () => {
             </div>
 
             <div className="space-y-6 flex-1 overflow-y-auto scrollbar-hide pb-20">
-                <ConnectedAccounts accounts={accounts} />
+                <ConnectedAccounts
+                    accounts={accounts}
+                    hasPassword={hasPassword}
+                />
                 {hasPassword && <Security hasPassword={true} />}
                 <SessionSection />
                 <DeleteAccount />

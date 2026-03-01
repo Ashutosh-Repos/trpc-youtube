@@ -112,8 +112,11 @@ export const PlaylistRow = ({
                             )}
                             alt={playlist.title}
                             fill
-                            unoptimized
                             className="object-cover"
+                            onError={(e) => {
+                                (e.target as HTMLImageElement).style.display =
+                                    "none";
+                            }}
                         />
                     ) : (
                         <div className="flex flex-col items-center gap-1 opacity-20">

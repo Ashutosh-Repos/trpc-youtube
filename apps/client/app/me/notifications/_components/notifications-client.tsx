@@ -13,6 +13,8 @@ import {
 } from "@/components/custom/notification-item";
 import { toast } from "sonner";
 import { NotificationSettings } from "./notification-settings";
+import { useInView } from "react-intersection-observer";
+import { useEffect } from "react";
 
 const FILTER_TABS = [
     { key: "all", label: "All Activity" },
@@ -97,6 +99,17 @@ export default function NotificationsClient({
         trpc.channel.updateNotificationLevel.useMutation();
 
     const notifications = data?.pages.flatMap((page) => page.items) || [];
+
+    const { ref, inView } = useInView({
+        threshold: 0,
+        rootMargin: "400px",
+    });
+
+    useEffect(() => {
+        if (inView && hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+        }
+    }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
     const handleNotificationClick = (notification: NotificationItemData) => {
         if (!notification.isRead) {
@@ -277,7 +290,10 @@ export default function NotificationsClient({
                         ))}
 
                         {hasNextPage && (
-                            <div className="flex justify-center pt-8 pb-4">
+                            <div
+                                ref={ref}
+                                className="flex justify-center pt-8 pb-4"
+                            >
                                 <Button
                                     variant="secondary"
                                     onClick={() => fetchNextPage()}

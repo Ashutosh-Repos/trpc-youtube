@@ -61,7 +61,7 @@ export function ChannelClient({
         isLoading: subLoading,
     } = useSubscribe({
         channelId: channel.id,
-        initialData: {
+        reactiveData: {
             isSubscribed: initialSubscribed,
             subscriberCount: channel.subscriberCount,
         },
@@ -86,6 +86,10 @@ export function ChannelClient({
                         fill
                         className="object-cover"
                         priority
+                        onError={(e) => {
+                            (e.target as HTMLImageElement).style.display =
+                                "none";
+                        }}
                     />
                 )}
             </div>
@@ -101,6 +105,11 @@ export function ChannelClient({
                                 alt={channel.name || "Channel avatar"}
                                 fill
                                 className="object-cover"
+                                onError={(e) => {
+                                    (
+                                        e.target as HTMLImageElement
+                                    ).style.display = "none";
+                                }}
                             />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-muted-foreground">

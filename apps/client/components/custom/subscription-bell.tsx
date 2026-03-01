@@ -72,6 +72,9 @@ export function SubscriptionBell({
             const option = BELL_OPTIONS.find((o) => o.level === level);
             toast.success(`Notifications: ${option?.label || level}`);
         },
+        onSettled: () => {
+            utils.channel.getNotificationLevel.invalidate({ channelId });
+        },
     });
 
     if (!isSubscribed || isLoading) return null;

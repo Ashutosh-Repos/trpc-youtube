@@ -4,24 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AnimatedTooltip } from "@/components/ui/animated-tooltip";
 import { motion, AnimatePresence } from "motion/react";
 import Image from "next/image";
-import {
-    Mail,
-    MapPin,
-    Globe,
-    Link as LinkIcon,
-    Twitter,
-    Github,
-    Instagram,
-    Linkedin,
-    Play,
-    Loader2,
-    Check,
-    Plus,
-    Trash2,
-    Pencil,
-    X,
-} from "lucide-react";
-import Link from "next/link";
+import { Mail, MapPin, Globe, Loader2, Check, Pencil, X } from "lucide-react";
 import { ImageUpload } from "@/components/custom/image-upload";
 import { getMediaUrl } from "@/lib/utils";
 import { Form } from "@/components/ui/form";
@@ -30,7 +13,7 @@ import { trpc } from "@/lib/trpc";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { z } from "zod";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect, useCallback } from "react";
@@ -48,18 +31,7 @@ interface MePageContentProps {
     user: User;
 }
 
-// Helper to get icon for platform
-const getPlatformIcon = (platform: string) => {
-    const p = platform.toLowerCase();
-    if (p.includes("twitter") || p.includes("x.com"))
-        return <Twitter className="w-4 h-4" />;
-    if (p.includes("github")) return <Github className="w-4 h-4" />;
-    if (p.includes("instagram")) return <Instagram className="w-4 h-4" />;
-    if (p.includes("linkedin")) return <Linkedin className="w-4 h-4" />;
-    if (p.includes("stream") || p.includes("play"))
-        return <Play className="w-4 h-4" />;
-    return <LinkIcon className="w-4 h-4" />;
-};
+import { ProfileSocialLinks } from "./profile-social-links";
 
 const socialLinkSchema = z.object({
     platform: z.string().min(1, "Platform required"),
@@ -119,7 +91,6 @@ const Client = ({ user }: MePageContentProps) => {
                     };
                 },
             );
-            router.refresh();
         },
         onError: (error) => {
             toast.error(error.message || "Failed to update profile");
@@ -153,15 +124,6 @@ const Client = ({ user }: MePageContentProps) => {
                 address: "",
             },
         },
-    });
-
-    const {
-        fields: socialFields,
-        append: appendSocial,
-        remove: removeSocial,
-    } = useFieldArray({
-        control: form.control,
-        name: "socialLinks",
     });
 
     // Reset form when userData updates
@@ -237,7 +199,6 @@ const Client = ({ user }: MePageContentProps) => {
                     );
                     // No need to invalidate manually if we set query data but invalidation is safer
                     utils.user.getProfile.invalidate();
-                    router.refresh();
                 },
             },
         );
@@ -283,7 +244,7 @@ const Client = ({ user }: MePageContentProps) => {
                     {/* Banner Section */}
                     <motion.div
                         layout
-                        className="w-full h-48 md:h-80 relative rounded-b-3xl overflow-hidden shadow-xl group"
+                        className="w-full h-48 md:h-80 relative rounded-b-3xl overflow-hidden shadow-xl group bg-surface-2"
                     >
                         {/* <div className="absolute inset-0 bg-linear-to-t from-background/90 via-background/20 to-transparent z-10 pointer-events-none" /> */}
                         <Image
@@ -292,6 +253,10 @@ const Client = ({ user }: MePageContentProps) => {
                             fill
                             className="object-cover"
                             priority
+                            onError={(e) => {
+                                (e.target as HTMLImageElement).style.display =
+                                    "none";
+                            }}
                         />
                         <ImageUpload
                             type="banner"
@@ -484,125 +449,12 @@ const Client = ({ user }: MePageContentProps) => {
                                         </div>
 
                                         {/* Social Links */}
-                                        <div className="space-y-4">
-                                            <div className="flex items-center justify-between">
-                                                <h3 className="text-sm font-medium uppercase tracking-wider">
-                                                    Social Links
-                                                </h3>
-                                                {isEditing && (
-                                                    <Button
-                                                        type="button"
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() =>
-                                                            appendSocial({
-                                                                platform: "",
-                                                                url: "",
-                                                            })
-                                                        }
-                                                        className="h-6 w-6 "
-                                                    >
-                                                        <Plus className="w-4 h-4" />
-                                                    </Button>
-                                                )}
-                                            </div>
-
-                                            <div className="flex flex-wrap gap-2">
-                                                <AnimatePresence>
-                                                    {socialFields.map(
-                                                        (field, index) => (
-                                                            <motion.div
-                                                                key={field.id}
-                                                                layout
-                                                                initial={{
-                                                                    opacity: 0,
-                                                                    scale: 0.8,
-                                                                }}
-                                                                animate={{
-                                                                    opacity: 1,
-                                                                    scale: 1,
-                                                                }}
-                                                                exit={{
-                                                                    opacity: 0,
-                                                                    scale: 0.8,
-                                                                }}
-                                                                className={
-                                                                    isEditing
-                                                                        ? "w-full flex gap-2 mb-2"
-                                                                        : ""
-                                                                }
-                                                            >
-                                                                {isEditing ? (
-                                                                    <div className="flex gap-2 w-full">
-                                                                        <Input
-                                                                            {...form.register(
-                                                                                `socialLinks.${index}.platform`,
-                                                                            )}
-                                                                            placeholder="Platform (Twitter, etc)"
-                                                                            className="flex-1 bg-white/5 border-white/10 h-8 text-xs"
-                                                                        />
-                                                                        <Input
-                                                                            {...form.register(
-                                                                                `socialLinks.${index}.url`,
-                                                                            )}
-                                                                            placeholder="URL"
-                                                                            className="flex-2 bg-white/5 border-white/10 h-8 text-xs"
-                                                                        />
-                                                                        <Button
-                                                                            type="button"
-                                                                            variant="ghost"
-                                                                            size="icon"
-                                                                            onClick={() =>
-                                                                                removeSocial(
-                                                                                    index,
-                                                                                )
-                                                                            }
-                                                                            className="h-8 w-8 hover:text-red-400 group/del"
-                                                                        >
-                                                                            <Trash2 className="w-4 h-4 group-hover/del:scale-110 transition-transform" />
-                                                                        </Button>
-                                                                    </div>
-                                                                ) : (
-                                                                    <Link
-                                                                        href={
-                                                                            form.getValues(
-                                                                                `socialLinks.${index}.url`,
-                                                                            ) ||
-                                                                            "#"
-                                                                        }
-                                                                        target="_blank"
-                                                                        className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group/link"
-                                                                    >
-                                                                        <span className="transition-colors">
-                                                                            {getPlatformIcon(
-                                                                                form.getValues(
-                                                                                    `socialLinks.${index}.platform`,
-                                                                                ) ||
-                                                                                    "",
-                                                                            )}
-                                                                        </span>
-                                                                        <span className="text-xs font-medium">
-                                                                            {form.getValues(
-                                                                                `socialLinks.${index}.platform`,
-                                                                            )}
-                                                                        </span>
-                                                                    </Link>
-                                                                )}
-                                                            </motion.div>
-                                                        ),
-                                                    )}
-                                                </AnimatePresence>
-
-                                                {!isEditing &&
-                                                    socialFields.length ===
-                                                        0 && (
-                                                        <p className="text-sm italic">
-                                                            No social links
-                                                            added.
-                                                        </p>
-                                                    )}
-                                            </div>
-                                        </div>
+                                        <ProfileSocialLinks
+                                            isEditing={isEditing}
+                                            control={form.control}
+                                            register={form.register}
+                                            getValues={form.getValues}
+                                        />
                                     </div>
 
                                     {/* Channels Tooltip Section (Read Only) */}

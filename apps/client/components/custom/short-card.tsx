@@ -13,6 +13,7 @@ export function ShortCard({ video }: ShortCardProps) {
 
     return (
         <Link
+            prefetch={false}
             href={videoUrl}
             className="group relative flex w-[160px] sm:w-[190px] md:w-[210px] flex-col shrink-0 gap-2 cursor-pointer"
         >
@@ -24,8 +25,11 @@ export function ShortCard({ video }: ShortCardProps) {
                         src={getMediaUrl(video.thumbnailUrl)}
                         alt={video.title}
                         fill
-                        unoptimized
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        onError={(e) => {
+                            (e.target as HTMLImageElement).style.display =
+                                "none";
+                        }}
                     />
                 ) : null}
 

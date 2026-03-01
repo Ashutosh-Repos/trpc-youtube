@@ -32,6 +32,7 @@ export const SideNav = ({ navLinks }: { navLinks: NavItem[] }) => {
                         <Tooltip key={idx + item.title}>
                             <TooltipTrigger asChild>
                                 <Link
+                                    prefetch={false}
                                     href={item.href}
                                     className={cn(
                                         "group flex items-center justify-center w-12 h-12 rounded-2xl transition-all duration-300 relative border",

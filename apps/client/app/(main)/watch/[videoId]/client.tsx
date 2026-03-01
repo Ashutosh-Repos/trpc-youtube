@@ -2,7 +2,16 @@
 
 import { format } from "date-fns";
 import { cn, getMediaUrl } from "@/lib/utils";
-import { VideoPlayer } from "@/components/custom/video-player";
+import dynamic from "next/dynamic";
+
+const VideoPlayer = dynamic(
+    () =>
+        import("@/components/custom/video-player").then(
+            (mod) => mod.VideoPlayer,
+        ),
+    { ssr: false },
+);
+
 import { useVideoEngagement } from "@/hooks/use-video-engagement";
 import type { AppRouter } from "@youtube/server/src/trpc/router";
 import { inferRouterOutputs } from "@trpc/server";
@@ -14,6 +23,7 @@ import { useSubscribe } from "@/hooks/use-subscribe";
 import { SubscribeButton } from "@/components/custom/subscribe-button";
 import { authClient } from "@/lib/auth/auth-client";
 import Link from "next/link";
+import { trpc } from "@/lib/trpc";
 
 type RouterOutputs = inferRouterOutputs<AppRouter>;
 type VideoData = RouterOutputs["video"]["getPublicVideo"];
@@ -24,6 +34,8 @@ import { PlaylistSidebar } from "./list/[playlistId]/playlist-sidebar";
 import { usePlaylistPlayerStore } from "@/hooks/use-playlist-player";
 import { PlaylistData } from "@/hooks/use-playlist-player";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { SaveToPlaylistModal } from "@/components/custom/save-to-playlist-modal";
 
 interface WatchClientProps {
     video: VideoData;
@@ -41,25 +53,36 @@ export function WatchClient({
     const playlistStore = usePlaylistPlayerStore();
     const { onPlay, onProgress } = useVideoEngagement(video.id);
 
-    // Engagement Hook (Optimistic)
+    // Wrap the server-provided video with a reactive tRPC query for cache invalidations
+    const { data: reactiveVideo } = trpc.video.getPublicVideo.useQuery(
+        { videoId: video.id },
+        {
+            initialData: video,
+            refetchOnMount: false,
+            refetchOnReconnect: false,
+            refetchOnWindowFocus: false,
+        },
+    );
+
+    // Engagement Hook (Optimistic via React 19 useOptimistic + Reactive DB state)
     const { likeCount, isLiked, isDisliked, toggleLike, toggleDislike } =
         useVideoReaction({
-            videoId: video.id,
-            initialData: {
-                likeCount: video.likeCount,
-                dislikeCount: video.dislikeCount,
-                liked: video.engagement?.liked || false,
-                disliked: video.engagement?.disliked || false,
+            videoId: reactiveVideo.id,
+            reactiveData: {
+                likeCount: reactiveVideo.likeCount,
+                dislikeCount: reactiveVideo.dislikeCount,
+                liked: reactiveVideo.engagement?.liked || false,
+                disliked: reactiveVideo.engagement?.disliked || false,
             },
         });
 
-    // Subscription Hook (Optimistic)
+    // Subscription Hook
     const { isSubscribed, subscriberCount, toggleSubscribe, isLoading } =
         useSubscribe({
-            channelId: video.channelId,
-            initialData: {
-                isSubscribed: video.engagement?.subscribed || false,
-                subscriberCount: video.channels?.subscriberCount || 0,
+            channelId: reactiveVideo.channelId,
+            reactiveData: {
+                isSubscribed: reactiveVideo.engagement?.subscribed || false,
+                subscriberCount: reactiveVideo.channels?.subscriberCount || 0,
             },
         });
 
@@ -180,10 +203,35 @@ export function WatchClient({
                         <Button
                             variant="secondary"
                             className="rounded-2xl px-6 h-10 bg-surface-1/60 backdrop-blur-xl border border-border/40 hover:bg-surface-2 text-muted-foreground hover:text-foreground transition-all shadow-sm"
+                            onClick={() => {
+                                const url = window.location.href;
+                                if (navigator.share) {
+                                    navigator
+                                        .share({
+                                            title: video.title,
+                                            text: `Check out this video: ${video.title}`,
+                                            url: url,
+                                        })
+                                        .catch((err) => {
+                                            if (err.name !== "AbortError") {
+                                                navigator.clipboard.writeText(
+                                                    url,
+                                                );
+                                                toast.success(
+                                                    "Link copied to clipboard!",
+                                                );
+                                            }
+                                        });
+                                } else {
+                                    navigator.clipboard.writeText(url);
+                                    toast.success("Link copied to clipboard!");
+                                }
+                            }}
                         >
                             <Share2 className="h-4 w-4 mr-2" />
                             Share
                         </Button>
+                        <SaveToPlaylistModal videoId={video.id} />
                         <Button
                             variant="secondary"
                             size="icon"

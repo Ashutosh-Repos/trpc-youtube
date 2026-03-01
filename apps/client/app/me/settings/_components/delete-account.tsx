@@ -30,14 +30,12 @@ export const DeleteAccount = () => {
     const handleDelete = async () => {
         setIsLoading(true);
         try {
-            await deleteUser({
-                callbackURL: "/", // Redirect after deletion or verification email sent
-            });
+            await deleteUser();
             // According to auth config, this sends an email.
             toast.success(
                 "Verification email sent. Please check your inbox to confirm deletion.",
+                { duration: 8000 },
             );
-            // Ideally we might want to log them out or show a message explaining the next step.
         } catch {
             toast.error("Failed to initiate account deletion");
         } finally {

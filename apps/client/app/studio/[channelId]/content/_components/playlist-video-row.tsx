@@ -61,8 +61,11 @@ export const PlaylistVideoRow = ({
                         src={getMediaUrl(video.thumbnailUrl)}
                         alt={video.title}
                         fill
-                        unoptimized
                         className="object-cover"
+                        onError={(e) => {
+                            (e.target as HTMLImageElement).style.display =
+                                "none";
+                        }}
                     />
                     <div className="absolute inset-0 bg-surface-3/40 backdrop-blur-[2px] opacity-0 group-hover/video-thumb:opacity-100 transition-all flex items-center justify-center">
                         <Play className="w-8 h-8 text-primary fill-primary drop-shadow-[0_0_10px_oklch(var(--primary)/0.4)]" />

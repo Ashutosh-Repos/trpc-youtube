@@ -83,11 +83,14 @@ const CreateChannelForm = () => {
     const { setOpen } = useModal();
     const router = useRouter();
 
+    const utils = trpc.useUtils();
+
     // tRPC mutations
     const createChannelMutation = trpc.channel.createChannel.useMutation({
         onSuccess: () => {
             setOpen(false);
             toast.success("Channel created successfully");
+            utils.channel.getUserChannels.invalidate();
             router.refresh();
         },
         onError: (error) => {

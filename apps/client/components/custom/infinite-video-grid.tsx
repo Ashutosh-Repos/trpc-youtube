@@ -33,11 +33,18 @@ export function InfiniteVideoGrid({
         rootMargin: "400px", // Trigger earlier
     });
 
+    const isFetchingRef = React.useRef(false);
+
     useEffect(() => {
-        if (inView && hasNextPage && !isFetchingNextPage) {
+        isFetchingRef.current = isFetchingNextPage;
+    }, [isFetchingNextPage]);
+
+    useEffect(() => {
+        if (inView && hasNextPage && !isFetchingRef.current) {
+            isFetchingRef.current = true; // Lock immediately
             fetchNextPage();
         }
-    }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+    }, [inView, hasNextPage, fetchNextPage, isFetchingNextPage]);
 
     if (error) {
         return (

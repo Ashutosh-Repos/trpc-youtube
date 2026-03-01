@@ -126,8 +126,8 @@ export const auth = betterAuth({
     },
     rateLimit: {
         enabled: true,
-        window: 60, // 60 second window (production default)
-        max: 100, // 100 requests per window
+        window: 60, // 60 second window
+        max: 300, // 300 requests per window (increased for image-heavy SPA resilience)
         storage: "secondary-storage", // Use Redis for high-performance rate limiting
         customRules: {
             // Stricter limits for sensitive authentication paths

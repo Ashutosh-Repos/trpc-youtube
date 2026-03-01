@@ -4,8 +4,13 @@ import React, { useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { InfiniteVideoGrid } from "@/components/custom/infinite-video-grid";
 import type { HydratedVideo } from "@youtube/server/src/services/FeedService";
+import type { AppRouter } from "@youtube/server/src/trpc/router";
+import type { inferRouterOutputs } from "@trpc/server";
 
-export function HomeFeedClient() {
+type RouterOutputs = inferRouterOutputs<AppRouter>;
+type FeedData = RouterOutputs["feed"]["getHomeFeed"];
+
+export function HomeFeedClient({ initialData }: { initialData: FeedData }) {
     // using useInfiniteQuery for seamless cursor pagination
     const {
         data,
@@ -17,6 +22,10 @@ export function HomeFeedClient() {
     } = trpc.feed.getHomeFeed.useInfiniteQuery(
         {},
         {
+            initialData: {
+                pages: [initialData],
+                pageParams: [undefined],
+            },
             getNextPageParam: (lastPage) => lastPage.nextCursor,
             // Keep fresh for a decent amount of time to prevent layout thrashing
             staleTime: 1000 * 60 * 5,

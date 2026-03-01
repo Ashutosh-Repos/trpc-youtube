@@ -557,6 +557,57 @@ export const playlistRouter = router({
             };
         }),
 
+    /**
+     * List all playlists across all channels for the current user (Save to Playlist dialog).
+     */
+    getUserPlaylists: protectedProcedure
+        .input(
+            z.object({
+                videoId: z.string().optional(),
+            }),
+        )
+        .query(async ({ ctx, input }) => {
+            const { videoId } = input;
+            const userId = ctx.user.id;
+
+            if (videoId) {
+                const playlists = await prisma.playlists.findMany({
+                    where: { userId, deletedAt: null },
+                    orderBy: { updatedAt: "desc" },
+                    include: {
+                        playlist_videos: {
+                            where: { videoId },
+                            select: { videoId: true },
+                        },
+                    },
+                });
+
+                return {
+                    success: true,
+                    playlists: playlists.map((p) => {
+                        const { playlist_videos, ...rest } = p;
+                        return {
+                            ...rest,
+                            containsVideo: playlist_videos.length > 0,
+                        };
+                    }),
+                };
+            }
+
+            const playlists = await prisma.playlists.findMany({
+                where: { userId, deletedAt: null },
+                orderBy: { updatedAt: "desc" },
+            });
+
+            return {
+                success: true,
+                playlists: playlists.map((p) => ({
+                    ...p,
+                    containsVideo: false,
+                })),
+            };
+        }),
+
     getPlaylistFlow: publicProcedure
         .input(z.object({ playlistId: z.string() }))
         .query(async ({ ctx, input }) => {

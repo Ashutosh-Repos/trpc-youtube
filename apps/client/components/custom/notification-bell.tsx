@@ -112,13 +112,56 @@ export function NotificationBell() {
 
     // 4. Mutations
     const markRead = trpc.notification.markRead.useMutation({
-        onSuccess: () => {
-            setUnreadCount((prev) => Math.max(0, prev - 1));
+        onMutate: async ({ id }) => {
+            // Optimistic update
+            await utils.notification.list.cancel();
+            const prev = utils.notification.list.getInfiniteData({ limit: 10 });
+
+            utils.notification.list.setInfiniteData(
+                { limit: 10 },
+                (old: any) => {
+                    if (!old) return old;
+                    return {
+                        ...old,
+                        pages: old.pages.map((page: any) => ({
+                            ...page,
+                            items: page.items.map((item: any) =>
+                                item.id === id
+                                    ? { ...item, isRead: true }
+                                    : item,
+                            ),
+                        })),
+                    };
+                },
+            );
+
+            setUnreadCount((prevCount) => Math.max(0, prevCount - 1));
+            return { prev };
+        },
+        onError: (_err, _vars, ctx) => {
+            if (ctx?.prev) {
+                utils.notification.list.setInfiniteData(
+                    { limit: 10 },
+                    ctx.prev,
+                );
+                setUnreadCount((prevCount) => prevCount + 1); // rough rollback
+            }
+            toast.error("Failed to mark notification as read");
+        },
+        onSettled: () => {
+            utils.notification.list.invalidate({ limit: 10 });
+            utils.notification.getUnreadCount.invalidate();
         },
     });
 
     const markAllRead = trpc.notification.markAllRead.useMutation({
-        onSuccess: () => {
+        onMutate: async () => {
+            await utils.notification.list.cancel();
+            const prevList = utils.notification.list.getInfiniteData({
+                limit: 10,
+            });
+            const prevCount = unreadCount;
+
             setUnreadCount(0);
             utils.notification.list.setInfiniteData(
                 { limit: 10 },
@@ -138,12 +181,37 @@ export function NotificationBell() {
                 },
             );
             utils.notification.getUnreadCount.setData(undefined, 0);
+
+            return { prevList, prevCount };
+        },
+        onError: (_err, _vars, ctx) => {
+            if (ctx?.prevList) {
+                utils.notification.list.setInfiniteData(
+                    { limit: 10 },
+                    ctx.prevList,
+                );
+            }
+            if (ctx?.prevCount !== undefined) {
+                setUnreadCount(ctx.prevCount);
+                utils.notification.getUnreadCount.setData(
+                    undefined,
+                    ctx.prevCount,
+                );
+            }
+            toast.error("Failed to mark all as read");
+        },
+        onSettled: () => {
+            utils.notification.list.invalidate({ limit: 10 });
+            utils.notification.getUnreadCount.invalidate();
         },
     });
 
     const deleteNotification = trpc.notification.delete.useMutation({
         onMutate: async ({ id }) => {
             // Optimistic removal from cache
+            await utils.notification.list.cancel();
+            const prev = utils.notification.list.getInfiniteData({ limit: 10 });
+
             utils.notification.list.setInfiniteData(
                 { limit: 10 },
                 (old: any) => {
@@ -159,6 +227,20 @@ export function NotificationBell() {
                     };
                 },
             );
+            return { prev };
+        },
+        onError: (_err, _vars, ctx) => {
+            if (ctx?.prev) {
+                utils.notification.list.setInfiniteData(
+                    { limit: 10 },
+                    ctx.prev,
+                );
+            }
+            toast.error("Failed to delete notification");
+        },
+        onSettled: () => {
+            utils.notification.list.invalidate({ limit: 10 });
+            utils.notification.getUnreadCount.invalidate();
         },
     });
 

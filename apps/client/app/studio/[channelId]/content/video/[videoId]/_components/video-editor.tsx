@@ -122,7 +122,6 @@ export function VideoEditor({ video }: VideoEditorProps) {
         onReady: () => {
             // Refresh DB data once processing completes
             utils.video.getVideo.invalidate({ videoId: video.id });
-            router.refresh();
         },
     });
 
@@ -164,8 +163,6 @@ export function VideoEditor({ video }: VideoEditorProps) {
             // Invalidate query to update local state immediately
             utils.video.getVideo.invalidate({ videoId: video.id });
             utils.video.getChannelContent.invalidate();
-            // Refresh router to update server components
-            router.refresh();
             setIsSaving(false);
 
             // Re-sync form with new data
@@ -435,8 +432,15 @@ export function VideoEditor({ video }: VideoEditorProps) {
                                                                         )}
                                                                         alt={`Thumbnail option ${idx + 1}`}
                                                                         fill
-                                                                        unoptimized
                                                                         className="object-cover"
+                                                                        onError={(
+                                                                            e,
+                                                                        ) => {
+                                                                            (
+                                                                                e.target as HTMLImageElement
+                                                                            ).style.display =
+                                                                                "none";
+                                                                        }}
                                                                     />
                                                                 </div>
                                                             ),
@@ -474,8 +478,15 @@ export function VideoEditor({ video }: VideoEditorProps) {
                                                                     )}
                                                                     alt="Custom thumbnail"
                                                                     fill
-                                                                    unoptimized
                                                                     className="object-cover"
+                                                                    onError={(
+                                                                        e,
+                                                                    ) => {
+                                                                        (
+                                                                            e.target as HTMLImageElement
+                                                                        ).style.display =
+                                                                            "none";
+                                                                    }}
                                                                 />
                                                                 <div className="absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-sm opacity-0 group-hover/custom-thumb:opacity-100 transition-all">
                                                                     <ImageIcon className="h-6 w-6 text-foreground" />

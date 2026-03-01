@@ -71,7 +71,7 @@ export function ShortsClient({ video, isActive = true }: ShortsClientProps) {
     const { likeCount, isLiked, isDisliked, toggleLike, toggleDislike } =
         useVideoReaction({
             videoId: video.id,
-            initialData: {
+            reactiveData: {
                 likeCount: video.likeCount,
                 dislikeCount: video.dislikeCount,
                 liked: video.engagement?.liked || false,
@@ -82,7 +82,7 @@ export function ShortsClient({ video, isActive = true }: ShortsClientProps) {
     // Subscription Hook (Optimistic)
     const { isSubscribed, toggleSubscribe, isLoading } = useSubscribe({
         channelId: video.channelId,
-        initialData: {
+        reactiveData: {
             isSubscribed: video.engagement?.subscribed || false,
             subscriberCount: video.channels?.subscriberCount || 0,
         },

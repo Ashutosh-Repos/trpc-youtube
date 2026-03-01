@@ -25,9 +25,13 @@ interface Account {
 
 interface ConnectedAccountsProps {
     accounts: Account[];
+    hasPassword?: boolean;
 }
 
-export const ConnectedAccounts = ({ accounts }: ConnectedAccountsProps) => {
+export const ConnectedAccounts = ({
+    accounts,
+    hasPassword,
+}: ConnectedAccountsProps) => {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState<string | null>(null);
 
@@ -49,8 +53,16 @@ export const ConnectedAccounts = ({ accounts }: ConnectedAccountsProps) => {
     };
 
     const handleUnlink = async (provider: string) => {
-        // Prevent unlinking if it's the only method?
-        // Better-auth usually handles this safety check or returns error.
+        const oauthAccounts = accounts.filter(
+            (a) => a.providerId !== "credential",
+        );
+        if (!hasPassword && oauthAccounts.length <= 1) {
+            toast.error(
+                "Cannot disconnect your only sign-in method. Please set a password first.",
+            );
+            return;
+        }
+
         setIsLoading(provider);
         try {
             await unlinkAccount({

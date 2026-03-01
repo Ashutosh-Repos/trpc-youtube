@@ -10,7 +10,15 @@ const PUBLIC_PATHS = [
     "/api/webhooks",
 ];
 
-const IGNORED_PATHS = ["/_next", "/favicon.ico", "/public", "/api/trpc"];
+const IGNORED_PATHS = [
+    "/_next",
+    "/favicon.ico",
+    "/public",
+    "/api/trpc",
+    "/api/media",
+    "/images",
+    "/manifest.json",
+];
 
 export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;

@@ -80,8 +80,7 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
             setIsEditing(false);
             // Invalidate query to update local state immediately
             utils.channel.getChannelById.invalidate({ channelId: channel.id });
-            // Refresh router to update server components (e.g. sidebar, header)
-            router.refresh();
+            utils.channel.getUserChannels.invalidate();
         },
         onError: (error) => {
             toast.error(error.message || "Failed to update channel");
@@ -240,7 +239,6 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                     utils.channel.getChannelById.invalidate({
                         channelId: channel.id,
                     });
-                    router.refresh();
                 },
                 onError: (error) => {
                     // Revert on error (optional, but good for consistency)
@@ -295,13 +293,17 @@ const StudioSettingsClient = ({ channel }: StudioSettingsClientProps) => {
                 className="w-full flex flex-col gap-0 min-h-screen bg-background pb-20"
             >
                 {/* Banner Section */}
-                <div className="relative w-full h-48 md:h-72 group">
+                <div className="relative w-full h-48 md:h-72 group bg-surface-2">
                     <Image
                         src={resolvedBannerUrl}
                         alt="Channel Banner"
                         fill
                         className="object-cover"
                         priority
+                        onError={(e) => {
+                            (e.target as HTMLImageElement).style.display =
+                                "none";
+                        }}
                     />
                     <ImageUpload
                         type="banner"

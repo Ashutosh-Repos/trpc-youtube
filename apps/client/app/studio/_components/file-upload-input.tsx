@@ -219,7 +219,6 @@ export function FileUploadInput({
                             src={getMediaUrl(value)}
                             alt="Preview"
                             fill
-                            unoptimized
                             className="object-cover"
                         />
                         <div className="absolute inset-0 bg-background/60 backdrop-blur-md opacity-0 group-hover/preview:opacity-100 transition-all flex items-center justify-center">

@@ -78,16 +78,16 @@ export class FeedService {
                     -- Candidate Retrieval Pipeline (Solves O(N) Table Scans)
                     candidate_pool AS (
                         -- 500 Globally Hot (Long form only)
-                        (SELECT id FROM videos WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "isShort" = false ORDER BY "hotScore" DESC LIMIT 500)
+                        (SELECT id FROM videos WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "deletedAt" IS NULL AND "isShort" = false ORDER BY "hotScore" DESC LIMIT 500)
                         UNION
                         -- 200 Chronologically Fresh (Long form only)
-                        (SELECT id FROM videos WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "isShort" = false ORDER BY "publishedAt" DESC NULLS LAST LIMIT 200)
+                        (SELECT id FROM videos WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "deletedAt" IS NULL AND "isShort" = false ORDER BY "publishedAt" DESC NULLS LAST LIMIT 200)
                         UNION
                         -- 500 User Category Matches
                         (
                             SELECT v.id FROM videos v 
                             INNER JOIN user_cats uc ON v."categoryId" = uc."categoryId"
-                            WHERE v.visibility = 'PUBLIC' AND v."processingStatus" = 'READY' AND v."isShort" = false AND uc.affinity > 1.0
+                            WHERE v.visibility = 'PUBLIC' AND v."processingStatus" = 'READY' AND v."deletedAt" IS NULL AND v."isShort" = false AND uc.affinity > 1.0
                             ORDER BY v."hotScore" DESC LIMIT 500
                         )
                     )
@@ -123,9 +123,9 @@ export class FeedService {
                 // 2. Anonymous Feed: Global HotScore + Freshness Bonus only
                 videos = await prisma.$queryRaw`
                     WITH candidate_pool AS (
-                        (SELECT id FROM videos WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "isShort" = false ORDER BY "hotScore" DESC LIMIT 500)
+                        (SELECT id FROM videos WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "deletedAt" IS NULL AND "isShort" = false ORDER BY "hotScore" DESC LIMIT 500)
                         UNION
-                        (SELECT id FROM videos WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "isShort" = false ORDER BY "publishedAt" DESC NULLS LAST LIMIT 200)
+                        (SELECT id FROM videos WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "deletedAt" IS NULL AND "isShort" = false ORDER BY "publishedAt" DESC NULLS LAST LIMIT 200)
                     )
                     SELECT 
                         v.id,
@@ -194,7 +194,7 @@ export class FeedService {
                     ),
                     candidate_pool AS (
                         SELECT id FROM videos 
-                        WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "trendingScore" > 0 AND "isShort" = false
+                        WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "deletedAt" IS NULL AND "trendingScore" > 0 AND "isShort" = false
                         ORDER BY "trendingScore" DESC LIMIT 500
                     )
                     SELECT 
@@ -228,7 +228,7 @@ export class FeedService {
                 videos = await prisma.$queryRaw`
                     WITH candidate_pool AS (
                         SELECT id FROM videos 
-                        WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "trendingScore" > 0 AND "isShort" = false
+                        WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "deletedAt" IS NULL AND "trendingScore" > 0 AND "isShort" = false
                         ORDER BY "trendingScore" DESC LIMIT 500
                     )
                     SELECT 
@@ -296,14 +296,14 @@ export class FeedService {
                         GROUP BY "channelId"
                     ),
                     candidate_pool AS (
-                        (SELECT id FROM videos WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "isShort" = true ORDER BY "hotScore" DESC LIMIT 500)
+                        (SELECT id FROM videos WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "deletedAt" IS NULL AND "isShort" = true ORDER BY "hotScore" DESC LIMIT 500)
                         UNION
-                        (SELECT id FROM videos WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "isShort" = true ORDER BY "publishedAt" DESC NULLS LAST LIMIT 200)
+                        (SELECT id FROM videos WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "deletedAt" IS NULL AND "isShort" = true ORDER BY "publishedAt" DESC NULLS LAST LIMIT 200)
                         UNION
                         (
                             SELECT v.id FROM videos v 
                             INNER JOIN user_cats uc ON v."categoryId" = uc."categoryId"
-                            WHERE v.visibility = 'PUBLIC' AND v."processingStatus" = 'READY' AND v."isShort" = true AND uc.affinity > 1.0
+                            WHERE v.visibility = 'PUBLIC' AND v."processingStatus" = 'READY' AND v."deletedAt" IS NULL AND v."isShort" = true AND uc.affinity > 1.0
                             ORDER BY v."hotScore" DESC LIMIT 500
                         )
                     )
@@ -336,9 +336,9 @@ export class FeedService {
             } else {
                 videos = await prisma.$queryRaw`
                     WITH candidate_pool AS (
-                        (SELECT id FROM videos WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "isShort" = true ORDER BY "hotScore" DESC LIMIT 500)
+                        (SELECT id FROM videos WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "deletedAt" IS NULL AND "isShort" = true ORDER BY "hotScore" DESC LIMIT 500)
                         UNION
-                        (SELECT id FROM videos WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "isShort" = true ORDER BY "publishedAt" DESC NULLS LAST LIMIT 200)
+                        (SELECT id FROM videos WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "deletedAt" IS NULL AND "isShort" = true ORDER BY "publishedAt" DESC NULLS LAST LIMIT 200)
                     )
                     SELECT 
                         v.id,
@@ -406,7 +406,7 @@ export class FeedService {
                     ),
                     candidate_pool AS (
                         SELECT id FROM videos 
-                        WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "trendingScore" > 0 AND "isShort" = true
+                        WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "deletedAt" IS NULL AND "trendingScore" > 0 AND "isShort" = true
                         ORDER BY "trendingScore" DESC LIMIT 500
                     )
                     SELECT 
@@ -439,7 +439,7 @@ export class FeedService {
                 videos = await prisma.$queryRaw`
                     WITH candidate_pool AS (
                         SELECT id FROM videos 
-                        WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "trendingScore" > 0 AND "isShort" = true
+                        WHERE visibility = 'PUBLIC' AND "processingStatus" = 'READY' AND "deletedAt" IS NULL AND "trendingScore" > 0 AND "isShort" = true
                         ORDER BY "trendingScore" DESC LIMIT 500
                     )
                     SELECT 

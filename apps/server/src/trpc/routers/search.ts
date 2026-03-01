@@ -142,6 +142,7 @@ export const searchRouter = router({
                 where: {
                     visibility: "PUBLIC",
                     processingStatus: "READY",
+                    deletedAt: null,
                     OR: [
                         { title: { search: formattedQuery } },
                         {

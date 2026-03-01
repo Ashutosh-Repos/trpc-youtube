@@ -26,11 +26,12 @@ export function VideoCard({ video, hideChannelInfo = false }: VideoCardProps) {
     const channelUrl = `/channel/@${video.channels.handle || video.channelId}`;
 
     return (
-        <div className="flex flex-col gap-3 group bg-transparent w-full transition-all duration-300 active:scale-[0.98]">
+        <div className="flex flex-col gap-3 group bg-transparent w-full transition-all duration-300">
             {/* Thumbnail Wrapper */}
             <Link
+                prefetch={false}
                 href={videoUrl}
-                className="relative aspect-video rounded-2xl overflow-hidden bg-surface-2 w-full border border-border/40 group-hover:shadow-[0_20px_50px_-15px_oklch(var(--primary)/0.2)] dark:group-hover:shadow-[0_20px_50px_-15px_oklch(var(--primary)/0.4)] transition-all duration-500 ease-out group-hover:-translate-y-1"
+                className="relative aspect-video rounded-2xl overflow-hidden bg-surface-2 w-full border border-border/40 group-hover:shadow-[0_20px_50px_-15px_oklch(var(--primary)/0.2)] dark:group-hover:shadow-[0_20px_50px_-15px_oklch(var(--primary)/0.4)] transition-all duration-500 ease-out group-hover:-translate-y-1 active:scale-[0.98]"
             >
                 <VideoHoverPreview
                     thumbnailUrl={getMediaUrl(video.thumbnailUrl)}
@@ -50,6 +51,7 @@ export function VideoCard({ video, hideChannelInfo = false }: VideoCardProps) {
             <div className="flex gap-3 items-start relative px-0.5">
                 {!hideChannelInfo && (
                     <Link
+                        prefetch={false}
                         href={channelUrl}
                         className="shrink-0 mt-1 transition-transform hover:scale-110 active:scale-90"
                         tabIndex={-1}
@@ -68,6 +70,7 @@ export function VideoCard({ video, hideChannelInfo = false }: VideoCardProps) {
 
                 <div className="flex flex-col overflow-hidden leading-[1.3]">
                     <Link
+                        prefetch={false}
                         href={videoUrl}
                         className="font-bold text-[15px] line-clamp-2 pb-px tracking-tight group-hover:text-primary transition-colors duration-300"
                         title={video.title}
@@ -78,6 +81,7 @@ export function VideoCard({ video, hideChannelInfo = false }: VideoCardProps) {
                     <div className="flex flex-col gap-0.5 mt-1">
                         {!hideChannelInfo && (
                             <Link
+                                prefetch={false}
                                 href={channelUrl}
                                 className="text-[13px] font-semibold text-muted-foreground/80 hover:text-primary transition-colors line-clamp-1 w-max"
                             >

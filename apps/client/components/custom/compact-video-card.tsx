@@ -17,6 +17,7 @@ export function CompactVideoCard({ video }: CompactVideoCardProps) {
     return (
         <div className="flex gap-2 group cursor-pointer items-start w-full">
             <Link
+                prefetch={false}
                 href={videoUrl}
                 className="relative w-[168px] h-[94px] bg-surface-2 rounded-xl shrink-0 overflow-hidden border border-border/10 group-hover:shadow-lg transition-all"
             >
@@ -31,12 +32,14 @@ export function CompactVideoCard({ video }: CompactVideoCardProps) {
             </Link>
             <div className="flex flex-col gap-1 pr-4 min-w-0">
                 <Link
+                    prefetch={false}
                     href={videoUrl}
                     className="font-semibold text-sm line-clamp-2 leading-tight"
                 >
                     {video.title}
                 </Link>
                 <Link
+                    prefetch={false}
                     href={channelUrl}
                     className="text-[12px] font-black uppercase tracking-widest text-muted-foreground/40 hover:text-primary transition-colors line-clamp-1 mt-1"
                 >

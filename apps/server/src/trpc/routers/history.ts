@@ -3,6 +3,7 @@ import { router, protectedProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import prisma from "../../lib/prisma";
 import { StreamService } from "../../services/StreamService";
+import { HistoryService } from "../../services/HistoryService";
 import { ProcessingStatus } from "../../../generated/prisma/client";
 
 export const historyRouter = router({
@@ -21,55 +22,7 @@ export const historyRouter = router({
             const { limit, cursor } = input;
             const userId = ctx.user.id;
 
-            const items = await prisma.watch_history.findMany({
-                take: limit + 1,
-                where: {
-                    userId,
-                    videos: {
-                        visibility: { in: ["PUBLIC", "UNLISTED"] },
-                        deletedAt: null,
-                        processingStatus: ProcessingStatus.READY,
-                    },
-                },
-                cursor: cursor ? { id: cursor } : undefined,
-                orderBy: [
-                    { lastWatchedAt: "desc" },
-                    { id: "desc" }, // Stable tie-breaker
-                ],
-                include: {
-                    videos: {
-                        select: {
-                            id: true,
-                            title: true,
-                            thumbnailUrl: true,
-                            description: true,
-                            viewCount: true,
-                            createdAt: true,
-                            duration: true,
-                            isShort: true,
-                            channels: {
-                                select: {
-                                    id: true,
-                                    name: true,
-                                    handle: true,
-                                    image: true,
-                                },
-                            },
-                        },
-                    },
-                },
-            });
-
-            let nextCursor: typeof cursor | undefined = undefined;
-            if (items.length > limit) {
-                const nextItem = items.pop();
-                nextCursor = nextItem!.id;
-            }
-
-            return {
-                items,
-                nextCursor,
-            };
+            return await HistoryService.getHistory(userId, limit, cursor);
         }),
 
     /**
@@ -91,6 +44,7 @@ export const historyRouter = router({
 
             // Invalidate Cache
             await StreamService.clearSession(userId, videoId);
+            await HistoryService.invalidateUserCache(userId);
 
             return { success: true };
         }),
@@ -108,6 +62,7 @@ export const historyRouter = router({
 
         // Invalidate All Cache
         await StreamService.clearAllSessions(userId);
+        await HistoryService.invalidateUserCache(userId);
 
         return { success: true };
     }),

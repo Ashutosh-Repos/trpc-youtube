@@ -5,20 +5,18 @@ import prisma from "./prisma";
  * Typically called after video publication, deletion, or visibility changes.
  */
 export async function updateChannelStats(channelId: string) {
-    // 1. Count PUBLIC videos that are not soft-deleted
+    // 1. Count all videos that are not soft-deleted (including unlisted/private/scheduled)
     const videoCount = await prisma.videos.count({
         where: {
             channelId,
-            visibility: "PUBLIC",
             deletedAt: null,
         },
     });
 
-    // 2. Sum total views for public videos
+    // 2. Sum total views for all videos (unlisted links still accrue views)
     const aggregate = await prisma.videos.aggregate({
         where: {
             channelId,
-            visibility: "PUBLIC",
             deletedAt: null,
         },
         _sum: {

@@ -648,6 +648,14 @@ export const videoRouter = router({
             // Delete record
             await prisma.videos.delete({ where: { id: video.id } });
 
+            // Ensure channel metrics update since the pending video was just destroyed
+            updateChannelStats(video.channelId).catch((err) =>
+                console.error(
+                    "[Video] Failed to update channel stats on abort",
+                    err,
+                ),
+            );
+
             // Clear cache
             await deleteVideoMetadata(video.id);
 
@@ -879,7 +887,12 @@ export const videoRouter = router({
             });
 
             // Update channel stats
-            await updateChannelStats(channelId);
+            updateChannelStats(channelId).catch((err) =>
+                console.error(
+                    "[Video] Failed to update channel stats on delete",
+                    err,
+                ),
+            );
 
             // Remove any scheduled jobs
             try {
@@ -937,8 +950,10 @@ export const videoRouter = router({
                 },
             });
 
-            // Update channel stats
-            await updateChannelStats(channelId);
+            // Update channel stats asynchronously to prevent blocking the UI
+            updateChannelStats(channelId).catch((err) =>
+                console.error("[Video] Failed to update channel stats:", err),
+            );
 
             // NEW_VIDEO notification: only for videos that were previously non-public
             if (visibility === "PUBLIC" && previouslyNonPublicIds.length > 0) {
@@ -1097,7 +1112,12 @@ export const videoRouter = router({
                 otherData.visibility &&
                 otherData.visibility !== video.visibility
             ) {
-                await updateChannelStats(video.channelId);
+                updateChannelStats(video.channelId).catch((err) =>
+                    console.error(
+                        "[Video] Failed to update channel stats on update",
+                        err,
+                    ),
+                );
 
                 // NEW_VIDEO notification: fan out to subscribers when video goes PUBLIC
                 if (
@@ -1237,7 +1257,7 @@ export const videoRouter = router({
                 },
             });
 
-            if (!video) {
+            if (!video || video.deletedAt !== null) {
                 throw new TRPCError({
                     code: "NOT_FOUND",
                     message: "Video not found",

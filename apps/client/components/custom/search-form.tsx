@@ -162,12 +162,12 @@ export function SearchForm() {
                                         className="rounded-l-full rounded-r-full muted-foreground border-accent pr-10"
                                     />
                                 </FormControl>
-                                <span
+                                <button
+                                    type="submit"
                                     className="absolute w-auto h-full right-0 top-1/2 -translate-y-1/2 px-3 rounded-r-full cursor-pointer grid place-items-center bg-accent text-accent-foreground"
-                                    onClick={form.handleSubmit(onSubmit)}
                                 >
                                     <SearchIcon size={18} />
-                                </span>
+                                </button>
                             </div>
                             <FormMessage />
                         </FormItem>

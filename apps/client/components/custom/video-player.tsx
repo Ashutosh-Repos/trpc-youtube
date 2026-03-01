@@ -31,17 +31,12 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     onEnd,
     initialTime = 0,
 }) => {
-    const [mounted, setMounted] = React.useState(false);
     const mediaRef = React.useRef<HTMLVideoElement>(null);
-
-    React.useEffect(() => {
-        setMounted(true);
-    }, []);
 
     // Set initial time
     React.useEffect(() => {
         const media = mediaRef.current;
-        if (media && initialTime > 0 && mounted) {
+        if (media && initialTime > 0) {
             // Small timeout to ensure H.js is attached or metadata loaded
             // Better: listen for 'loadedmetadata' but this is a simple attempt
             const setTime = () => {
@@ -55,7 +50,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 });
             }
         }
-    }, [mounted, initialTime]);
+    }, [initialTime]);
 
     // Attach event listeners
     React.useEffect(() => {
@@ -79,18 +74,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             media.removeEventListener("timeupdate", handleTimeUpdate);
             media.removeEventListener("ended", handleEnded);
         };
-    }, [onPlay, onProgress, onEnd, mounted]);
-
-    if (!mounted) {
-        return (
-            <div className="w-full aspect-video bg-surface-1 rounded-2xl animate-pulse flex flex-col items-center justify-center text-muted-foreground/40 gap-3 border border-border/10">
-                <div className="w-12 h-12 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]">
-                    Initializing Engine...
-                </span>
-            </div>
-        );
-    }
+    }, [onPlay, onProgress, onEnd]);
 
     return (
         <div className="w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl relative group border border-border/10">

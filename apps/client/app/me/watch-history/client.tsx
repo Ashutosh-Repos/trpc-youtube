@@ -2,11 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import { getMediaUrl } from "@/lib/utils";
-import { trpc } from "@/lib/trpc";
+import { RouterOutputs, trpc } from "@/lib/trpc";
 import { format, isToday, isYesterday } from "date-fns";
 import { Loader2, Trash2, X } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useMemo, useRef, forwardRef } from "react";
+import { useCallback, useMemo, useEffect, forwardRef } from "react";
+import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
 import Image from "next/image";
 
@@ -57,6 +58,10 @@ const HistoryItem = forwardRef<HTMLDivElement, HistoryItemProps>(
                             fill
                             className="object-cover"
                             sizes="(max-width: 768px) 100vw, 240px"
+                            onError={(e) => {
+                                (e.target as HTMLImageElement).style.display =
+                                    "none";
+                            }}
                         />
                         {/* Duration Badge */}
                         {video.duration && (
@@ -131,7 +136,11 @@ function formatDuration(seconds: number) {
     return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-export function HistoryClient() {
+interface HistoryClientProps {
+    initialData: RouterOutputs["history"]["getHistory"];
+}
+
+export function HistoryClient({ initialData }: HistoryClientProps) {
     const utils = trpc.useUtils();
 
     const {
@@ -146,6 +155,10 @@ export function HistoryClient() {
             limit: 20,
         },
         {
+            initialData: {
+                pages: [initialData],
+                pageParams: [undefined],
+            },
             getNextPageParam: (lastPage) => lastPage.nextCursor,
         },
     );
@@ -172,20 +185,16 @@ export function HistoryClient() {
     });
 
     // Intersection Observer for Infinite Scroll
-    const observer = useRef<IntersectionObserver | null>(null);
-    const lastElementRef = useCallback(
-        (node: HTMLDivElement | null) => {
-            if (isFetchingNextPage) return;
-            if (observer.current) observer.current.disconnect();
-            observer.current = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting && hasNextPage) {
-                    fetchNextPage();
-                }
-            });
-            if (node) observer.current.observe(node);
-        },
-        [isFetchingNextPage, hasNextPage, fetchNextPage],
-    );
+    const { ref, inView } = useInView({
+        threshold: 0,
+        rootMargin: "400px",
+    });
+
+    useEffect(() => {
+        if (inView && hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+        }
+    }, [inView, hasNextPage, fetchNextPage, isFetchingNextPage]);
 
     // Grouping Logic
     const groupedHistory = useMemo(() => {
@@ -197,7 +206,7 @@ export function HistoryClient() {
         const older: HistoryItemProps["item"][] = [];
 
         data.pages.forEach((page) => {
-            page.items.forEach((item) => {
+            page.items.forEach((item: HistoryItemProps["item"]) => {
                 const date = new Date(item.lastWatchedAt);
                 if (isToday(date)) {
                     today.push(item);
@@ -277,34 +286,26 @@ export function HistoryClient() {
                                 {group.title}
                             </h2>
                             <div className="flex flex-col gap-4">
-                                {group.items.map((item, index) => {
-                                    const isLast =
-                                        index === group.items.length - 1 &&
-                                        group.title ===
-                                            groupedHistory[
-                                                groupedHistory.length - 1
-                                            ].title;
-                                    return (
-                                        <HistoryItem
-                                            key={item.id} // use history ID, unique
-                                            item={item}
-                                            ref={isLast ? lastElementRef : null}
-                                            onRemove={() =>
-                                                removeFromHistoryMutation.mutate(
-                                                    {
-                                                        videoId: item.videoId,
-                                                    },
-                                                )
-                                            }
-                                        />
-                                    );
-                                })}
+                                {group.items.map((item) => (
+                                    <HistoryItem
+                                        key={item.id}
+                                        item={item}
+                                        ref={null}
+                                        onRemove={() =>
+                                            removeFromHistoryMutation.mutate({
+                                                videoId: item.videoId,
+                                            })
+                                        }
+                                    />
+                                ))}
                             </div>
                         </div>
                     ))}
-                    {isFetchingNextPage && (
-                        <div className="flex justify-center py-4">
-                            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                    {hasNextPage && (
+                        <div ref={ref} className="flex justify-center py-4">
+                            {isFetchingNextPage && (
+                                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                            )}
                         </div>
                     )}
                 </div>

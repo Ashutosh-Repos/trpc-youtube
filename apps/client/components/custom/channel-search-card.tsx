@@ -23,7 +23,7 @@ export function ChannelSearchCard({ channel }: ChannelSearchCardProps) {
     const { isSubscribed, subscriberCount, toggleSubscribe, isLoading } =
         useSubscribe({
             channelId: channel.id,
-            initialData: {
+            reactiveData: {
                 isSubscribed: channel.isSubscribed,
                 subscriberCount: channel.subscriberCount,
             },
@@ -31,7 +31,7 @@ export function ChannelSearchCard({ channel }: ChannelSearchCardProps) {
 
     return (
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 p-6 border-b border-border/10 w-full hover:bg-surface-2/60 transition-all duration-300 font-sans group">
-            <Link href={channelUrl} className="shrink-0">
+            <Link prefetch={false} href={channelUrl} className="shrink-0">
                 <Avatar className="w-24 h-24 sm:w-32 sm:h-32 mb-2 sm:mb-0">
                     <AvatarImage
                         src={getMediaUrl(channel.image)}
@@ -44,6 +44,7 @@ export function ChannelSearchCard({ channel }: ChannelSearchCardProps) {
             </Link>
             <div className="flex flex-col justify-center flex-1 text-center sm:text-left h-full sm:min-h-[128px]">
                 <Link
+                    prefetch={false}
                     href={channelUrl}
                     className="text-xl font-black tracking-tighter hover:text-primary transition-colors"
                 >

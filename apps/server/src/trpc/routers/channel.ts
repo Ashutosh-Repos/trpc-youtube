@@ -354,17 +354,6 @@ export const channelRouter = router({
             orderBy: {
                 createdAt: "desc",
             },
-            include: {
-                _count: {
-                    select: {
-                        videos: {
-                            where: {
-                                deletedAt: null,
-                            },
-                        },
-                    },
-                },
-            },
         });
 
         // Map to public shape but use dynamic video count
@@ -378,7 +367,7 @@ export const channelRouter = router({
             bannerUrl: channel.bannerUrl,
             isVerified: channel.isVerified,
             subscriberCount: channel.subscriberCount,
-            videoCount: channel._count.videos, // Use real count
+            videoCount: channel.videoCount, // Use denormalized fast count
             totalViews: channel.totalViews,
             createdAt: channel.createdAt,
             links: channel.links,

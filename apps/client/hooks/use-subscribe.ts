@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth/auth-client";
 
 interface UseSubscribeProps {
     channelId: string;
-    initialData: {
+    reactiveData: {
         isSubscribed: boolean;
         subscriberCount: number;
     };
@@ -14,57 +14,63 @@ interface UseSubscribeProps {
 
 export function useSubscribe({
     channelId,
-    initialData,
+    reactiveData,
     onSubscriptionChange,
 }: UseSubscribeProps) {
     const { data: session } = authClient.useSession();
-    const [isSubscribed, setIsSubscribed] = useState(initialData.isSubscribed);
-    const [subscriberCount, setSubscriberCount] = useState(
-        initialData.subscriberCount,
-    );
-
     const utils = trpc.useUtils();
+
+    const [localState, setLocalState] = useState(reactiveData);
+
+    useEffect(() => {
+        setLocalState(reactiveData);
+    }, [reactiveData.isSubscribed, reactiveData.subscriberCount]);
+
+    const performOptimisticUpdate = () => {
+        setLocalState((prev) => {
+            const newState = {
+                isSubscribed: !prev.isSubscribed,
+                subscriberCount: prev.isSubscribed
+                    ? Math.max(0, prev.subscriberCount - 1)
+                    : prev.subscriberCount + 1,
+            };
+
+            return newState;
+        });
+    };
 
     const toggleSubscriptionMutation =
         trpc.channel.toggleSubscription.useMutation({
             onMutate: async () => {
-                // Optimistically update state
-                const newIsSubscribed = !isSubscribed;
-
-                setIsSubscribed(newIsSubscribed);
-                setSubscriberCount((prev) =>
-                    newIsSubscribed ? prev + 1 : Math.max(0, prev - 1),
-                );
-
-                return {
-                    prevSubscribed: isSubscribed,
-                    prevCount: subscriberCount,
-                };
+                await utils.channel.getChannelByHandle.cancel({
+                    handle: channelId,
+                });
+                const prev = utils.channel.getChannelByHandle.getData({
+                    handle: channelId,
+                });
+                const prevLocal = localState;
+                performOptimisticUpdate();
+                return { prev, prevLocal };
             },
-            onError: (err, variables, context) => {
-                // Revert on error
-                if (context) {
-                    setIsSubscribed(context.prevSubscribed);
-                    setSubscriberCount(context.prevCount);
+            onError: (err, _vars, ctx) => {
+                if (ctx?.prev !== undefined) {
+                    utils.channel.getChannelByHandle.setData(
+                        { handle: channelId },
+                        ctx.prev,
+                    );
+                }
+                if (ctx?.prevLocal) {
+                    setLocalState(ctx.prevLocal);
                 }
                 toast.error(err.message || "Failed to update subscription");
             },
             onSuccess: (data) => {
-                if (data.action === "SUBSCRIBED") {
-                    toast.success("Subscribed");
-                } else {
-                    toast.success("Unsubscribed");
-                }
-
                 onSubscriptionChange?.(data.action === "SUBSCRIBED");
-
-                // Invalidate relevant queries (if any other views need to know)
-                utils.channel.getChannelByHandle.invalidate();
-                utils.video.getPublicVideo.invalidate();
-                // Don't strongly block on the invalidate though, our local state is already right
             },
             onSettled: () => {
-                // optionally refetch or sync if needed
+                utils.channel.getChannelByHandle.invalidate({
+                    handle: channelId,
+                });
             },
         });
 
@@ -77,8 +83,8 @@ export function useSubscribe({
     };
 
     return {
-        isSubscribed,
-        subscriberCount,
+        isSubscribed: localState.isSubscribed,
+        subscriberCount: localState.subscriberCount,
         toggleSubscribe,
         isLoading: toggleSubscriptionMutation.isPending,
     };
